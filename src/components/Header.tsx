@@ -28,9 +28,9 @@ const Header = () => {
             className="flex items-center gap-3"
           >
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent to-amber-600 flex items-center justify-center shadow-lg">
-              <span className="text-accent-foreground font-bold text-lg">F</span>
+              <span className="text-accent-foreground font-bold text-lg">R</span>
             </div>
-            <span className="text-xl font-bold text-foreground">FishTrack</span>
+            <span className="text-xl font-bold text-foreground">ReelSpot</span>
           </motion.div>
 
           {/* Desktop Navigation */}
