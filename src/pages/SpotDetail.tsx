@@ -5,6 +5,7 @@ import {
   MapPin, 
   Star, 
   Bookmark, 
+  BookmarkCheck,
   Thermometer, 
   Wind, 
   Droplets, 
@@ -19,19 +20,34 @@ import {
   Sun,
   CloudRain,
   Cloud,
-  CloudSun
+  CloudSun,
+  Loader2,
+  CloudSnow,
+  CloudLightning
 } from "lucide-react";
 import { getSpotBySlug, FishingSpot } from "@/data/spots";
 import { countries } from "@/components/CountrySelector";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { useWeather } from "@/hooks/useWeather";
+import { useSavedItems } from "@/hooks/useSavedItems";
+import { useAuth } from "@/contexts/AuthContext";
 
-const WeatherIcon = ({ condition }: { condition: string }) => {
-  const lowerCondition = condition.toLowerCase();
-  if (lowerCondition.includes("rain")) return <CloudRain className="w-8 h-8 text-accent" />;
-  if (lowerCondition.includes("sunny") || lowerCondition.includes("clear")) return <Sun className="w-8 h-8 text-accent" />;
-  if (lowerCondition.includes("partly")) return <CloudSun className="w-8 h-8 text-accent" />;
-  return <Cloud className="w-8 h-8 text-accent" />;
+const WeatherIcon = ({ icon }: { icon: string }) => {
+  switch (icon) {
+    case "sun":
+      return <Sun className="w-8 h-8 text-accent" />;
+    case "cloud-rain":
+      return <CloudRain className="w-8 h-8 text-accent" />;
+    case "cloud-sun":
+      return <CloudSun className="w-8 h-8 text-accent" />;
+    case "cloud-snow":
+      return <CloudSnow className="w-8 h-8 text-accent" />;
+    case "cloud-lightning":
+      return <CloudLightning className="w-8 h-8 text-accent" />;
+    default:
+      return <Cloud className="w-8 h-8 text-accent" />;
+  }
 };
 
 const TrendIcon = ({ trend }: { trend: string }) => {
@@ -44,6 +60,15 @@ const SpotDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const spot = getSpotBySlug(slug || "");
+  const { user } = useAuth();
+  const { isSaved, toggleSave, isToggling } = useSavedItems();
+
+  // Fetch live weather data
+  const { data: liveWeather, isLoading: weatherLoading } = useWeather(
+    spot?.coordinates.lat || 0,
+    spot?.coordinates.lng || 0,
+    !!spot
+  );
 
   if (!spot) {
     return (
@@ -62,6 +87,17 @@ const SpotDetail = () => {
   }
 
   const countryName = countries.find((c) => c.code === spot.country)?.name || spot.country;
+  const spotIsSaved = isSaved("spot", spot.slug);
+
+  // Use live weather if available, otherwise fall back to static data
+  const displayWeather = liveWeather || {
+    temperature: spot.weather.temperature,
+    condition: spot.weather.condition,
+    humidity: spot.weather.humidity,
+    windSpeed: spot.weather.windSpeed,
+    windDirection: spot.weather.windDirection,
+    icon: "cloud",
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -85,6 +121,30 @@ const SpotDetail = () => {
         >
           <ArrowLeft className="w-4 h-4" />
           <span className="text-sm font-medium">Back</span>
+        </motion.button>
+
+        {/* Save Button */}
+        <motion.button
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          onClick={() => toggleSave("spot", spot.slug)}
+          disabled={isToggling}
+          className={`absolute top-24 right-4 lg:right-8 flex items-center gap-2 px-4 py-2 backdrop-blur-sm rounded-full transition-colors ${
+            spotIsSaved 
+              ? "bg-accent text-accent-foreground" 
+              : "bg-background/80 text-foreground hover:bg-background"
+          }`}
+        >
+          {isToggling ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : spotIsSaved ? (
+            <BookmarkCheck className="w-4 h-4" />
+          ) : (
+            <Bookmark className="w-4 h-4" />
+          )}
+          <span className="text-sm font-medium">
+            {spotIsSaved ? "Saved" : "Save"}
+          </span>
         </motion.button>
 
         {/* Title Overlay */}
@@ -171,27 +231,39 @@ const SpotDetail = () => {
               transition={{ delay: 0.2 }}
               className="bg-card rounded-2xl p-6 border border-border/50"
             >
-              <h2 className="text-xl font-bold text-foreground mb-6">Current Conditions</h2>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-foreground">Current Conditions</h2>
+                {liveWeather && (
+                  <span className="text-xs text-accent flex items-center gap-1">
+                    <span className="w-2 h-2 bg-accent rounded-full animate-pulse" />
+                    Live
+                  </span>
+                )}
+              </div>
               
               <div className="grid sm:grid-cols-2 gap-6">
                 {/* Weather */}
                 <div className="bg-muted/50 rounded-xl p-5">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-sm font-medium text-muted-foreground">Weather</h3>
-                    <WeatherIcon condition={spot.weather.condition} />
+                    {weatherLoading ? (
+                      <Loader2 className="w-8 h-8 text-accent animate-spin" />
+                    ) : (
+                      <WeatherIcon icon={displayWeather.icon || "cloud"} />
+                    )}
                   </div>
                   <p className="text-3xl font-bold text-foreground mb-1">
-                    {spot.weather.temperature}°F
+                    {displayWeather.temperature}°F
                   </p>
-                  <p className="text-sm text-muted-foreground mb-4">{spot.weather.condition}</p>
+                  <p className="text-sm text-muted-foreground mb-4">{displayWeather.condition}</p>
                   <div className="grid grid-cols-2 gap-3 text-sm">
                     <div className="flex items-center gap-2 text-muted-foreground">
                       <Droplets className="w-4 h-4" />
-                      <span>{spot.weather.humidity}% humidity</span>
+                      <span>{displayWeather.humidity}% humidity</span>
                     </div>
                     <div className="flex items-center gap-2 text-muted-foreground">
                       <Wind className="w-4 h-4" />
-                      <span>{spot.weather.windSpeed} mph {spot.weather.windDirection}</span>
+                      <span>{displayWeather.windSpeed} mph {displayWeather.windDirection}</span>
                     </div>
                   </div>
                 </div>
@@ -357,11 +429,28 @@ const SpotDetail = () => {
             >
               <h3 className="text-lg font-bold text-foreground mb-2">Ready to Fish?</h3>
               <p className="text-sm text-muted-foreground mb-4">
-                Save this spot to your collection and get real-time updates.
+                {user 
+                  ? "Save this spot to your collection and get real-time updates."
+                  : "Sign in to save spots and track your catches."}
               </p>
-              <button className="w-full px-6 py-3 bg-accent text-accent-foreground rounded-xl font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
-                <Bookmark className="w-4 h-4" />
-                Save Spot
+              <button 
+                onClick={() => user ? toggleSave("spot", spot.slug) : navigate("/auth")}
+                disabled={isToggling}
+                className="w-full px-6 py-3 bg-accent text-accent-foreground rounded-xl font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+              >
+                {isToggling ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : spotIsSaved ? (
+                  <>
+                    <BookmarkCheck className="w-4 h-4" />
+                    Saved to Collection
+                  </>
+                ) : (
+                  <>
+                    <Bookmark className="w-4 h-4" />
+                    {user ? "Save Spot" : "Sign In to Save"}
+                  </>
+                )}
               </button>
             </motion.div>
           </div>
