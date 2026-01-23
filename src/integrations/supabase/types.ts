@@ -296,6 +296,45 @@ export type Database = {
         }
         Relationships: []
       }
+      spot_reviews: {
+        Row: {
+          author_name: string
+          content: string
+          created_at: string
+          id: string
+          rating: number
+          spot_id: number
+          title: string | null
+          updated_at: string
+          user_id: string | null
+          visit_date: string | null
+        }
+        Insert: {
+          author_name?: string
+          content: string
+          created_at?: string
+          id?: string
+          rating: number
+          spot_id: number
+          title?: string | null
+          updated_at?: string
+          user_id?: string | null
+          visit_date?: string | null
+        }
+        Update: {
+          author_name?: string
+          content?: string
+          created_at?: string
+          id?: string
+          rating?: number
+          spot_id?: number
+          title?: string | null
+          updated_at?: string
+          user_id?: string | null
+          visit_date?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

@@ -32,6 +32,7 @@ import Footer from "@/components/Footer";
 import { useWeather } from "@/hooks/useWeather";
 import { useSavedItems } from "@/hooks/useSavedItems";
 import { useAuth } from "@/contexts/AuthContext";
+import { SpotReviews } from "@/components/spots/SpotReviews";
 
 const WeatherIcon = ({ icon }: { icon: string }) => {
   switch (icon) {
@@ -355,6 +356,16 @@ const SpotDetail = () => {
                   </li>
                 ))}
               </ul>
+            </motion.div>
+
+            {/* Reviews Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="bg-card rounded-2xl p-6 border border-border/50"
+            >
+              <SpotReviews spotId={spot.id} spotTitle={spot.title} />
             </motion.div>
           </div>
 
