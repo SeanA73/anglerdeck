@@ -13,6 +13,7 @@ const Header = () => {
     { name: "Map", icon: Map, href: "/map" },
     { name: "Catch Log", icon: Fish, href: "/catches" },
     { name: "Community", icon: MessageSquare, href: "/community" },
+    { name: "Marketplace", icon: ShoppingBag, href: "/marketplace" },
     { name: "Premium", icon: Crown, href: "#premium" },
   ];
 
