@@ -8,6 +8,7 @@ import SpotDetail from "./pages/SpotDetail";
 import MapView from "./pages/MapView";
 import CatchLog from "./pages/CatchLog";
 import CommunityFeed from "./pages/CommunityFeed";
+import Marketplace from "./pages/Marketplace";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/map" element={<MapView />} />
           <Route path="/catches" element={<CatchLog />} />
           <Route path="/community" element={<CommunityFeed />} />
+          <Route path="/marketplace" element={<Marketplace />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

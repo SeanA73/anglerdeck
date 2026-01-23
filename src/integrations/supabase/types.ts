@@ -71,6 +71,63 @@ export type Database = {
         }
         Relationships: []
       }
+      gear_listings: {
+        Row: {
+          category: string
+          condition: string
+          contact_method: string | null
+          contact_value: string | null
+          created_at: string
+          currency: string
+          description: string | null
+          id: string
+          images: string[] | null
+          is_sold: boolean
+          location: string | null
+          price: number
+          seller_name: string
+          title: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          category?: string
+          condition?: string
+          contact_method?: string | null
+          contact_value?: string | null
+          created_at?: string
+          currency?: string
+          description?: string | null
+          id?: string
+          images?: string[] | null
+          is_sold?: boolean
+          location?: string | null
+          price: number
+          seller_name?: string
+          title: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          category?: string
+          condition?: string
+          contact_method?: string | null
+          contact_value?: string | null
+          created_at?: string
+          currency?: string
+          description?: string | null
+          id?: string
+          images?: string[] | null
+          is_sold?: boolean
+          location?: string | null
+          price?: number
+          seller_name?: string
+          title?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       post_comments: {
         Row: {
           author_name: string
