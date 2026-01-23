@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Menu, X, MapPin, Users, Crown, ShoppingBag, Map, Fish } from "lucide-react";
+import { Menu, X, MapPin, Users, Crown, ShoppingBag, Map, Fish, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import reelspotLogo from "@/assets/reelspot-logo.png";
 
@@ -12,6 +12,7 @@ const Header = () => {
     { name: "Discover", icon: MapPin, href: "/" },
     { name: "Map", icon: Map, href: "/map" },
     { name: "Catch Log", icon: Fish, href: "/catches" },
+    { name: "Community", icon: MessageSquare, href: "/community" },
     { name: "Premium", icon: Crown, href: "#premium" },
   ];
 
