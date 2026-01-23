@@ -1,9 +1,11 @@
 import { useSpotReviews } from '@/hooks/useSpotReviews';
+import { useReviewVotes } from '@/hooks/useReviewVotes';
 import { StarRating } from './StarRating';
 import { ReviewForm } from './ReviewForm';
 import { ReviewCard } from './ReviewCard';
 import { MessageSquare } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useMemo } from 'react';
 
 interface SpotReviewsProps {
   spotId: number;
@@ -20,6 +22,9 @@ export const SpotReviews = ({ spotId, spotTitle }: SpotReviewsProps) => {
     submitReview,
     deleteReview,
   } = useSpotReviews(spotId);
+
+  const reviewIds = useMemo(() => reviews.map(r => r.id), [reviews]);
+  const { votesData, toggleVote } = useReviewVotes(reviewIds);
 
   return (
     <div className="space-y-6">
@@ -72,6 +77,8 @@ export const SpotReviews = ({ spotId, spotTitle }: SpotReviewsProps) => {
               key={review.id}
               review={review}
               onDelete={deleteReview}
+              voteData={votesData.get(review.id)}
+              onToggleVote={toggleVote}
             />
           ))
         )}
@@ -79,3 +86,4 @@ export const SpotReviews = ({ spotId, spotTitle }: SpotReviewsProps) => {
     </div>
   );
 };
+
