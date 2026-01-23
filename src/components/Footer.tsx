@@ -22,9 +22,9 @@ const Footer = () => {
               className="flex items-center gap-3 mb-6"
             >
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent to-amber-600 flex items-center justify-center shadow-lg">
-                <span className="text-accent-foreground font-bold text-lg">F</span>
+                <span className="text-accent-foreground font-bold text-lg">R</span>
               </div>
-              <span className="text-xl font-bold text-foreground">FishTrack</span>
+              <span className="text-xl font-bold text-foreground">ReelSpot</span>
             </motion.div>
             <p className="text-muted-foreground mb-6 max-w-xs">
               Your ultimate companion for discovering and sharing the best fishing spots worldwide.
@@ -71,7 +71,7 @@ const Footer = () => {
         {/* Bottom */}
         <div className="mt-16 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground">
-            © 2024 FishTrack. All rights reserved.
+            © 2024 ReelSpot. All rights reserved.
           </p>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <MapPin className="w-4 h-4" />
