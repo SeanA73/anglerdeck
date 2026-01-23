@@ -272,6 +272,41 @@ export type Database = {
         }
         Relationships: []
       }
+      review_votes: {
+        Row: {
+          created_at: string
+          id: string
+          is_helpful: boolean
+          review_id: string
+          session_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_helpful?: boolean
+          review_id: string
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_helpful?: boolean
+          review_id?: string
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_votes_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "spot_reviews"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       saved_items: {
         Row: {
           created_at: string
@@ -302,6 +337,7 @@ export type Database = {
           content: string
           created_at: string
           id: string
+          photo_urls: string[] | null
           rating: number
           spot_id: number
           title: string | null
@@ -314,6 +350,7 @@ export type Database = {
           content: string
           created_at?: string
           id?: string
+          photo_urls?: string[] | null
           rating: number
           spot_id: number
           title?: string | null
@@ -326,6 +363,7 @@ export type Database = {
           content?: string
           created_at?: string
           id?: string
+          photo_urls?: string[] | null
           rating?: number
           spot_id?: number
           title?: string | null

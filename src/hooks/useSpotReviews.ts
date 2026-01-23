@@ -13,6 +13,7 @@ export interface SpotReview {
   content: string;
   visit_date: string | null;
   created_at: string;
+  photo_urls: string[] | null;
 }
 
 export const useSpotReviews = (spotId: number) => {
@@ -51,6 +52,7 @@ export const useSpotReviews = (spotId: number) => {
     title?: string;
     content: string;
     visitDate?: string;
+    photoUrls?: string[];
   }) => {
     setSubmitting(true);
     try {
@@ -62,6 +64,7 @@ export const useSpotReviews = (spotId: number) => {
         title: data.title || null,
         content: data.content,
         visit_date: data.visitDate || null,
+        photo_urls: data.photoUrls || [],
       });
 
       if (error) throw error;
