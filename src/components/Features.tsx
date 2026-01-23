@@ -5,7 +5,7 @@ const features = [
   {
     icon: MapPin,
     title: "Smart Location Finder",
-    description: "Discover verified hunting and fishing spots with detailed info on weather, terrain, and best times to visit.",
+    description: "Discover verified fishing spots with detailed info on weather, water conditions, and best times to fish.",
   },
   {
     icon: Wifi,
@@ -14,23 +14,23 @@ const features = [
   },
   {
     icon: Users,
-    title: "Community Hub",
-    description: "Share your catches, connect with locals, and learn from experienced hunters and anglers.",
+    title: "Angler Community",
+    description: "Share your catches, connect with local anglers, and learn from experienced fishermen.",
   },
   {
     icon: BookOpen,
     title: "Expert Content",
-    description: "Access exclusive guides, seasonal tips, and up-to-date regulations for every region.",
+    description: "Access exclusive guides, seasonal tips, and up-to-date fishing regulations for every region.",
   },
   {
     icon: Search,
     title: "Advanced Filters",
-    description: "Filter by species, season, difficulty, and get AI-powered recommendations.",
+    description: "Filter by fish species, season, technique, and get AI-powered recommendations.",
   },
   {
     icon: Shield,
     title: "Verified Spots",
-    description: "Every location is community-verified with honest reviews and real photos.",
+    description: "Every location is community-verified with honest reviews and real catch photos.",
   },
 ];
 
@@ -53,7 +53,7 @@ const Features = () => {
             Everything You Need
           </h2>
           <p className="text-muted-foreground max-w-xl mx-auto">
-            Built for outdoor enthusiasts who demand the best tools for their adventures.
+            Built for anglers who demand the best tools for their fishing adventures.
           </p>
         </motion.div>
 

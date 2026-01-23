@@ -38,7 +38,7 @@ const Premium = () => {
               <span className="text-gradient-amber"> Experience</span>
             </h2>
             <p className="text-muted-foreground max-w-xl mx-auto">
-              Get unlimited access to premium maps, exclusive spots, and expert content with WildTrack Pro.
+              Get unlimited access to premium maps, exclusive spots, and expert content with FishTrack Pro.
             </p>
           </motion.div>
 
