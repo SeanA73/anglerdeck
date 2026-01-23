@@ -3,7 +3,8 @@ import { MapPin, Star, Users, Bookmark } from "lucide-react";
 import { useState } from "react";
 import fishingSpot from "@/assets/fishing-spot.jpg";
 import duckSpot from "@/assets/duck-spot.jpg";
-import CountrySelector from "./CountrySelector";
+import CountrySelector, { countries } from "./CountrySelector";
+import FishSpeciesFilter from "./FishSpeciesFilter";
 
 const spots = [
   {
@@ -12,6 +13,7 @@ const spots = [
     location: "Colorado",
     country: "US",
     type: "Freshwater",
+    species: ["trout", "bass"],
     rating: 4.9,
     saves: 2340,
     image: fishingSpot,
@@ -23,6 +25,7 @@ const spots = [
     location: "Florida",
     country: "US",
     type: "Saltwater",
+    species: ["tuna", "marlin", "snapper"],
     rating: 4.8,
     saves: 1890,
     image: duckSpot,
@@ -34,6 +37,7 @@ const spots = [
     location: "Michigan",
     country: "US",
     type: "Freshwater",
+    species: ["walleye", "perch", "bass"],
     rating: 4.7,
     saves: 1560,
     image: fishingSpot,
@@ -45,6 +49,7 @@ const spots = [
     location: "Alberta",
     country: "CA",
     type: "Fly Fishing",
+    species: ["trout", "salmon"],
     rating: 4.8,
     saves: 1920,
     image: duckSpot,
@@ -56,6 +61,7 @@ const spots = [
     location: "Queensland",
     country: "AU",
     type: "Saltwater",
+    species: ["tuna", "marlin", "snapper"],
     rating: 4.9,
     saves: 3100,
     image: fishingSpot,
@@ -67,6 +73,7 @@ const spots = [
     location: "Highlands",
     country: "GB",
     type: "Fly Fishing",
+    species: ["salmon", "trout"],
     rating: 4.6,
     saves: 1340,
     image: duckSpot,
@@ -78,6 +85,7 @@ const spots = [
     location: "Baden-Württemberg",
     country: "DE",
     type: "Freshwater",
+    species: ["carp", "pike", "catfish"],
     rating: 4.7,
     saves: 980,
     image: fishingSpot,
@@ -89,6 +97,7 @@ const spots = [
     location: "Bergen",
     country: "NO",
     type: "Saltwater",
+    species: ["salmon", "trout"],
     rating: 4.9,
     saves: 2450,
     image: duckSpot,
@@ -100,30 +109,62 @@ const spots = [
     location: "Río Negro",
     country: "AR",
     type: "Fly Fishing",
+    species: ["trout", "salmon"],
     rating: 4.8,
     saves: 1670,
     image: fishingSpot,
     featured: false,
   },
+  {
+    id: 10,
+    title: "Swedish Pike Adventure",
+    location: "Stockholm Archipelago",
+    country: "SE",
+    type: "Freshwater",
+    species: ["pike", "perch"],
+    rating: 4.7,
+    saves: 1120,
+    image: duckSpot,
+    featured: false,
+  },
+  {
+    id: 11,
+    title: "Finnish Lake District",
+    location: "Lakeland",
+    country: "FI",
+    type: "Freshwater",
+    species: ["pike", "perch", "walleye"],
+    rating: 4.6,
+    saves: 890,
+    image: fishingSpot,
+    featured: false,
+  },
+  {
+    id: 12,
+    title: "Amazon Catfish Expedition",
+    location: "Manaus",
+    country: "BR",
+    type: "Freshwater",
+    species: ["catfish", "bass"],
+    rating: 4.9,
+    saves: 2100,
+    image: duckSpot,
+    featured: true,
+  },
 ];
 
 const FeaturedSpots = () => {
   const [selectedCountry, setSelectedCountry] = useState("ALL");
+  const [selectedSpecies, setSelectedSpecies] = useState("ALL");
 
-  const filteredSpots = selectedCountry === "ALL" 
-    ? spots 
-    : spots.filter((spot) => spot.country === selectedCountry);
+  const filteredSpots = spots.filter((spot) => {
+    const countryMatch = selectedCountry === "ALL" || spot.country === selectedCountry;
+    const speciesMatch = selectedSpecies === "ALL" || spot.species.includes(selectedSpecies);
+    return countryMatch && speciesMatch;
+  });
 
-  const countryNames: Record<string, string> = {
-    US: "USA",
-    CA: "Canada",
-    AU: "Australia",
-    GB: "UK",
-    DE: "Germany",
-    NO: "Norway",
-    AR: "Argentina",
-  };
-
+  const currentCountry = countries.find((c) => c.code === selectedCountry);
+  const countryLabel = currentCountry?.name || "Worldwide";
   return (
     <section className="py-24 bg-background">
       <div className="container mx-auto px-4 lg:px-8">
@@ -136,17 +177,19 @@ const FeaturedSpots = () => {
           className="text-center mb-12"
         >
           <span className="inline-block px-4 py-1.5 rounded-full bg-accent/10 text-accent text-sm font-medium mb-4">
-            Top Rated Locations
+            {selectedCountry === "ALL" ? "Worldwide" : countryLabel} Fishing
           </span>
           <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-4">
-            Featured Spots
+            {selectedCountry === "ALL" ? "Featured Spots" : `Fishing in ${countryLabel}`}
           </h2>
           <p className="text-muted-foreground max-w-xl mx-auto">
-            Discover handpicked fishing locations verified by our community of anglers.
+            {selectedCountry === "ALL" 
+              ? "Discover handpicked fishing locations verified by our community of anglers."
+              : `Explore the best fishing destinations across ${countryLabel}.`}
           </p>
         </motion.div>
 
-        {/* Country Filter */}
+        {/* Filters */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -154,11 +197,20 @@ const FeaturedSpots = () => {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12"
         >
-          <span className="text-muted-foreground font-medium">Filter by country:</span>
-          <CountrySelector
-            selectedCountry={selectedCountry}
-            onSelectCountry={setSelectedCountry}
-          />
+          <div className="flex flex-col sm:flex-row items-center gap-2">
+            <span className="text-muted-foreground font-medium text-sm">Country:</span>
+            <CountrySelector
+              selectedCountry={selectedCountry}
+              onSelectCountry={setSelectedCountry}
+            />
+          </div>
+          <div className="flex flex-col sm:flex-row items-center gap-2">
+            <span className="text-muted-foreground font-medium text-sm">Species:</span>
+            <FishSpeciesFilter
+              selectedSpecies={selectedSpecies}
+              onSelectSpecies={setSelectedSpecies}
+            />
+          </div>
         </motion.div>
 
         {/* Spots Grid */}
@@ -220,9 +272,21 @@ const FeaturedSpots = () => {
                     {spot.title}
                   </h3>
                   
-                  <div className="flex items-center gap-1 text-muted-foreground mb-4">
+                  <div className="flex items-center gap-1 text-muted-foreground mb-2">
                     <MapPin className="w-4 h-4" />
-                    <span className="text-sm">{spot.location}, {countryNames[spot.country] || spot.country}</span>
+                    <span className="text-sm">{spot.location}, {countries.find(c => c.code === spot.country)?.name || spot.country}</span>
+                  </div>
+
+                  {/* Species Tags */}
+                  <div className="flex flex-wrap gap-1 mb-4">
+                    {spot.species.slice(0, 3).map((s) => (
+                      <span
+                        key={s}
+                        className="px-2 py-0.5 text-xs rounded-full bg-muted text-muted-foreground capitalize"
+                      >
+                        {s}
+                      </span>
+                    ))}
                   </div>
 
                 <div className="flex items-center justify-between">
