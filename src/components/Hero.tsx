@@ -29,7 +29,7 @@ const Hero = () => {
           >
             <Compass className="w-4 h-4 text-accent" />
             <span className="text-sm font-medium text-foreground">
-              Your Ultimate Outdoor Companion
+              Your Ultimate Fishing Companion
             </span>
           </motion.div>
 
@@ -41,7 +41,7 @@ const Hero = () => {
             className="text-4xl md:text-6xl lg:text-7xl font-bold text-foreground leading-tight mb-6"
           >
             Discover Your Next
-            <span className="block text-gradient-amber">Wild Adventure</span>
+            <span className="block text-gradient-amber">Perfect Catch</span>
           </motion.h1>
 
           {/* Subtitle */}
@@ -51,8 +51,8 @@ const Hero = () => {
             transition={{ duration: 0.7, delay: 0.4 }}
             className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10"
           >
-            Find, save, and share the best hunting and fishing spots. Connect
-            with fellow outdoor enthusiasts and access expert tips—all in one app.
+            Find, save, and share the best fishing spots worldwide. Connect
+            with fellow anglers and access expert tips—all in one app.
           </motion.p>
 
           {/* CTA Buttons */}
@@ -80,8 +80,8 @@ const Hero = () => {
             className="mt-16 grid grid-cols-3 gap-8 max-w-lg mx-auto"
           >
             {[
-              { value: "50K+", label: "Active Users" },
-              { value: "10K+", label: "Verified Spots" },
+              { value: "50K+", label: "Active Anglers" },
+              { value: "10K+", label: "Fishing Spots" },
               { value: "4.9★", label: "App Rating" },
             ].map((stat) => (
               <div key={stat.label} className="text-center">

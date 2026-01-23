@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { MapPin, Star, Users, Bookmark } from "lucide-react";
 import { useState } from "react";
-import huntingSpot from "@/assets/hunting-spot.jpg";
 import fishingSpot from "@/assets/fishing-spot.jpg";
 import duckSpot from "@/assets/duck-spot.jpg";
 import CountrySelector from "./CountrySelector";
@@ -9,46 +8,46 @@ import CountrySelector from "./CountrySelector";
 const spots = [
   {
     id: 1,
-    title: "Eagle Ridge Hunting Grounds",
-    location: "Montana",
+    title: "Crystal Creek Trout Haven",
+    location: "Colorado",
     country: "US",
-    type: "Hunting",
+    type: "Freshwater",
     rating: 4.9,
     saves: 2340,
-    image: huntingSpot,
+    image: fishingSpot,
     featured: true,
   },
   {
     id: 2,
-    title: "Crystal Creek Trout Haven",
-    location: "Colorado",
+    title: "Gulf Coast Deep Sea",
+    location: "Florida",
     country: "US",
-    type: "Fishing",
+    type: "Saltwater",
     rating: 4.8,
     saves: 1890,
-    image: fishingSpot,
-    featured: false,
-  },
-  {
-    id: 3,
-    title: "Sunrise Wetlands",
-    location: "Louisiana",
-    country: "US",
-    type: "Waterfowl",
-    rating: 4.7,
-    saves: 1560,
     image: duckSpot,
     featured: false,
   },
   {
+    id: 3,
+    title: "Lake Michigan Charter",
+    location: "Michigan",
+    country: "US",
+    type: "Freshwater",
+    rating: 4.7,
+    saves: 1560,
+    image: fishingSpot,
+    featured: false,
+  },
+  {
     id: 4,
-    title: "Rocky Mountain Elk Reserve",
+    title: "Bow River Fly Fishing",
     location: "Alberta",
     country: "CA",
-    type: "Hunting",
+    type: "Fly Fishing",
     rating: 4.8,
     saves: 1920,
-    image: huntingSpot,
+    image: duckSpot,
     featured: true,
   },
   {
@@ -56,7 +55,7 @@ const spots = [
     title: "Great Barrier Reef Fishing",
     location: "Queensland",
     country: "AU",
-    type: "Fishing",
+    type: "Saltwater",
     rating: 4.9,
     saves: 3100,
     image: fishingSpot,
@@ -64,24 +63,24 @@ const spots = [
   },
   {
     id: 6,
-    title: "Scottish Highlands Hunt",
+    title: "Scottish Salmon Rivers",
     location: "Highlands",
     country: "GB",
-    type: "Hunting",
+    type: "Fly Fishing",
     rating: 4.6,
     saves: 1340,
-    image: huntingSpot,
+    image: duckSpot,
     featured: false,
   },
   {
     id: 7,
-    title: "Black Forest Deer Grounds",
+    title: "Rhine River Carp Fishing",
     location: "Baden-Württemberg",
     country: "DE",
-    type: "Hunting",
+    type: "Freshwater",
     rating: 4.7,
     saves: 980,
-    image: huntingSpot,
+    image: fishingSpot,
     featured: false,
   },
   {
@@ -89,18 +88,18 @@ const spots = [
     title: "Fjord Salmon Paradise",
     location: "Bergen",
     country: "NO",
-    type: "Fishing",
+    type: "Saltwater",
     rating: 4.9,
     saves: 2450,
-    image: fishingSpot,
+    image: duckSpot,
     featured: true,
   },
   {
     id: 9,
-    title: "Patagonia Trophy Fishing",
+    title: "Patagonia Trophy Trout",
     location: "Río Negro",
     country: "AR",
-    type: "Fishing",
+    type: "Fly Fishing",
     rating: 4.8,
     saves: 1670,
     image: fishingSpot,
@@ -143,7 +142,7 @@ const FeaturedSpots = () => {
             Featured Spots
           </h2>
           <p className="text-muted-foreground max-w-xl mx-auto">
-            Discover handpicked locations verified by our community of outdoor enthusiasts.
+            Discover handpicked fishing locations verified by our community of anglers.
           </p>
         </motion.div>
 
