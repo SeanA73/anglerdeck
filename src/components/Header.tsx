@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Menu, X, MapPin, Users, Crown, ShoppingBag } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Menu, X, MapPin, Users, Crown, ShoppingBag, Map, Fish } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import reelspotLogo from "@/assets/reelspot-logo.png";
 
@@ -8,10 +9,10 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navItems = [
-    { name: "Discover", icon: MapPin },
-    { name: "Community", icon: Users },
-    { name: "Premium", icon: Crown },
-    { name: "Marketplace", icon: ShoppingBag },
+    { name: "Discover", icon: MapPin, href: "/" },
+    { name: "Map", icon: Map, href: "/map" },
+    { name: "Catch Log", icon: Fish, href: "/catches" },
+    { name: "Premium", icon: Crown, href: "#premium" },
   ];
 
   return (
@@ -24,26 +25,29 @@ const Header = () => {
       <div className="container mx-auto px-4 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
-          <motion.div
-            whileHover={{ scale: 1.02 }}
-            className="flex items-center gap-3"
-          >
-            <img src={reelspotLogo} alt="ReelSpot" className="w-10 h-10 rounded-xl shadow-lg" />
-            <span className="text-xl font-bold text-foreground">ReelSpot</span>
-          </motion.div>
+          <Link to="/">
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              className="flex items-center gap-3"
+            >
+              <img src={reelspotLogo} alt="ReelSpot" className="w-10 h-10 rounded-xl shadow-lg" />
+              <span className="text-xl font-bold text-foreground">ReelSpot</span>
+            </motion.div>
+          </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-1">
             {navItems.map((item) => (
-              <motion.button
-                key={item.name}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.98 }}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors duration-200"
-              >
-                <item.icon className="w-4 h-4" />
-                {item.name}
-              </motion.button>
+              <Link key={item.name} to={item.href}>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors duration-200"
+                >
+                  <item.icon className="w-4 h-4" />
+                  {item.name}
+                </motion.button>
+              </Link>
             ))}
           </nav>
 
@@ -77,13 +81,15 @@ const Header = () => {
         >
           <div className="container mx-auto px-4 py-4 space-y-2">
             {navItems.map((item) => (
-              <button
+              <Link
                 key={item.name}
+                to={item.href}
+                onClick={() => setIsMenuOpen(false)}
                 className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
               >
                 <item.icon className="w-5 h-5" />
                 {item.name}
-              </button>
+              </Link>
             ))}
             <div className="pt-4 space-y-2">
               <Button variant="ghost" className="w-full">
