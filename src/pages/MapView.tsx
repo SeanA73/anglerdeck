@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import { Link } from "react-router-dom";
 import L from "leaflet";
@@ -49,11 +49,12 @@ const createCustomIcon = (type: string) => {
 // Component to handle map bounds
 const MapBounds = ({ spots }: { spots: FishingSpot[] }) => {
   const map = useMap();
-  
-  useMemo(() => {
+ 
+  // Use an effect (not useMemo) to avoid triggering Leaflet map mutations during render.
+  useEffect(() => {
     if (spots.length > 0) {
       const bounds = L.latLngBounds(
-        spots.map(spot => [spot.coordinates.lat, spot.coordinates.lng])
+        spots.map((spot) => [spot.coordinates.lat, spot.coordinates.lng]),
       );
       map.fitBounds(bounds, { padding: [50, 50] });
     }
