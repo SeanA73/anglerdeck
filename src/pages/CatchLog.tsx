@@ -425,16 +425,16 @@ const CatchLog = () => {
                   <div>
                     <Label>Location</Label>
                     <Select
-                      value={formData.spot_id}
+                      value={formData.spot_id || "custom"}
                       onValueChange={(value) =>
-                        setFormData({ ...formData, spot_id: value })
+                        setFormData({ ...formData, spot_id: value === "custom" ? "" : value })
                       }
                     >
                       <SelectTrigger className="mt-1">
                         <SelectValue placeholder="Select a spot (optional)" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Custom Location</SelectItem>
+                        <SelectItem value="custom">Custom Location</SelectItem>
                         {spots.map((spot) => (
                           <SelectItem key={spot.id} value={spot.id.toString()}>
                             {spot.title}
