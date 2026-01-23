@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { MapPin, Mail, Twitter, Instagram, Facebook } from "lucide-react";
+import { MapPin, Twitter, Instagram, Facebook } from "lucide-react";
+import reelspotLogo from "@/assets/reelspot-logo.png";
 
 const Footer = () => {
   const footerLinks = {
@@ -21,9 +22,7 @@ const Footer = () => {
               viewport={{ once: true }}
               className="flex items-center gap-3 mb-6"
             >
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent to-amber-600 flex items-center justify-center shadow-lg">
-                <span className="text-accent-foreground font-bold text-lg">R</span>
-              </div>
+              <img src={reelspotLogo} alt="ReelSpot" className="w-10 h-10 rounded-xl shadow-lg" />
               <span className="text-xl font-bold text-foreground">ReelSpot</span>
             </motion.div>
             <p className="text-muted-foreground mb-6 max-w-xs">

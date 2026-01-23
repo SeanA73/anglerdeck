@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Menu, X, MapPin, Users, Crown, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import reelspotLogo from "@/assets/reelspot-logo.png";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -27,9 +28,7 @@ const Header = () => {
             whileHover={{ scale: 1.02 }}
             className="flex items-center gap-3"
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent to-amber-600 flex items-center justify-center shadow-lg">
-              <span className="text-accent-foreground font-bold text-lg">R</span>
-            </div>
+            <img src={reelspotLogo} alt="ReelSpot" className="w-10 h-10 rounded-xl shadow-lg" />
             <span className="text-xl font-bold text-foreground">ReelSpot</span>
           </motion.div>
 
