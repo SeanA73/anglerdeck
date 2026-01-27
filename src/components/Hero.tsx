@@ -1,9 +1,12 @@
 import { motion } from "framer-motion";
-import { MapPin, Compass, Download } from "lucide-react";
+import { MapPin, Compass, Sparkles, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 import heroImage from "@/assets/hero-fishing.jpg";
 
 const Hero = () => {
+  const navigate = useNavigate();
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Image */}
@@ -51,8 +54,8 @@ const Hero = () => {
             transition={{ duration: 0.7, delay: 0.4 }}
             className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10"
           >
-            Find, save, and share the best fishing spots worldwide. Connect
-            with fellow anglers and access expert tips—all in one app.
+            Find, save, and share the best fishing spots worldwide. Get AI-powered recommendations,
+            real-time water conditions, and connect with fellow anglers.
           </motion.p>
 
           {/* CTA Buttons */}
@@ -62,14 +65,37 @@ const Hero = () => {
             transition={{ duration: 0.7, delay: 0.5 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <Button variant="hero" size="xl">
-              <Download className="w-5 h-5" />
-              Download Free
+            <Button
+              variant="hero"
+              size="xl"
+              onClick={() => navigate('/auth')}
+            >
+              <Sparkles className="w-5 h-5" />
+              Get Started Free
             </Button>
-            <Button variant="heroOutline" size="xl">
+            <Button
+              variant="heroOutline"
+              size="xl"
+              onClick={() => navigate('/map')}
+            >
               <MapPin className="w-5 h-5" />
               Explore Spots
             </Button>
+          </motion.div>
+
+          {/* Secondary CTA */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.7, delay: 0.6 }}
+            className="mt-4"
+          >
+            <button
+              onClick={() => navigate('/pricing')}
+              className="text-sm text-accent hover:text-accent/80 transition-colors underline"
+            >
+              View Pro & Elite plans
+            </button>
           </motion.div>
 
           {/* Stats */}
@@ -80,15 +106,18 @@ const Hero = () => {
             className="mt-16 grid grid-cols-3 gap-8 max-w-lg mx-auto"
           >
             {[
-              { value: "50K+", label: "Active Anglers" },
-              { value: "10K+", label: "Fishing Spots" },
-              { value: "4.9★", label: "App Rating" },
+              { value: "1,000+", label: "Fishing Spots", icon: MapPin },
+              { value: "500+", label: "Active Users", icon: TrendingUp },
+              { value: "AI-Powered", label: "Recommendations", icon: Sparkles },
             ].map((stat) => (
               <div key={stat.label} className="text-center">
-                <div className="text-2xl md:text-3xl font-bold text-accent">
+                <div className="flex justify-center mb-2">
+                  <stat.icon className="w-6 h-6 text-accent" />
+                </div>
+                <div className="text-xl md:text-2xl font-bold text-accent">
                   {stat.value}
                 </div>
-                <div className="text-sm text-muted-foreground mt-1">
+                <div className="text-xs md:text-sm text-muted-foreground mt-1">
                   {stat.label}
                 </div>
               </div>

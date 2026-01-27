@@ -1,0 +1,380 @@
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { motion } from 'framer-motion';
+import { Sparkles, Target, Fish, Package, MapPin, Clock, TrendingUp } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Skeleton } from '@/components/ui/skeleton';
+import { aiRecommendationEngine, type CatchData } from '@/lib/aiRecommendations';
+import { useAuth } from '@/contexts/AuthContext';
+import { useSubscription } from '@/hooks/useSubscription';
+import { cn } from '@/lib/utils';
+
+interface AIRecommendationsProps {
+    userLocation: {
+        lat: number;
+        lon: number;
+    };
+    targetSpecies?: string;
+}
+
+export const AIRecommendations = ({
+    userLocation,
+    targetSpecies,
+}: AIRecommendationsProps) => {
+    const { user } = useAuth();
+    const { checkFeatureAccess } = useSubscription();
+    const [selectedTab, setSelectedTab] = useState('overview');
+
+    const hasAIAccess = checkFeatureAccess('ai_predictions');
+
+    // Mock user history - in production, fetch from database
+    const userHistory: CatchData[] = [];
+
+    const { data: recommendations, isLoading } = useQuery({
+        queryKey: ['ai-recommendations', userLocation, targetSpecies],
+        queryFn: () =>
+            aiRecommendationEngine.getRealTimeRecommendations({
+                userLocation,
+                targetSpecies,
+                userHistory,
+                timeOfDay: new Date().getHours() < 12 ? 'morning' : 'afternoon',
+                season: 'spring',
+            }),
+        enabled: hasAIAccess && !!user,
+    });
+
+    if (!hasAIAccess) {
+        return (
+            <Card className="bg-gradient-to-br from-purple-500/10 to-purple-600/10 border-purple-500/50">
+                <CardContent className="py-12 text-center">
+                    <div className="flex justify-center mb-4">
+                        <div className="p-4 bg-purple-500/20 rounded-full">
+                            <Sparkles className="w-12 h-12 text-purple-400" />
+                        </div>
+                    </div>
+                    <h3 className="text-2xl font-bold mb-2">AI-Powered Recommendations</h3>
+                    <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                        Unlock personalized bait, gear, and spot recommendations powered by
+                        machine learning. Available with Elite tier.
+                    </p>
+                    <Button className="bg-purple-500 hover:bg-purple-600">
+                        Upgrade to Elite
+                    </Button>
+                </CardContent>
+            </Card>
+        );
+    }
+
+    if (isLoading) {
+        return (
+            <div className="space-y-4">
+                <Skeleton className="h-32 w-full" />
+                <div className="grid md:grid-cols-3 gap-4">
+                    {[...Array(3)].map((_, i) => (
+                        <Skeleton key={i} className="h-48" />
+                    ))}
+                </div>
+            </div>
+        );
+    }
+
+    if (!recommendations) {
+        return (
+            <Card>
+                <CardContent className="py-8 text-center text-muted-foreground">
+                    Unable to generate recommendations at this time
+                </CardContent>
+            </Card>
+        );
+    }
+
+    const getScoreColor = (score: number) => {
+        if (score >= 80) return 'text-green-500';
+        if (score >= 60) return 'text-amber-500';
+        return 'text-red-500';
+    };
+
+    return (
+        <div className="space-y-6">
+            {/* Overall Recommendation */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+            >
+                <Card className="bg-gradient-to-br from-purple-500/20 to-purple-600/20 border-purple-500">
+                    <CardHeader>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <Sparkles className="w-6 h-6 text-purple-400" />
+                                <CardTitle className="text-white">AI Fishing Insights</CardTitle>
+                            </div>
+                            <Badge className="bg-purple-500 text-white">
+                                Elite Feature
+                            </Badge>
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className={cn("text-5xl font-bold", getScoreColor(recommendations.fishingScore))}>
+                                {recommendations.fishingScore}
+                            </div>
+                            <div className="flex-1">
+                                <p className="text-white text-lg font-semibold mb-1">
+                                    {recommendations.overall}
+                                </p>
+                                <p className="text-purple-200 text-sm">
+                                    Best time: {recommendations.bestTime}
+                                </p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            </motion.div>
+
+            {/* Recommendations Tabs */}
+            <Tabs value={selectedTab} onValueChange={setSelectedTab}>
+                <TabsList className="grid w-full grid-cols-3">
+                    <TabsTrigger value="overview">
+                        <Target className="w-4 h-4 mr-2" />
+                        Overview
+                    </TabsTrigger>
+                    <TabsTrigger value="bait">
+                        <Fish className="w-4 h-4 mr-2" />
+                        Bait
+                    </TabsTrigger>
+                    <TabsTrigger value="gear">
+                        <Package className="w-4 h-4 mr-2" />
+                        Gear
+                    </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="overview" className="space-y-4">
+                    {/* Top Bait Recommendation */}
+                    {recommendations.bait[0] && (
+                        <motion.div
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                        >
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle className="text-lg flex items-center gap-2">
+                                        <Fish className="w-5 h-5 text-primary" />
+                                        Recommended Bait
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="flex items-center justify-between mb-2">
+                                        <h4 className="font-semibold text-xl">
+                                            {recommendations.bait[0].name}
+                                        </h4>
+                                        <Badge variant="secondary">
+                                            {recommendations.bait[0].confidence}% confidence
+                                        </Badge>
+                                    </div>
+                                    <p className="text-muted-foreground mb-4">
+                                        {recommendations.bait[0].reason}
+                                    </p>
+                                    <Button variant="outline" className="w-full">
+                                        View Products
+                                    </Button>
+                                </CardContent>
+                            </Card>
+                        </motion.div>
+                    )}
+
+                    {/* Top Gear Recommendation */}
+                    {recommendations.gear[0] && (
+                        <motion.div
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.1 }}
+                        >
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle className="text-lg flex items-center gap-2">
+                                        <Package className="w-5 h-5 text-primary" />
+                                        Recommended Gear
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="flex items-center justify-between mb-2">
+                                        <h4 className="font-semibold text-xl">
+                                            {recommendations.gear[0].name}
+                                        </h4>
+                                        <Badge variant="secondary">
+                                            {recommendations.gear[0].confidence}% confidence
+                                        </Badge>
+                                    </div>
+                                    <p className="text-sm text-muted-foreground mb-2">
+                                        {recommendations.gear[0].specifications}
+                                    </p>
+                                    <p className="text-muted-foreground mb-4">
+                                        {recommendations.gear[0].reason}
+                                    </p>
+                                    <Button variant="outline" className="w-full">
+                                        Shop Now
+                                    </Button>
+                                </CardContent>
+                            </Card>
+                        </motion.div>
+                    )}
+
+                    {/* Top Spot Recommendations */}
+                    {recommendations.spots.length > 0 && (
+                        <motion.div
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.2 }}
+                        >
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle className="text-lg flex items-center gap-2">
+                                        <MapPin className="w-5 h-5 text-primary" />
+                                        Recommended Spots Nearby
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="space-y-3">
+                                        {recommendations.spots.slice(0, 3).map((spot, i) => (
+                                            <div
+                                                key={i}
+                                                className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors cursor-pointer"
+                                            >
+                                                <div className="flex-1">
+                                                    <h5 className="font-semibold">{spot.name}</h5>
+                                                    <p className="text-sm text-muted-foreground">
+                                                        {spot.distance.toFixed(1)} miles away • {spot.bestTime}
+                                                    </p>
+                                                    <p className="text-xs text-muted-foreground mt-1">
+                                                        {spot.reason}
+                                                    </p>
+                                                </div>
+                                                <Badge variant="outline">
+                                                    {spot.confidence}%
+                                                </Badge>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </motion.div>
+                    )}
+                </TabsContent>
+
+                <TabsContent value="bait" className="space-y-4">
+                    <div className="grid md:grid-cols-2 gap-4">
+                        {recommendations.bait.map((bait, i) => (
+                            <motion.div
+                                key={i}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: i * 0.1 }}
+                            >
+                                <Card>
+                                    <CardHeader>
+                                        <div className="flex items-center justify-between">
+                                            <CardTitle className="text-lg">{bait.name}</CardTitle>
+                                            <Badge variant="secondary">
+                                                {bait.confidence}%
+                                            </Badge>
+                                        </div>
+                                        <CardDescription className="capitalize">
+                                            {bait.type}
+                                        </CardDescription>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <p className="text-sm text-muted-foreground mb-4">
+                                            {bait.reason}
+                                        </p>
+                                        <Button variant="outline" className="w-full">
+                                            View Products
+                                        </Button>
+                                    </CardContent>
+                                </Card>
+                            </motion.div>
+                        ))}
+                    </div>
+                </TabsContent>
+
+                <TabsContent value="gear" className="space-y-4">
+                    <div className="grid md:grid-cols-2 gap-4">
+                        {recommendations.gear.map((gear, i) => (
+                            <motion.div
+                                key={i}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: i * 0.1 }}
+                            >
+                                <Card>
+                                    <CardHeader>
+                                        <div className="flex items-center justify-between">
+                                            <CardTitle className="text-lg">{gear.name}</CardTitle>
+                                            <Badge variant="secondary">
+                                                {gear.confidence}%
+                                            </Badge>
+                                        </div>
+                                        <CardDescription className="capitalize">
+                                            {gear.category}
+                                        </CardDescription>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <p className="text-sm font-medium mb-2">
+                                            {gear.specifications}
+                                        </p>
+                                        <p className="text-sm text-muted-foreground mb-4">
+                                            {gear.reason}
+                                        </p>
+                                        <Button variant="outline" className="w-full">
+                                            Shop Now
+                                        </Button>
+                                    </CardContent>
+                                </Card>
+                            </motion.div>
+                        ))}
+                    </div>
+                </TabsContent>
+            </Tabs>
+
+            {/* Success Prediction */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+            >
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <TrendingUp className="w-5 h-5" />
+                            Success Prediction
+                        </CardTitle>
+                        <CardDescription>
+                            Based on historical data and current conditions
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className="flex-1">
+                                <div className="h-4 bg-muted rounded-full overflow-hidden">
+                                    <div
+                                        className="h-full bg-gradient-to-r from-green-500 to-green-600 transition-all"
+                                        style={{ width: `${recommendations.fishingScore}%` }}
+                                    />
+                                </div>
+                            </div>
+                            <span className="text-2xl font-bold">
+                                {recommendations.fishingScore}%
+                            </span>
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                            Probability of a successful catch based on AI analysis of weather,
+                            water conditions, and historical catch data.
+                        </p>
+                    </CardContent>
+                </Card>
+            </motion.div>
+        </div>
+    );
+};

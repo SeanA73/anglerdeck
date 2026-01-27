@@ -2,7 +2,6 @@ import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import FeaturedSpots from "@/components/FeaturedSpots";
 import Features from "@/components/Features";
-import Premium from "@/components/Premium";
 import Footer from "@/components/Footer";
 
 const Index = () => {
@@ -12,7 +11,6 @@ const Index = () => {
       <Hero />
       <FeaturedSpots />
       <Features />
-      <Premium />
       <Footer />
     </div>
   );

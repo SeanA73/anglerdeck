@@ -20,12 +20,12 @@ const Header = () => {
   const navigate = useNavigate();
 
   const navItems = [
-    { name: "Discover", icon: MapPin, href: "/" },
-    { name: "Map", icon: Map, href: "/map" },
-    { name: "Catch Log", icon: Fish, href: "/catches" },
+    { name: "Explore Spots", icon: MapPin, href: "/" },
+    { name: "Map View", icon: Map, href: "/map" },
+    { name: "My Catches", icon: Fish, href: "/catches" },
     { name: "Community", icon: MessageSquare, href: "/community" },
-    { name: "Marketplace", icon: ShoppingBag, href: "/marketplace" },
-    { name: "Premium", icon: Crown, href: "#premium" },
+    { name: "Gear Shop", icon: ShoppingBag, href: "/marketplace" },
+    { name: "Go Pro", icon: Crown, href: "/pricing" },
   ];
 
   const handleSignOut = async () => {

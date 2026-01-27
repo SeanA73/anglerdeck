@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/sheet";
 
 // Fix default marker icon issue with Leaflet + Vite
-delete (L.Icon.Default.prototype as any)._getIconUrl;
+delete (L.Icon.Default.prototype as unknown as Record<string, unknown>)._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
   iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
@@ -49,7 +49,7 @@ const createCustomIcon = (type: string) => {
 // Component to handle map bounds
 const MapBounds = ({ spots }: { spots: FishingSpot[] }) => {
   const map = useMap();
- 
+
   // Use an effect (not useMemo) to avoid triggering Leaflet map mutations during render.
   useEffect(() => {
     if (spots.length > 0) {
@@ -59,7 +59,7 @@ const MapBounds = ({ spots }: { spots: FishingSpot[] }) => {
       map.fitBounds(bounds, { padding: [50, 50] });
     }
   }, [spots, map]);
-  
+
   return null;
 };
 
@@ -84,7 +84,7 @@ const MapView = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      
+
       <main className="flex-1 flex flex-col">
         {/* Header */}
         <div className="bg-card border-b px-4 py-4">
@@ -93,7 +93,7 @@ const MapView = () => {
               <h1 className="text-2xl font-bold text-foreground">Explore Fishing Spots</h1>
               <p className="text-muted-foreground">{filteredSpots.length} spots worldwide</p>
             </div>
-            
+
             {/* Filters */}
             <div className="flex flex-wrap gap-3">
               <Select value={selectedType} onValueChange={setSelectedType}>
@@ -107,7 +107,7 @@ const MapView = () => {
                   <SelectItem value="Fly Fishing">Fly Fishing</SelectItem>
                 </SelectContent>
               </Select>
-              
+
               <Select value={selectedCountry} onValueChange={setSelectedCountry}>
                 <SelectTrigger className="w-[150px]">
                   <SelectValue placeholder="Country" />
@@ -151,7 +151,7 @@ const MapView = () => {
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             <MapBounds spots={filteredSpots} />
-            
+
             {filteredSpots.map((spot) => (
               <Marker
                 key={spot.id}

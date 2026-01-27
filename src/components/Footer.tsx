@@ -1,13 +1,40 @@
 import { motion } from "framer-motion";
-import { MapPin, Twitter, Instagram, Facebook } from "lucide-react";
+import { Link } from "react-router-dom";
+import { MapPin, Twitter, Instagram, Facebook, Youtube } from "lucide-react";
 import reelspotLogo from "@/assets/reelspot-logo.png";
 
 const Footer = () => {
   const footerLinks = {
-    Product: ["Features", "Premium", "Pricing", "Download"],
-    Company: ["About", "Blog", "Careers", "Press"],
-    Resources: ["Help Center", "Community", "Guides", "Regulations"],
-    Legal: ["Privacy", "Terms", "Cookies", "Licenses"],
+    Explore: [
+      { name: "Fishing Spots", href: "/" },
+      { name: "Map View", href: "/map" },
+      { name: "My Catches", href: "/catches" },
+      { name: "Community", href: "/community" },
+    ],
+    Marketplace: [
+      { name: "Gear Shop", href: "/marketplace" },
+      { name: "Sell Your Gear", href: "/marketplace" },
+      { name: "Featured Products", href: "/marketplace" },
+      { name: "Deals", href: "/marketplace" },
+    ],
+    Premium: [
+      { name: "Go Pro", href: "/pricing" },
+      { name: "Pro Features", href: "/pricing" },
+      { name: "Elite Membership", href: "/pricing" },
+      { name: "Compare Plans", href: "/pricing" },
+    ],
+    Support: [
+      { name: "Help Center", href: "#" },
+      { name: "Contact Us", href: "#" },
+      { name: "Fishing Guides", href: "#" },
+      { name: "Regulations", href: "#" },
+    ],
+    Legal: [
+      { name: "Privacy Policy", href: "#" },
+      { name: "Terms of Service", href: "#" },
+      { name: "Cookie Policy", href: "#" },
+      { name: "Licenses", href: "#" },
+    ],
   };
 
   return (
@@ -15,7 +42,7 @@ const Footer = () => {
       <div className="container mx-auto px-4 lg:px-8 py-16">
         <div className="grid grid-cols-2 md:grid-cols-6 gap-8 lg:gap-12">
           {/* Brand */}
-          <div className="col-span-2">
+          <div className="col-span-2 md:col-span-2">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -29,10 +56,17 @@ const Footer = () => {
               Your ultimate companion for discovering and sharing the best fishing spots worldwide.
             </p>
             <div className="flex items-center gap-4">
-              {[Twitter, Instagram, Facebook].map((Icon, index) => (
+              {[
+                { Icon: Twitter, href: "https://twitter.com/reelspot" },
+                { Icon: Instagram, href: "https://instagram.com/reelspot" },
+                { Icon: Facebook, href: "https://facebook.com/reelspot" },
+                { Icon: Youtube, href: "https://youtube.com/@reelspot" },
+              ].map(({ Icon, href }, index) => (
                 <motion.a
                   key={index}
-                  href="#"
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   whileHover={{ scale: 1.1, y: -2 }}
                   className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center text-muted-foreground hover:text-accent hover:bg-muted/80 transition-colors"
                 >
@@ -49,17 +83,27 @@ const Footer = () => {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
+              className="col-span-1"
             >
               <h4 className="font-semibold text-foreground mb-4">{category}</h4>
               <ul className="space-y-3">
                 {links.map((link) => (
-                  <li key={link}>
-                    <a
-                      href="#"
-                      className="text-muted-foreground hover:text-accent transition-colors"
-                    >
-                      {link}
-                    </a>
+                  <li key={link.name}>
+                    {link.href.startsWith("#") ? (
+                      <a
+                        href={link.href}
+                        className="text-sm text-muted-foreground hover:text-accent transition-colors"
+                      >
+                        {link.name}
+                      </a>
+                    ) : (
+                      <Link
+                        to={link.href}
+                        className="text-sm text-muted-foreground hover:text-accent transition-colors"
+                      >
+                        {link.name}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -70,10 +114,10 @@ const Footer = () => {
         {/* Bottom */}
         <div className="mt-16 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground">
-            © 2024 ReelSpot. All rights reserved.
+            © 2026 ReelSpot. All rights reserved.
           </p>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <MapPin className="w-4 h-4" />
+            <MapPin className="w-4 h-4 text-accent" />
             Made for anglers, everywhere
           </div>
         </div>
