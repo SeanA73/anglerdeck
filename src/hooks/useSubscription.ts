@@ -1,137 +1,258 @@
 // Custom hook for subscription management and feature access
-// Note: This is a simplified version that works without database tables
-// Full subscription tracking requires creating subscriptions table
-import { useQuery } from '@tanstack/react-query';
+// Connects to the subscriptions and spot_views tables
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import {
-    SUBSCRIPTION_TIERS,
-    hasFeatureAccess,
-    type SubscriptionTier,
-    type Feature,
+  SUBSCRIPTION_TIERS,
+  hasFeatureAccess,
+  type SubscriptionTier,
+  type Feature,
 } from '@/lib/stripe';
 
 export interface Subscription {
-    tier: SubscriptionTier;
-    status: 'active' | 'canceled' | 'past_due' | 'trialing';
+  id: string;
+  tier: SubscriptionTier;
+  status: 'active' | 'canceled' | 'past_due';
+  stripe_customer_id?: string;
+  stripe_subscription_id?: string;
+  current_period_end?: string;
+  cancel_at_period_end?: boolean;
 }
 
 export interface UsageStats {
-    spotsViewedThisMonth: number;
-    catchesLoggedThisMonth: number;
-    offlineMapsDownloaded: number;
+  spotsViewedThisMonth: number;
+  catchesLoggedThisMonth: number;
+  offlineMapsDownloaded: number;
 }
 
 export const useSubscription = () => {
-    const { user } = useAuth();
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
 
-    // Default to free tier - full implementation requires database tables
-    const {
-        data: subscription,
-        isLoading,
-        error,
-    } = useQuery({
-        queryKey: ['subscription', user?.id],
-        queryFn: async (): Promise<Subscription> => {
-            // Default to free tier for all users
-            // To enable paid tiers, create a subscriptions table and integrate Stripe
-            return {
-                tier: 'free' as SubscriptionTier,
-                status: 'active' as const,
-            };
-        },
-        enabled: !!user,
-    });
+  // Fetch subscription from database
+  const {
+    data: subscription,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ['subscription', user?.id],
+    queryFn: async (): Promise<Subscription> => {
+      if (!user) {
+        return { id: '', tier: 'free', status: 'active' };
+      }
 
-    // Mock usage stats - full implementation requires database tables
-    const { data: usageStats } = useQuery({
-        queryKey: ['usage-stats', user?.id],
-        queryFn: async (): Promise<UsageStats> => {
-            return {
-                spotsViewedThisMonth: 0,
-                catchesLoggedThisMonth: 0,
-                offlineMapsDownloaded: 0,
-            };
-        },
-        enabled: !!user,
-    });
+      const { data, error } = await supabase
+        .from('subscriptions')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
 
-    // Check if user has reached limits
-    const hasReachedLimit = (type: 'spots' | 'catches' | 'maps'): boolean => {
-        if (!subscription || !usageStats) return false;
+      if (error) {
+        console.error('Error fetching subscription:', error);
+        return { id: '', tier: 'free', status: 'active' };
+      }
 
-        const tier = subscription.tier;
-        const limits = SUBSCRIPTION_TIERS[tier].limits;
+      if (!data) {
+        // Create a free subscription for the user if none exists
+        const { data: newSub, error: insertError } = await supabase
+          .from('subscriptions')
+          .insert({ user_id: user.id, tier: 'free', status: 'active' })
+          .select()
+          .single();
 
-        switch (type) {
-            case 'spots':
-                return usageStats.spotsViewedThisMonth >= limits.spotsPerMonth;
-            case 'catches':
-                return usageStats.catchesLoggedThisMonth >= limits.catchesPerMonth;
-            case 'maps':
-                return usageStats.offlineMapsDownloaded >= limits.offlineMaps;
-            default:
-                return false;
+        if (insertError) {
+          console.error('Error creating subscription:', insertError);
+          return { id: '', tier: 'free', status: 'active' };
         }
-    };
 
-    // Check feature access
-    const checkFeatureAccess = (feature: Feature): boolean => {
-        if (!subscription) return false;
-        return hasFeatureAccess(subscription.tier, feature);
-    };
+        return {
+          id: newSub.id,
+          tier: newSub.tier as SubscriptionTier,
+          status: newSub.status as 'active' | 'canceled' | 'past_due',
+          stripe_customer_id: newSub.stripe_customer_id || undefined,
+          stripe_subscription_id: newSub.stripe_subscription_id || undefined,
+          current_period_end: newSub.current_period_end || undefined,
+          cancel_at_period_end: newSub.cancel_at_period_end || undefined,
+        };
+      }
 
-    // Get remaining usage
-    const getRemainingUsage = (
-        type: 'spots' | 'catches' | 'maps'
-    ): number | 'unlimited' => {
-        if (!subscription || !usageStats) return 0;
+      return {
+        id: data.id,
+        tier: data.tier as SubscriptionTier,
+        status: data.status as 'active' | 'canceled' | 'past_due',
+        stripe_customer_id: data.stripe_customer_id || undefined,
+        stripe_subscription_id: data.stripe_subscription_id || undefined,
+        current_period_end: data.current_period_end || undefined,
+        cancel_at_period_end: data.cancel_at_period_end || undefined,
+      };
+    },
+    enabled: !!user,
+  });
 
-        const tier = subscription.tier;
-        const limits = SUBSCRIPTION_TIERS[tier].limits;
+  // Fetch usage stats from database
+  const { data: usageStats } = useQuery({
+    queryKey: ['usage-stats', user?.id],
+    queryFn: async (): Promise<UsageStats> => {
+      if (!user) {
+        return {
+          spotsViewedThisMonth: 0,
+          catchesLoggedThisMonth: 0,
+          offlineMapsDownloaded: 0,
+        };
+      }
 
-        switch (type) {
-            case 'spots':
-                if (limits.spotsPerMonth === Infinity) return 'unlimited';
-                return Math.max(0, limits.spotsPerMonth - usageStats.spotsViewedThisMonth);
-            case 'catches':
-                if (limits.catchesPerMonth === Infinity) return 'unlimited';
-                return Math.max(
-                    0,
-                    limits.catchesPerMonth - usageStats.catchesLoggedThisMonth
-                );
-            case 'maps':
-                if (limits.offlineMaps === Infinity) return 'unlimited';
-                return Math.max(0, limits.offlineMaps - usageStats.offlineMapsDownloaded);
-            default:
-                return 0;
+      // Get the start of the current month
+      const startOfMonth = new Date();
+      startOfMonth.setDate(1);
+      startOfMonth.setHours(0, 0, 0, 0);
+
+      // Count spot views this month
+      const { count: spotViewCount, error: spotViewError } = await supabase
+        .from('spot_views')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .gte('viewed_at', startOfMonth.toISOString());
+
+      if (spotViewError) {
+        console.error('Error fetching spot views:', spotViewError);
+      }
+
+      // Count catch logs this month
+      const { count: catchCount, error: catchError } = await supabase
+        .from('catch_logs')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .gte('created_at', startOfMonth.toISOString());
+
+      if (catchError) {
+        console.error('Error fetching catch logs:', catchError);
+      }
+
+      return {
+        spotsViewedThisMonth: spotViewCount || 0,
+        catchesLoggedThisMonth: catchCount || 0,
+        offlineMapsDownloaded: 0, // Not tracked yet
+      };
+    },
+    enabled: !!user,
+  });
+
+  // Track spot view mutation
+  const trackSpotViewMutation = useMutation({
+    mutationFn: async (spotId: number) => {
+      if (!user) return;
+
+      // Check if already viewed this spot today to avoid duplicate tracking
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const { data: existingView } = await supabase
+        .from('spot_views')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('spot_id', spotId)
+        .gte('viewed_at', today.toISOString())
+        .maybeSingle();
+
+      if (!existingView) {
+        const { error } = await supabase
+          .from('spot_views')
+          .insert({ user_id: user.id, spot_id: spotId });
+
+        if (error) {
+          console.error('Error tracking spot view:', error);
+          throw error;
         }
-    };
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['usage-stats', user?.id] });
+    },
+  });
 
-    // Placeholder functions - full implementation requires Stripe integration
-    const trackUsage = (type: 'spot_view' | 'catch_log' | 'offline_map') => {
-        console.log('Usage tracking:', type);
-    };
+  // Check if user has reached limits
+  const hasReachedLimit = (type: 'spots' | 'catches' | 'maps'): boolean => {
+    if (!subscription || !usageStats) return false;
 
-    const cancelSubscription = () => {
-        console.log('Cancel subscription - requires Stripe integration');
-    };
+    const tier = subscription.tier;
+    const limits = SUBSCRIPTION_TIERS[tier].limits;
 
-    const resumeSubscription = () => {
-        console.log('Resume subscription - requires Stripe integration');
-    };
+    switch (type) {
+      case 'spots':
+        return usageStats.spotsViewedThisMonth >= limits.spotsPerMonth;
+      case 'catches':
+        return usageStats.catchesLoggedThisMonth >= limits.catchesPerMonth;
+      case 'maps':
+        return usageStats.offlineMapsDownloaded >= limits.offlineMaps;
+      default:
+        return false;
+    }
+  };
 
-    return {
-        subscription,
-        usageStats,
-        isLoading,
-        error,
-        hasReachedLimit,
-        checkFeatureAccess,
-        getRemainingUsage,
-        trackUsage,
-        cancelSubscription,
-        resumeSubscription,
-        isCanceling: false,
-        isResuming: false,
-    };
+  // Check feature access
+  const checkFeatureAccess = (feature: Feature): boolean => {
+    if (!subscription) return false;
+    return hasFeatureAccess(subscription.tier, feature);
+  };
+
+  // Get remaining usage
+  const getRemainingUsage = (
+    type: 'spots' | 'catches' | 'maps'
+  ): number | 'unlimited' => {
+    if (!subscription || !usageStats) return 0;
+
+    const tier = subscription.tier;
+    const limits = SUBSCRIPTION_TIERS[tier].limits;
+
+    switch (type) {
+      case 'spots':
+        if (limits.spotsPerMonth === Infinity) return 'unlimited';
+        return Math.max(0, limits.spotsPerMonth - usageStats.spotsViewedThisMonth);
+      case 'catches':
+        if (limits.catchesPerMonth === Infinity) return 'unlimited';
+        return Math.max(
+          0,
+          limits.catchesPerMonth - usageStats.catchesLoggedThisMonth
+        );
+      case 'maps':
+        if (limits.offlineMaps === Infinity) return 'unlimited';
+        return Math.max(0, limits.offlineMaps - usageStats.offlineMapsDownloaded);
+      default:
+        return 0;
+    }
+  };
+
+  // Track usage
+  const trackUsage = (type: 'spot_view' | 'catch_log' | 'offline_map', id?: number) => {
+    if (type === 'spot_view' && id) {
+      trackSpotViewMutation.mutate(id);
+    }
+    // catch_log tracking happens automatically when inserting to catch_logs table
+    // offline_map tracking to be implemented later
+  };
+
+  // Placeholder functions - requires Stripe integration
+  const cancelSubscription = () => {
+    console.log('Cancel subscription - requires Stripe integration');
+  };
+
+  const resumeSubscription = () => {
+    console.log('Resume subscription - requires Stripe integration');
+  };
+
+  return {
+    subscription,
+    usageStats,
+    isLoading,
+    error,
+    hasReachedLimit,
+    checkFeatureAccess,
+    getRemainingUsage,
+    trackUsage,
+    cancelSubscription,
+    resumeSubscription,
+    isCanceling: false,
+    isResuming: false,
+  };
 };
