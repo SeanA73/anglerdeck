@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import Index from "./pages/Index";
 import SpotDetail from "./pages/SpotDetail";
+import Spots from "./pages/Spots";
 import MapView from "./pages/MapView";
 import CatchLog from "./pages/CatchLog";
 import CommunityFeed from "./pages/CommunityFeed";
@@ -27,6 +28,7 @@ const App = () => (
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/spots" element={<Spots />} />
               <Route path="/spot/:slug" element={<SpotDetail />} />
               <Route path="/map" element={<MapView />} />
               <Route path="/catches" element={<CatchLog />} />
