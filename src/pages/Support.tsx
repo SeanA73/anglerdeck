@@ -5,6 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { HelpCircle, Book, MessageCircle, FileText, Search } from "lucide-react";
 import { motion } from "framer-motion";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 const Support = () => {
   const helpTopics = [
@@ -31,6 +37,77 @@ const Support = () => {
       title: "Marketplace Help",
       description: "Everything you need to know about buying and selling gear.",
       articles: ["Listing your gear", "Safe transactions", "Shipping guidelines"],
+    },
+  ];
+
+  const faqCategories = [
+    {
+      category: "Getting Started",
+      questions: [
+        {
+          q: "How do I create an account?",
+          a: "Click the 'Get Started' button in the top navigation, then enter your email and create a password. You'll receive a confirmation email to verify your account.",
+        },
+        {
+          q: "How do I find fishing spots near me?",
+          a: "Use the Map View to see spots near your location, or browse the Explore Spots page and filter by distance. You can also search for specific locations or water bodies.",
+        },
+        {
+          q: "What's included in the free tier?",
+          a: "Free users can view up to 10 spots per month, log up to 5 catches, and access basic community features. Upgrade to Pro or Elite for unlimited access.",
+        },
+      ],
+    },
+    {
+      category: "Features",
+      questions: [
+        {
+          q: "How do I log a catch?",
+          a: "Go to 'My Catches' from the navigation, click 'Add Catch', and fill in the details including species, weight, location, and optionally upload a photo.",
+        },
+        {
+          q: "Can I save spots for later?",
+          a: "Yes! Click the heart icon on any spot to save it to your favorites. Access your saved spots from the dropdown menu under your profile.",
+        },
+        {
+          q: "How do spot ratings work?",
+          a: "Users can rate spots from 1-5 stars based on their experience. The displayed rating is an average of all user reviews. You can also read detailed reviews from other anglers.",
+        },
+      ],
+    },
+    {
+      category: "Subscriptions",
+      questions: [
+        {
+          q: "What are the different subscription tiers?",
+          a: "We offer Free, Pro ($9.99/month), and Elite ($19.99/month) tiers. Pro gives unlimited spots and catches, while Elite adds exclusive features like AI recommendations and advanced weather data.",
+        },
+        {
+          q: "How do I upgrade my subscription?",
+          a: "Visit the Pricing page from the navigation or click 'Go Pro'. Select your preferred tier and complete the checkout process securely via Stripe.",
+        },
+        {
+          q: "Can I cancel my subscription anytime?",
+          a: "Yes, you can cancel at any time from your Account settings. You'll retain access until the end of your billing period, and no refunds are provided for partial months.",
+        },
+      ],
+    },
+    {
+      category: "Technical",
+      questions: [
+        {
+          q: "What browsers are supported?",
+          a: "ReelSpot works best on Chrome, Firefox, Safari, and Edge. We recommend using the latest version of your preferred browser for the best experience.",
+        },
+        {
+          q: "Is my data secure?",
+          a: "Yes, we use industry-standard encryption and secure authentication through Supabase. Your personal information and catch logs are only visible to you unless you choose to share them.",
+        },
+        {
+          q: "How do I report a bug?",
+          a: "Use our Contact page to report any issues. Please include details about what happened, what you expected, and your browser/device information to help us investigate.",
+        },
+      ],
     },
   ];
 
@@ -92,6 +169,41 @@ const Support = () => {
             </motion.div>
           ))}
         </div>
+
+        {/* FAQ Accordion Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="mb-12"
+        >
+          <h2 className="text-3xl font-bold text-foreground text-center mb-8">
+            Frequently Asked Questions
+          </h2>
+          <div className="max-w-3xl mx-auto space-y-6">
+            {faqCategories.map((category) => (
+              <Card key={category.category}>
+                <CardHeader>
+                  <CardTitle className="text-lg">{category.category}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Accordion type="single" collapsible className="w-full">
+                    {category.questions.map((faq, index) => (
+                      <AccordionItem key={index} value={`${category.category}-${index}`}>
+                        <AccordionTrigger className="text-left">
+                          {faq.q}
+                        </AccordionTrigger>
+                        <AccordionContent className="text-muted-foreground">
+                          {faq.a}
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </motion.div>
 
         <Card className="bg-primary/5 border-primary/20">
           <CardContent className="p-8 text-center">
