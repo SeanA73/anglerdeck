@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import ScrollToTop from "@/components/ScrollToTop";
+import CookieConsent from "@/components/CookieConsent";
 import Index from "./pages/Index";
 import SpotDetail from "./pages/SpotDetail";
 import Spots from "./pages/Spots";
@@ -15,6 +16,7 @@ import CommunityFeed from "./pages/CommunityFeed";
 import Marketplace from "./pages/Marketplace";
 import Auth from "./pages/Auth";
 import Pricing from "./pages/Pricing";
+import Account from "./pages/Account";
 import Support from "./pages/Support";
 import Contact from "./pages/Contact";
 import Regulations from "./pages/Regulations";
@@ -45,6 +47,7 @@ const App = () => (
               <Route path="/marketplace" element={<Marketplace />} />
               <Route path="/pricing" element={<Pricing />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/account" element={<Account />} />
               <Route path="/support" element={<Support />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/regulations" element={<Regulations />} />
@@ -55,6 +58,7 @@ const App = () => (
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
+            <CookieConsent />
           </BrowserRouter>
         </TooltipProvider>
       </AuthProvider>

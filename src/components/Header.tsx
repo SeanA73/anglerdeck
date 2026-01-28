@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, X, MapPin, Crown, ShoppingBag, Map, Fish, MessageSquare, User, LogOut, Heart } from "lucide-react";
+import { Menu, X, MapPin, Crown, ShoppingBag, Map, Fish, MessageSquare, User, LogOut, Heart, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -108,6 +108,10 @@ const Header = () => {
                     </p>
                   </div>
                   <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => navigate("/account")}>
+                    <User className="mr-2 h-4 w-4" />
+                    My Account
+                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => navigate("/catches")}>
                     <Fish className="mr-2 h-4 w-4" />
                     My Catches
