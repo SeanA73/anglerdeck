@@ -15,6 +15,13 @@ import CommunityFeed from "./pages/CommunityFeed";
 import Marketplace from "./pages/Marketplace";
 import Auth from "./pages/Auth";
 import Pricing from "./pages/Pricing";
+import Support from "./pages/Support";
+import Contact from "./pages/Contact";
+import Regulations from "./pages/Regulations";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
+import Cookies from "./pages/Cookies";
+import Licenses from "./pages/Licenses";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -38,6 +45,13 @@ const App = () => (
               <Route path="/marketplace" element={<Marketplace />} />
               <Route path="/pricing" element={<Pricing />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/support" element={<Support />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/regulations" element={<Regulations />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/cookies" element={<Cookies />} />
+              <Route path="/licenses" element={<Licenses />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
