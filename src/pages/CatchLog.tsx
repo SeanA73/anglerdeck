@@ -12,6 +12,7 @@ import {
   Camera,
   Trash2,
   Edit2,
+  Lock,
 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -38,6 +39,11 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { getSpotById, spots } from "@/data/spots";
+import { useSubscription } from "@/hooks/useSubscription";
+import { UpgradePrompt } from "@/components/UpgradePrompt";
+import { UsageMeter } from "@/components/UsageMeter";
+import { SUBSCRIPTION_TIERS } from "@/lib/stripe";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface CatchLog {
   id: string;
@@ -74,7 +80,14 @@ const CatchLog = () => {
   const [editingCatch, setEditingCatch] = useState<CatchLog | null>(null);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const { subscription, usageStats, hasReachedLimit, getRemainingUsage } = useSubscription();
+
+  const catchesLimit = subscription 
+    ? SUBSCRIPTION_TIERS[subscription.tier].limits.catchesPerMonth 
+    : 5;
 
   const [formData, setFormData] = useState({
     species: "",
@@ -101,6 +114,15 @@ const CatchLog = () => {
       return data as CatchLog[];
     },
   });
+
+  // Handle opening the dialog - check limits first
+  const handleOpenDialog = () => {
+    if (!editingCatch && hasReachedLimit('catches')) {
+      setShowUpgradePrompt(true);
+      return;
+    }
+    setIsDialogOpen(true);
+  };
 
   // Upload photo
   const uploadPhoto = async (file: File): Promise<string | null> => {
@@ -159,6 +181,7 @@ const CatchLog = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["catches"] });
+      queryClient.invalidateQueries({ queryKey: ["usage-stats"] });
       toast.success(editingCatch ? "Catch updated!" : "Catch logged!");
       resetForm();
       setIsDialogOpen(false);
@@ -243,6 +266,16 @@ const CatchLog = () => {
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
 
+      {/* Upgrade Prompt Modal */}
+      <UpgradePrompt
+        isOpen={showUpgradePrompt}
+        onClose={() => setShowUpgradePrompt(false)}
+        type="limit_reached"
+        limitType="catches"
+        currentUsage={usageStats?.catchesLoggedThisMonth || 0}
+        limit={catchesLimit === Infinity ? 999 : catchesLimit}
+      />
+
       <main className="flex-1 container mx-auto px-4 py-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -258,14 +291,31 @@ const CatchLog = () => {
               <p className="text-muted-foreground mt-1">
                 Record and track all your fishing catches
               </p>
+              {/* Usage meter for free users */}
+              {user && subscription?.tier === 'free' && (
+                <div className="mt-3 max-w-xs">
+                  <UsageMeter
+                    type="catches"
+                    current={usageStats?.catchesLoggedThisMonth || 0}
+                    limit={catchesLimit}
+                  />
+                </div>
+              )}
             </div>
 
             <Dialog open={isDialogOpen} onOpenChange={(open) => {
+              if (open && !editingCatch && hasReachedLimit('catches')) {
+                setShowUpgradePrompt(true);
+                return;
+              }
               setIsDialogOpen(open);
               if (!open) resetForm();
             }}>
               <DialogTrigger asChild>
-                <Button size="lg">
+                <Button size="lg" className="relative">
+                  {hasReachedLimit('catches') && !editingCatch && (
+                    <Lock className="w-4 h-4 mr-2" />
+                  )}
                   <Plus className="w-5 h-5 mr-2" /> Log a Catch
                 </Button>
               </DialogTrigger>

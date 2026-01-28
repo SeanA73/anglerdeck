@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { 
   ArrowLeft, 
@@ -33,6 +34,10 @@ import { useWeather } from "@/hooks/useWeather";
 import { useSavedItems } from "@/hooks/useSavedItems";
 import { useAuth } from "@/contexts/AuthContext";
 import { SpotReviews } from "@/components/spots/SpotReviews";
+import { useSubscription } from "@/hooks/useSubscription";
+import { UpgradePrompt } from "@/components/UpgradePrompt";
+import { UsageMeter } from "@/components/UsageMeter";
+import { SUBSCRIPTION_TIERS } from "@/lib/stripe";
 
 const WeatherIcon = ({ icon }: { icon: string }) => {
   switch (icon) {
@@ -63,6 +68,28 @@ const SpotDetail = () => {
   const spot = getSpotBySlug(slug || "");
   const { user } = useAuth();
   const { isSaved, toggleSave, isToggling } = useSavedItems();
+  const { 
+    subscription, 
+    usageStats, 
+    hasReachedLimit, 
+    getRemainingUsage, 
+    trackUsage 
+  } = useSubscription();
+  const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
+  const [hasTrackedView, setHasTrackedView] = useState(false);
+
+  // Track spot view on mount (only for logged-in users)
+  useEffect(() => {
+    if (spot && user && !hasTrackedView) {
+      // Check if at limit before tracking
+      if (hasReachedLimit('spots')) {
+        setShowUpgradePrompt(true);
+      } else {
+        trackUsage('spot_view', spot.id);
+        setHasTrackedView(true);
+      }
+    }
+  }, [spot, user, hasTrackedView, hasReachedLimit, trackUsage]);
 
   // Fetch live weather data
   const { data: liveWeather, isLoading: weatherLoading } = useWeather(
@@ -70,6 +97,11 @@ const SpotDetail = () => {
     spot?.coordinates.lng || 0,
     !!spot
   );
+
+  const spotsLimit = subscription 
+    ? SUBSCRIPTION_TIERS[subscription.tier].limits.spotsPerMonth 
+    : 10;
+  const spotsRemaining = getRemainingUsage('spots');
 
   if (!spot) {
     return (
@@ -103,6 +135,30 @@ const SpotDetail = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
+      
+      {/* Upgrade Prompt Modal */}
+      <UpgradePrompt
+        isOpen={showUpgradePrompt}
+        onClose={() => setShowUpgradePrompt(false)}
+        type="limit_reached"
+        limitType="spots"
+        currentUsage={usageStats?.spotsViewedThisMonth || 0}
+        limit={spotsLimit === Infinity ? 999 : spotsLimit}
+      />
+      
+      {/* Usage indicator for logged-in free users */}
+      {user && subscription?.tier === 'free' && (
+        <div className="fixed bottom-4 right-4 z-40">
+          <div className="bg-card/95 backdrop-blur-sm border border-border rounded-xl p-3 shadow-lg">
+            <UsageMeter
+              type="spots"
+              current={usageStats?.spotsViewedThisMonth || 0}
+              limit={spotsLimit}
+              compact
+            />
+          </div>
+        </div>
+      )}
       
       {/* Hero Image */}
       <div className="relative h-[50vh] min-h-[400px]">
