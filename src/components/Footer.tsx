@@ -6,34 +6,34 @@ import reelspotLogo from "@/assets/reelspot-logo.png";
 const Footer = () => {
   const footerLinks = {
     Explore: [
-      { name: "Fishing Spots", href: "/" },
+      { name: "Fishing Spots", href: "/spots" },
       { name: "Map View", href: "/map" },
       { name: "My Catches", href: "/catches" },
       { name: "Community", href: "/community" },
     ],
     Marketplace: [
       { name: "Gear Shop", href: "/marketplace" },
-      { name: "Sell Your Gear", href: "/marketplace" },
-      { name: "Featured Products", href: "/marketplace" },
-      { name: "Deals", href: "/marketplace" },
+      { name: "Sell Your Gear", href: "/marketplace?action=sell" },
+      { name: "Featured Products", href: "/marketplace?tab=featured" },
+      { name: "Deals", href: "/marketplace?tab=deals" },
     ],
     Premium: [
       { name: "Go Pro", href: "/pricing" },
-      { name: "Pro Features", href: "/pricing" },
-      { name: "Elite Membership", href: "/pricing" },
+      { name: "Pro Features", href: "/pricing#features" },
+      { name: "Elite Membership", href: "/pricing#elite" },
       { name: "Compare Plans", href: "/pricing" },
     ],
     Support: [
-      { name: "Help Center", href: "#" },
-      { name: "Contact Us", href: "#" },
-      { name: "Fishing Guides", href: "#" },
-      { name: "Regulations", href: "#" },
+      { name: "Help Center", href: "/support" },
+      { name: "Contact Us", href: "/contact" },
+      { name: "Fishing Guides", href: "/spots" },
+      { name: "Regulations", href: "/regulations" },
     ],
     Legal: [
-      { name: "Privacy Policy", href: "#" },
-      { name: "Terms of Service", href: "#" },
-      { name: "Cookie Policy", href: "#" },
-      { name: "Licenses", href: "#" },
+      { name: "Privacy Policy", href: "/privacy" },
+      { name: "Terms of Service", href: "/terms" },
+      { name: "Cookie Policy", href: "/cookies" },
+      { name: "Licenses", href: "/licenses" },
     ],
   };
 
