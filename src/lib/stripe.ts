@@ -121,7 +121,8 @@ export const hasFeatureAccess = (
     userTier: SubscriptionTier,
     feature: Feature
 ): boolean => {
-    return FEATURE_ACCESS[feature].includes(userTier);
+    const allowedTiers = FEATURE_ACCESS[feature] as readonly string[];
+    return allowedTiers.includes(userTier);
 };
 
 // Pricing display helpers
