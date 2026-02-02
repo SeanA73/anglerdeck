@@ -1,12 +1,26 @@
 import { useState, useCallback } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
 }
 
-const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-chat`;
+// Get the Supabase URL from the client
+const getSupabaseUrl = () => {
+  // Use the environment variable, or fall back to constructing from project ID
+  const url = import.meta.env.VITE_SUPABASE_URL;
+  if (url) return url;
+  
+  const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+  if (projectId) return `https://${projectId}.supabase.co`;
+  
+  // Final fallback
+  return 'https://nhlsjqhrzmnpqmrupghr.supabase.co';
+};
+
+const CHAT_URL = `${getSupabaseUrl()}/functions/v1/ai-chat`;
 
 export const useAIChat = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -36,11 +50,15 @@ export const useAIChat = () => {
     };
 
     try {
+      const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5obHNqcWhyem1ucHFtcnVwZ2hyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxMzc3NDEsImV4cCI6MjA4NDcxMzc0MX0.npf5y_FASW4B4SCQtTX_Vfh6SZ-z-qDZhvBqnZKmJlg';
+      
       const resp = await fetch(CHAT_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          'Authorization': `Bearer ${anonKey}`,
+          'apikey': anonKey,
         },
         body: JSON.stringify({ messages: [...messages, userMsg] }),
       });
