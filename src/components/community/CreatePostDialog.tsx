@@ -20,6 +20,8 @@ import {
 } from "@/components/ui/select";
 import { Fish, MessageSquare, Lightbulb, ImagePlus, X, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { MagicWriteButton } from "@/components/ai/MagicWriteButton";
+import { useSubscription } from "@/hooks/useSubscription";
 
 interface CreatePostDialogProps {
   open: boolean;
@@ -37,6 +39,12 @@ const CreatePostDialog = ({ open, onOpenChange, sessionId }: CreatePostDialogPro
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { subscription, checkFeatureAccess } = useSubscription();
+  
+  // Pro and Elite users get AI features
+  const hasAIAccess = checkFeatureAccess('ai_predictions') || 
+    subscription?.tier === 'pro' || 
+    subscription?.tier === 'elite';
 
   const createPostMutation = useMutation({
     mutationFn: async () => {
@@ -161,7 +169,15 @@ const CreatePostDialog = ({ open, onOpenChange, sessionId }: CreatePostDialogPro
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="content">What's on your mind?</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="content">What's on your mind?</Label>
+              {hasAIAccess && (
+                <MagicWriteButton
+                  postType={postType}
+                  onGenerated={(text) => setContent(text)}
+                />
+              )}
+            </div>
             <Textarea
               id="content"
               placeholder={

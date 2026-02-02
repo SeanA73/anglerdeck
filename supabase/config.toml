@@ -1,1 +1,7 @@
 project_id = "nhlsjqhrzmnpqmrupghr"
+
+[functions.ai-chat]
+verify_jwt = false
+
+[functions.ai-generate-story]
+verify_jwt = false

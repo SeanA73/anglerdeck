@@ -11,6 +11,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import FishingAssistant from "@/components/ai/FishingAssistant";
 
 const Support = () => {
   const helpTopics = [
@@ -218,6 +219,7 @@ const Support = () => {
         </Card>
       </main>
       <Footer />
+      <FishingAssistant />
     </div>
   );
 };
