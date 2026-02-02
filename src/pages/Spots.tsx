@@ -16,6 +16,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { WeatherBadge } from "@/components/weather/WeatherBadge";
+import { FishingScoreBadge } from "@/components/weather/FishingConditions";
+import { useWeather } from "@/hooks/useWeather";
 
 type SortOption = "rating" | "saves" | "name";
 
@@ -231,6 +234,12 @@ const Spots = () => {
 };
 
 const SpotCard = ({ spot, index }: { spot: FishingSpot; index: number }) => {
+  const { data: weather, isLoading: weatherLoading } = useWeather(
+    spot.coordinates.lat,
+    spot.coordinates.lng,
+    true
+  );
+
   return (
     <Link to={`/spot/${spot.slug}`}>
       <motion.div
@@ -284,6 +293,28 @@ const SpotCard = ({ spot, index }: { spot: FishingSpot; index: number }) => {
               {spot.location},{" "}
               {countries.find((c) => c.code === spot.country)?.name || spot.country}
             </span>
+          </div>
+
+          {/* Weather Badge */}
+          <div className="flex flex-wrap items-center gap-2 mb-3">
+            <WeatherBadge
+              temperature={weather?.temperature}
+              icon={weather?.icon}
+              windSpeed={weather?.windSpeed}
+              isLoading={weatherLoading}
+              variant="compact"
+            />
+            {weather && (
+              <FishingScoreBadge
+                temperature={weather.temperature}
+                windSpeed={weather.windSpeed}
+                humidity={weather.humidity}
+                pressure={weather.pressure}
+                cloudCover={weather.cloudCover}
+                weatherCode={weather.weatherCode}
+                isLoading={weatherLoading}
+              />
+            )}
           </div>
 
           {/* Species Tags */}

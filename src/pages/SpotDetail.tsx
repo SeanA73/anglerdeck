@@ -38,6 +38,7 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { UpgradePrompt } from "@/components/UpgradePrompt";
 import { UsageMeter } from "@/components/UsageMeter";
 import { SUBSCRIPTION_TIERS } from "@/lib/stripe";
+import { FishingConditions } from "@/components/weather/FishingConditions";
 
 const WeatherIcon = ({ icon }: { icon: string }) => {
   switch (icon) {
@@ -427,6 +428,19 @@ const SpotDetail = () => {
 
           {/* Sidebar */}
           <div className="space-y-6">
+            {/* Fishing Conditions - AI Analysis */}
+            {liveWeather && (
+              <FishingConditions
+                temperature={liveWeather.temperature}
+                windSpeed={liveWeather.windSpeed}
+                humidity={liveWeather.humidity}
+                pressure={liveWeather.pressure}
+                cloudCover={liveWeather.cloudCover}
+                weatherCode={liveWeather.weatherCode}
+                isLoading={weatherLoading}
+              />
+            )}
+            
             {/* Best Times */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
