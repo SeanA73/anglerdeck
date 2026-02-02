@@ -39,6 +39,7 @@ import { UpgradePrompt } from "@/components/UpgradePrompt";
 import { UsageMeter } from "@/components/UsageMeter";
 import { SUBSCRIPTION_TIERS } from "@/lib/stripe";
 import { FishingConditions } from "@/components/weather/FishingConditions";
+import FishingAssistant from "@/components/ai/FishingAssistant";
 
 const WeatherIcon = ({ icon }: { icon: string }) => {
   switch (icon) {
@@ -539,6 +540,7 @@ const SpotDetail = () => {
       </div>
 
       <Footer />
+      <FishingAssistant />
     </div>
   );
 };
