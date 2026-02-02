@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
-interface WeatherData {
+export interface WeatherData {
   temperature: number;
   condition: string;
   humidity: number;
@@ -8,6 +8,13 @@ interface WeatherData {
   windDirection: string;
   feelsLike: number;
   icon: string;
+  pressure?: number; // hPa
+  cloudCover?: number; // %
+  uvIndex?: number;
+  isDay?: boolean;
+  weatherCode?: number;
+  sunrise?: string;
+  sunset?: string;
 }
 
 // Using Open-Meteo API (free, no API key required)
@@ -16,7 +23,7 @@ export const useWeather = (lat: number, lng: number, enabled = true) => {
     queryKey: ["weather", lat, lng],
     queryFn: async (): Promise<WeatherData> => {
       const response = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m&temperature_unit=fahrenheit&wind_speed_unit=mph`
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,surface_pressure,cloud_cover,uv_index,is_day&daily=sunrise,sunset&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto`
       );
 
       if (!response.ok) {
@@ -25,6 +32,7 @@ export const useWeather = (lat: number, lng: number, enabled = true) => {
 
       const data = await response.json();
       const current = data.current;
+      const daily = data.daily;
 
       // Convert weather code to condition string
       const weatherCondition = getWeatherCondition(current.weather_code);
@@ -38,6 +46,13 @@ export const useWeather = (lat: number, lng: number, enabled = true) => {
         windDirection,
         feelsLike: Math.round(current.apparent_temperature),
         icon: getWeatherIcon(current.weather_code),
+        pressure: current.surface_pressure ? Math.round(current.surface_pressure) : undefined,
+        cloudCover: current.cloud_cover,
+        uvIndex: current.uv_index,
+        isDay: current.is_day === 1,
+        weatherCode: current.weather_code,
+        sunrise: daily?.sunrise?.[0],
+        sunset: daily?.sunset?.[0],
       };
     },
     enabled,

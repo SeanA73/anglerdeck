@@ -3,10 +3,13 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import { Link } from "react-router-dom";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { MapPin, Star } from "lucide-react";
+import { MapPin, Star, Thermometer, Wind } from "lucide-react";
 import { FishingSpot } from "@/data/spots";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useWeather } from "@/hooks/useWeather";
+import { FishingScoreBadge } from "@/components/weather/FishingConditions";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Fix default marker icon issue with Leaflet + Vite
 delete (L.Icon.Default.prototype as unknown as Record<string, unknown>)._getIconUrl;
@@ -44,6 +47,76 @@ const MapBounds = ({ spots }: { spots: FishingSpot[] }) => {
   return null;
 };
 
+// Popup content with weather
+const SpotPopupContent = ({ spot }: { spot: FishingSpot }) => {
+  const { data: weather, isLoading } = useWeather(
+    spot.coordinates.lat,
+    spot.coordinates.lng,
+    true
+  );
+
+  return (
+    <div className="p-2 min-w-[220px]">
+      <img
+        src={spot.image}
+        alt={spot.title}
+        className="w-full h-24 object-cover rounded-lg mb-2"
+      />
+      <h3 className="font-bold text-foreground">{spot.title}</h3>
+      <p className="text-sm text-muted-foreground flex items-center gap-1 mb-2">
+        <MapPin className="w-3 h-3" /> {spot.location}
+      </p>
+      
+      {/* Weather Info */}
+      <div className="bg-muted/50 rounded-lg p-2 mb-2">
+        {isLoading ? (
+          <div className="space-y-1">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-3 w-32" />
+          </div>
+        ) : weather ? (
+          <div className="space-y-1">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1 text-sm font-medium">
+                <Thermometer className="w-3.5 h-3.5 text-accent" />
+                <span>{weather.temperature}°F</span>
+              </div>
+              <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                <Wind className="w-3.5 h-3.5" />
+                <span>{weather.windSpeed}mph</span>
+              </div>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-muted-foreground">{weather.condition}</span>
+              <FishingScoreBadge
+                temperature={weather.temperature}
+                windSpeed={weather.windSpeed}
+                humidity={weather.humidity}
+                pressure={weather.pressure}
+                cloudCover={weather.cloudCover}
+                weatherCode={weather.weatherCode}
+              />
+            </div>
+          </div>
+        ) : (
+          <p className="text-xs text-muted-foreground">Weather unavailable</p>
+        )}
+      </div>
+      
+      <div className="flex items-center justify-between mb-2">
+        <Badge variant="secondary">{spot.type}</Badge>
+        <div className="flex items-center gap-1 text-sm">
+          <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
+          {spot.rating}
+        </div>
+      </div>
+      <Link to={`/spot/${spot.slug}`}>
+        <Button size="sm" className="w-full">View Details</Button>
+      </Link>
+    </div>
+  );
+};
+
 interface LeafletMapProps {
   filteredSpots: FishingSpot[];
   onSpotSelect: (spot: FishingSpot) => void;
@@ -73,27 +146,7 @@ const LeafletMap = ({ filteredSpots, onSpotSelect }: LeafletMapProps) => {
           }}
         >
           <Popup>
-            <div className="p-2 min-w-[200px]">
-              <img
-                src={spot.image}
-                alt={spot.title}
-                className="w-full h-24 object-cover rounded-lg mb-2"
-              />
-              <h3 className="font-bold text-foreground">{spot.title}</h3>
-              <p className="text-sm text-muted-foreground flex items-center gap-1 mb-2">
-                <MapPin className="w-3 h-3" /> {spot.location}
-              </p>
-              <div className="flex items-center justify-between mb-2">
-                <Badge variant="secondary">{spot.type}</Badge>
-                <div className="flex items-center gap-1 text-sm">
-                  <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
-                  {spot.rating}
-                </div>
-              </div>
-              <Link to={`/spot/${spot.slug}`}>
-                <Button size="sm" className="w-full">View Details</Button>
-              </Link>
-            </div>
+            <SpotPopupContent spot={spot} />
           </Popup>
         </Marker>
       ))}
