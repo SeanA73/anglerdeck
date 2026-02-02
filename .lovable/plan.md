@@ -1,188 +1,191 @@
 
-# ReelSpot User Engagement and Conversion Optimization Plan
+# Real-Time Weather Integration Enhancement Plan
 
 ## Overview
-This plan covers implementing five key features to improve user engagement, trust, and conversion:
-1. Social Proof Section on Homepage
-2. Cookie Consent Banner
-3. User Account Dashboard  
-4. First-Time User Onboarding Tour
-5. FAQ Accordion on Support Page
+
+The project already has a solid weather foundation with the `useWeather` hook using the free Open-Meteo API. This plan enhances the existing implementation to display weather prominently across the app and add intelligent fishing conditions recommendations.
+
+## Current State
+
+- Weather hook exists (`src/hooks/useWeather.ts`) using Open-Meteo API
+- SpotDetail page already shows live weather data with icons
+- Backup files exist for advanced water conditions dashboard
+
+## Implementation Scope
+
+### 1. Weather Display Component (New)
+Create a reusable `WeatherBadge` component that can be used across the app:
+- Compact mode: Shows temp + icon (for spot cards)
+- Expanded mode: Shows temp, wind, humidity (for popups)
+- Loading state with skeleton
+- Error fallback to static data
+
+### 2. Fishing Conditions Analyzer (New)
+Create an intelligent fishing score calculator:
+- Analyzes temperature, wind, pressure, and weather conditions
+- Returns a score (0-100) with recommendation text
+- Provides species-specific optimal conditions
+- Color-coded visual indicator (Excellent/Good/Fair/Poor)
+
+### 3. Enhanced Spot Cards
+Add weather badges to spot cards showing:
+- Current temperature with weather icon
+- Wind speed indicator
+- "Great fishing conditions" badge when score > 75
+
+**Files affected:**
+- `src/components/FeaturedSpots.tsx`
+- `src/pages/Spots.tsx` (SpotCard component)
+
+### 4. Map Popup Weather
+Enhance map spot popups with:
+- Current temperature and conditions
+- Quick fishing score indicator
+- "View Details" for full weather info
+
+**Files affected:**
+- `src/components/map/LeafletMap.tsx`
+
+### 5. Fishing Conditions Dashboard
+Restore and enhance the WaterConditionsDashboard component:
+- Current conditions grid (temp, wind, humidity, pressure)
+- Fishing score card with factor breakdown
+- Best times recommendation
+- Weather-based fishing tips
+
+**Files affected:**
+- New: `src/components/weather/WeatherBadge.tsx`
+- New: `src/components/weather/FishingConditions.tsx`
+- Restored: `src/components/WaterConditionsDashboard.tsx`
+- Update: `src/pages/SpotDetail.tsx`
+
+### 6. Enhanced Weather Hook
+Extend `useWeather` to include:
+- Barometric pressure (for fish activity prediction)
+- UV index
+- Sunrise/sunset times
+- Caching optimization
 
 ---
 
-## Phase 1: Social Proof Section on Homepage
+## New Components
 
-### What We're Building
-A new section on the homepage that displays testimonials from users, platform statistics, and a trust bar to build credibility with new visitors.
+### WeatherBadge Component
+```text
+┌─────────────────────────────┐
+│  ☀️  72°F  │  Wind: 8 mph  │  <- Compact mode on cards
+└─────────────────────────────┘
 
-### Components to Create
+┌────────────────────────────────────┐
+│  ☀️  Clear Sky                     │
+│  72°F (feels like 70°F)            │  <- Expanded mode
+│  Wind: 8 mph NW  •  Humidity: 45%  │
+└────────────────────────────────────┘
+```
 
-**1. `src/components/SocialProof.tsx`**
-- Animated testimonial carousel with 3-4 fishing enthusiast quotes
-- Avatar images, names, and fishing achievements
-- Platform stats counter (spots discovered, catches logged, active anglers)
-- Trust bar with partner/feature logos
-
-### Design Elements
-- Card-based testimonial layout with star ratings
-- Animated number counters for statistics
-- Subtle background with fishing-themed accent colors
-- Mobile-responsive grid layout
-
-### Integration
-- Add between `<FeaturedSpots />` and `<Features />` in `Index.tsx`
-
----
-
-## Phase 2: Cookie Consent Banner
-
-### What We're Building
-A GDPR-compliant cookie consent banner that appears on first visit, allowing users to accept all cookies, reject non-essential ones, or customize preferences.
-
-### Components to Create
-
-**1. `src/components/CookieConsent.tsx`**
-- Slide-up banner from bottom of screen
-- Three action buttons: Accept All, Reject Non-Essential, Customize
-- Persistent state using localStorage
-- Links to Cookie Policy page
-
-**2. `src/components/CookiePreferencesDialog.tsx`**
-- Modal dialog for granular cookie control
-- Toggle switches for: Essential (always on), Functional, Analytics, Marketing
-- Save preferences button
-
-### Integration
-- Add to `App.tsx` as a global component
-- Check localStorage for existing consent on mount
-- Auto-hide after user makes a choice
-
----
-
-## Phase 3: User Account Dashboard
-
-### What We're Building
-A centralized hub for logged-in users to view their subscription status, usage statistics, saved spots, and recent catch history.
-
-### Pages to Create
-
-**1. `src/pages/Account.tsx`**
-Main dashboard with tabs/sections for:
-- **Overview**: Subscription tier badge, quick stats summary
-- **Usage Meter**: Visual progress bars for spots viewed and catches logged (using existing `UsageMeter` component)
-- **Saved Spots**: Grid of bookmarked fishing locations
-- **Catch History**: Recent catches with photos and details
-- **Profile Settings**: Edit display name, avatar, bio
-
-### Components to Create
-
-**2. `src/components/account/AccountOverview.tsx`**
-- Current tier display (Free/Pro/Elite) with upgrade CTA
-- Monthly usage progress bars
-- Next billing date (if subscribed)
-
-**3. `src/components/account/SavedSpotsList.tsx`**
-- Query saved_items table for spots
-- Display as card grid with quick actions
-
-**4. `src/components/account/CatchHistoryList.tsx`**
-- Query catch_logs table for user's catches
-- Paginated list with photos, species, dates
-
-### Integration
-- Add `/account` route to `App.tsx`
-- Add "My Account" link to Header for logged-in users
-- Redirect to `/auth` if not authenticated
-
----
-
-## Phase 4: First-Time User Onboarding Tour
-
-### What We're Building
-An interactive guided tour that highlights key features when a user first signs up, helping them understand how to find spots, log catches, and use the community features.
-
-### Components to Create
-
-**1. `src/components/OnboardingTour.tsx`**
-- Step-by-step tooltip overlay system
-- Highlights key UI elements with spotlight effect
-- Progress indicator (Step 1 of 4, etc.)
-- Skip and Next buttons
-
-**2. `src/hooks/useOnboarding.ts`**
-- Check if user has completed onboarding (localStorage or database)
-- Track current step
-- Mark completion
-
-### Tour Steps
-1. **Welcome**: Brief intro to ReelSpot
-2. **Explore Spots**: Point to the Featured Spots section
-3. **Search & Filter**: Highlight the "View More Spots" button
-4. **Log Catches**: Show the Catch Log navigation
-5. **Community**: Point to community features
-
-### Integration
-- Trigger after successful signup in `Auth.tsx`
-- Store completion status in localStorage (or profiles table)
-- Add trigger in `Index.tsx` for first visit detection
-
----
-
-## Phase 5: FAQ Accordion on Support Page
-
-### What We're Building
-Enhance the existing Support page with an expandable FAQ section using the Accordion component for common questions and answers.
-
-### Changes to `src/pages/Support.tsx`
-
-Add a new FAQ section with common questions organized by category:
-- **Getting Started**: Account creation, first steps
-- **Features**: How to use spots, catches, maps
-- **Subscriptions**: Upgrading, canceling, billing
-- **Technical**: Offline access, data sync, troubleshooting
-
-### Implementation
-- Use existing `@/components/ui/accordion` component
-- Group FAQs by category with collapsible sections
-- Add smooth animations on expand/collapse
+### FishingConditions Component
+```text
+┌─────────────────────────────────────────┐
+│  🎣 Fishing Score: 82/100  [EXCELLENT]  │
+├─────────────────────────────────────────┤
+│  Temperature ████████░░  80%            │
+│  Wind        █████████░  90%            │
+│  Pressure    ███████░░░  70%            │
+│  Conditions  █████████░  90%            │
+├─────────────────────────────────────────┤
+│  💡 Great conditions! Stable pressure   │
+│  and mild winds are ideal for fishing.  │
+└─────────────────────────────────────────┘
+```
 
 ---
 
 ## Technical Details
 
-### New Dependencies
-None required - all features use existing libraries (framer-motion, Radix UI, React Query)
+### Files to Create
+1. `src/components/weather/WeatherBadge.tsx` - Reusable weather display
+2. `src/components/weather/FishingConditions.tsx` - Fishing score card
+3. `src/lib/fishingConditions.ts` - Score calculation logic
 
-### Database Changes
-Optional: Add `onboarding_completed` boolean column to `profiles` table for persistent onboarding tracking
+### Files to Modify
+1. `src/hooks/useWeather.ts` - Add pressure, UV, sunrise/sunset
+2. `src/components/FeaturedSpots.tsx` - Add WeatherBadge to cards
+3. `src/pages/Spots.tsx` - Add WeatherBadge to SpotCard
+4. `src/components/map/LeafletMap.tsx` - Add weather to popups
+5. `src/pages/SpotDetail.tsx` - Add FishingConditions component
 
-### File Summary
+### Weather Data Flow
+```text
+Open-Meteo API
+     │
+     ▼
+useWeather Hook (cached 15 min)
+     │
+     ├──► WeatherBadge (spot cards, popups)
+     │
+     └──► FishingConditions (spot detail page)
+              │
+              ▼
+         calculateFishingScore()
+              │
+              ▼
+         Score + Recommendations
+```
 
-| File | Action | Purpose |
-|------|--------|---------|
-| `src/components/SocialProof.tsx` | Create | Testimonials and stats section |
-| `src/components/CookieConsent.tsx` | Create | Cookie banner component |
-| `src/components/CookiePreferencesDialog.tsx` | Create | Cookie preferences modal |
-| `src/pages/Account.tsx` | Create | User dashboard page |
-| `src/components/account/AccountOverview.tsx` | Create | Dashboard overview section |
-| `src/components/account/SavedSpotsList.tsx` | Create | Saved spots grid |
-| `src/components/account/CatchHistoryList.tsx` | Create | Catch history list |
-| `src/components/OnboardingTour.tsx` | Create | Guided tour overlay |
-| `src/hooks/useOnboarding.ts` | Create | Onboarding state management |
-| `src/pages/Index.tsx` | Modify | Add SocialProof component |
-| `src/pages/Support.tsx` | Modify | Add FAQ accordion |
-| `src/App.tsx` | Modify | Add Account route, CookieConsent |
-| `src/components/Header.tsx` | Modify | Add Account link for logged-in users |
+### Fishing Score Algorithm
+Factors and weights:
+- Temperature (25%): Optimal range 55-75°F
+- Wind Speed (25%): Under 15 mph is ideal
+- Barometric Pressure (25%): Stable/rising is better
+- Cloud Cover (25%): Overcast often better than bright sun
+
+Score thresholds:
+- 80-100: Excellent (green badge)
+- 60-79: Good (blue badge)
+- 40-59: Fair (yellow badge)
+- 0-39: Poor (red badge)
 
 ---
 
 ## Implementation Order
 
-1. **FAQ Accordion** - Quick win, enhances existing page
-2. **Social Proof Section** - High impact on conversion
-3. **Cookie Consent Banner** - Compliance requirement
-4. **User Account Dashboard** - Core user experience
-5. **Onboarding Tour** - Polish for new users
+1. **Phase 1: Core Components**
+   - Create WeatherBadge component
+   - Create FishingConditions component
+   - Create fishing score calculation utility
 
-This order prioritizes quick wins and high-impact features first, then builds toward more complex user experience improvements.
+2. **Phase 2: Integration**
+   - Add WeatherBadge to FeaturedSpots cards
+   - Add WeatherBadge to Spots page cards
+   - Enhance useWeather with additional data
+
+3. **Phase 3: Advanced Features**
+   - Add FishingConditions to SpotDetail page
+   - Add weather to map popups
+   - Add species-specific recommendations
+
+---
+
+## API Details
+
+### Open-Meteo Parameters (Enhanced)
+The existing API call will be extended to include:
+```
+current=temperature_2m,relative_humidity_2m,apparent_temperature,
+        weather_code,wind_speed_10m,wind_direction_10m,
+        surface_pressure,cloud_cover,uv_index,is_day
+daily=sunrise,sunset
+```
+
+No API key required - Open-Meteo is free and reliable.
+
+---
+
+## Benefits
+
+- **Real-time data**: Live weather updates every 15 minutes
+- **Fishing intelligence**: Actionable recommendations for anglers
+- **Visual appeal**: Weather icons and color-coded scores
+- **Performance**: Cached queries reduce API calls
+- **No cost**: Uses free Open-Meteo API
+
