@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import { SUBSCRIPTION_TIERS, formatPrice, getAnnualPrice } from '@/lib/stripe';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { createCheckoutSession } from '@/lib/checkout';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
@@ -30,9 +31,17 @@ const Pricing = () => {
             return;
         }
 
-        // Redirect to Stripe Checkout
-        // This would be implemented with your backend
-        toast.info('Redirecting to checkout...');
+        try {
+            toast.info('Redirecting to checkout...');
+            const url = await createCheckoutSession({
+                tier,
+                billingPeriod: isAnnual ? 'yearly' : 'monthly',
+            });
+            window.location.href = url;
+        } catch (err) {
+            const message = err instanceof Error ? err.message : 'Checkout failed';
+            toast.error(message);
+        }
     };
 
     return (

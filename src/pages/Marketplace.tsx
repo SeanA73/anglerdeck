@@ -18,6 +18,8 @@ import { GearListingCard } from "@/components/marketplace/GearListingCard";
 import { AffiliateProductCard } from "@/components/marketplace/AffiliateProductCard";
 import { CreateListingDialog } from "@/components/marketplace/CreateListingDialog";
 import { affiliateProducts, affiliateCategories } from "@/data/affiliateProducts";
+import { SEO } from "@/components/SEO";
+import { AdBanner } from "@/components/ads/AdBanner";
 
 const gearCategories = [
   'All',
@@ -71,6 +73,11 @@ const Marketplace = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Fishing Gear Marketplace — Buy & Sell Tackle"
+        description="Shop top-rated fishing rods, reels, and tackle. Browse community gear listings and exclusive affiliate deals. Save big on quality fishing equipment."
+        canonicalPath="/marketplace"
+      />
       <Header />
       
       <main className="pt-24 pb-16">
@@ -155,7 +162,10 @@ const Marketplace = () => {
 
             {/* Affiliate Products Tab */}
             <TabsContent value="affiliate" className="space-y-6">
-              {/* Affiliate Disclaimer */}
+              <AdBanner
+                slot={import.meta.env.VITE_ADSENSE_SLOT_MARKETPLACE || ''}
+                format="horizontal"
+              />
               <div className="bg-muted/30 border border-border rounded-lg p-4 text-sm text-muted-foreground">
                 <strong className="text-foreground">Affiliate Disclosure:</strong> We may earn a commission when you purchase through our links. This helps support ReelSpot at no extra cost to you.
               </div>

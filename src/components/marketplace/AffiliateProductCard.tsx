@@ -3,6 +3,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Star } from "lucide-react";
 import { AffiliateProduct } from "@/data/affiliateProducts";
+import { parsePriceValue, trackAffiliateClick } from "@/lib/affiliate";
+import { trackEvent } from "@/lib/analytics";
 
 interface AffiliateProductCardProps {
   product: AffiliateProduct;
@@ -16,6 +18,13 @@ const sourceColors: Record<string, string> = {
 
 export const AffiliateProductCard = ({ product }: AffiliateProductCardProps) => {
   const handleClick = () => {
+    trackEvent('affiliate_click', {
+      product_id: product.id,
+      product_title: product.title,
+      product_source: product.source,
+      value: parsePriceValue(product.price),
+    });
+    trackAffiliateClick(product.source, product.id);
     window.open(product.affiliateUrl, '_blank', 'noopener,noreferrer');
   };
 
@@ -26,6 +35,9 @@ export const AffiliateProductCard = ({ product }: AffiliateProductCardProps) => 
           src={product.image}
           alt={product.title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          loading="lazy"
+          width={300}
+          height={300}
         />
         {product.badge && (
           <Badge className="absolute top-2 left-2 bg-primary text-primary-foreground">

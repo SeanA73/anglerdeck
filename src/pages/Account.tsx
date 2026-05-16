@@ -16,6 +16,7 @@ import { useOnboarding } from "@/hooks/useOnboarding";
 import AccountOverview from "@/components/account/AccountOverview";
 import SavedSpotsList from "@/components/account/SavedSpotsList";
 import CatchHistoryList from "@/components/account/CatchHistoryList";
+import { SEO } from "@/components/SEO";
 
 const Account = () => {
   const { user, profile, loading: isLoading } = useAuth();
@@ -68,6 +69,7 @@ const Account = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO title="My Account" description="Manage your ReelSpot account" canonicalPath="/account" noIndex />
       <Header />
       <main className="container mx-auto px-4 py-16">
         <motion.div

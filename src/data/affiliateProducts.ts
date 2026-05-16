@@ -1,3 +1,5 @@
+import { buildAmazonUrl, buildClickbankUrl } from '@/lib/affiliate';
+
 export interface AffiliateProduct {
   id: string;
   title: string;
@@ -12,8 +14,7 @@ export interface AffiliateProduct {
   badge?: string;
 }
 
-// Sample affiliate products - Replace URLs with your actual affiliate links
-export const affiliateProducts: AffiliateProduct[] = [
+const productDefs = [
   {
     id: 'af-1',
     title: 'Shimano Stradic FL Spinning Reel',
@@ -21,11 +22,11 @@ export const affiliateProducts: AffiliateProduct[] = [
     price: '$249.99',
     originalPrice: '$299.99',
     image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=300&h=300&fit=crop',
-    affiliateUrl: 'https://amazon.com/dp/example1?tag=YOUR_AFFILIATE_ID',
-    source: 'amazon',
+    source: 'amazon' as const,
+    asin: 'B07HGF82KB',
     category: 'Reels',
     rating: 4.8,
-    badge: 'Best Seller'
+    badge: 'Best Seller',
   },
   {
     id: 'af-2',
@@ -33,10 +34,10 @@ export const affiliateProducts: AffiliateProduct[] = [
     description: 'High-performance casting rod with Multi-Taper Design technology',
     price: '$199.99',
     image: 'https://images.unsplash.com/photo-1500463959177-e0869687df26?w=300&h=300&fit=crop',
-    affiliateUrl: 'https://amazon.com/dp/example2?tag=YOUR_AFFILIATE_ID',
-    source: 'amazon',
+    source: 'amazon' as const,
+    asin: 'B00144F9E0',
     category: 'Rods',
-    rating: 4.7
+    rating: 4.7,
   },
   {
     id: 'af-3',
@@ -45,11 +46,11 @@ export const affiliateProducts: AffiliateProduct[] = [
     price: '$89.99',
     originalPrice: '$119.99',
     image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&h=300&fit=crop',
-    affiliateUrl: 'https://amazon.com/dp/example3?tag=YOUR_AFFILIATE_ID',
-    source: 'amazon',
+    source: 'amazon' as const,
+    asin: 'B000E39P0G',
     category: 'Tackle Boxes',
     rating: 4.5,
-    badge: 'Deal'
+    badge: 'Deal',
   },
   {
     id: 'af-4',
@@ -58,10 +59,10 @@ export const affiliateProducts: AffiliateProduct[] = [
     price: '$47.00',
     originalPrice: '$97.00',
     image: 'https://images.unsplash.com/photo-1545816250-e12bedba42ba?w=300&h=300&fit=crop',
-    affiliateUrl: 'https://clickbank.com/example-course?hop=YOUR_AFFILIATE_ID',
-    source: 'clickbank',
+    source: 'clickbank' as const,
+    clickbankPath: 'bassfishingmastery.com',
     category: 'Courses',
-    badge: '52% Off'
+    badge: '52% Off',
   },
   {
     id: 'af-5',
@@ -69,10 +70,10 @@ export const affiliateProducts: AffiliateProduct[] = [
     description: 'Ultra-strong braided line with enhanced sensitivity',
     price: '$24.99',
     image: 'https://images.unsplash.com/photo-1516962126636-27ad087061cc?w=300&h=300&fit=crop',
-    affiliateUrl: 'https://amazon.com/dp/example4?tag=YOUR_AFFILIATE_ID',
-    source: 'amazon',
+    source: 'amazon' as const,
+    asin: 'B0000AUW8M',
     category: 'Line',
-    rating: 4.6
+    rating: 4.6,
   },
   {
     id: 'af-6',
@@ -81,11 +82,11 @@ export const affiliateProducts: AffiliateProduct[] = [
     price: '$449.99',
     originalPrice: '$549.99',
     image: 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=300&h=300&fit=crop',
-    affiliateUrl: 'https://amazon.com/dp/example5?tag=YOUR_AFFILIATE_ID',
-    source: 'amazon',
+    source: 'amazon' as const,
+    asin: 'B07HGF82KB',
     category: 'Electronics',
     rating: 4.4,
-    badge: 'Top Rated'
+    badge: 'Top Rated',
   },
   {
     id: 'af-7',
@@ -94,10 +95,10 @@ export const affiliateProducts: AffiliateProduct[] = [
     price: '$19.99',
     originalPrice: '$39.99',
     image: 'https://images.unsplash.com/photo-1534438097545-a2c22c57f2ad?w=300&h=300&fit=crop',
-    affiliateUrl: 'https://clickbank.com/flytying?hop=YOUR_AFFILIATE_ID',
-    source: 'clickbank',
+    source: 'clickbank' as const,
+    clickbankPath: 'flytyingguide.com',
     category: 'eBooks',
-    badge: '50% Off'
+    badge: '50% Off',
   },
   {
     id: 'af-8',
@@ -105,12 +106,31 @@ export const affiliateProducts: AffiliateProduct[] = [
     description: 'Polarized sunglasses with 580G glass lenses for fishing',
     price: '$269.00',
     image: 'https://images.unsplash.com/photo-1473496169904-658ba7c44d8a?w=300&h=300&fit=crop',
-    affiliateUrl: 'https://amazon.com/dp/example6?tag=YOUR_AFFILIATE_ID',
-    source: 'amazon',
+    source: 'amazon' as const,
+    asin: 'B00144F9E0',
     category: 'Apparel',
-    rating: 4.9
-  }
+    rating: 4.9,
+  },
 ];
+
+export const affiliateProducts: AffiliateProduct[] = productDefs.map((p) => ({
+  id: p.id,
+  title: p.title,
+  description: p.description,
+  price: p.price,
+  originalPrice: p.originalPrice,
+  image: p.image,
+  affiliateUrl:
+    p.source === 'amazon' && 'asin' in p
+      ? buildAmazonUrl(p.asin)
+      : 'clickbankPath' in p
+        ? buildClickbankUrl(p.clickbankPath)
+        : '#',
+  source: p.source,
+  category: p.category,
+  rating: p.rating,
+  badge: p.badge,
+}));
 
 export const affiliateCategories = [
   'All',
@@ -121,5 +141,5 @@ export const affiliateCategories = [
   'Electronics',
   'Apparel',
   'Courses',
-  'eBooks'
+  'eBooks',
 ];

@@ -1,26 +1,17 @@
-// Stripe configuration and utilities
-// TODO: Install Stripe package: npm install @stripe/stripe-js stripe
-// import { loadStripe, Stripe } from '@stripe/stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
 
-// Initialize Stripe
-let stripePromise: Promise<any> | null = null;
+let stripePromise: ReturnType<typeof loadStripe> | null = null;
 
 export const getStripe = () => {
-    // Stripe not installed yet - will be enabled after npm install
-    console.warn('Stripe not configured. Install with: npm install @stripe/stripe-js');
-    return null;
-
-    /* Uncomment after installing Stripe:
-    if (!stripePromise) {
-      const key = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
-      if (!key) {
-        console.error('Stripe publishable key is not set');
-        return null;
-      }
-      stripePromise = loadStripe(key);
+  if (!stripePromise) {
+    const key = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
+    if (!key) {
+      console.warn('VITE_STRIPE_PUBLISHABLE_KEY is not set');
+      return null;
     }
-    return stripePromise;
-    */
+    stripePromise = loadStripe(key);
+  }
+  return stripePromise;
 };
 
 // Subscription tier configuration
@@ -47,7 +38,7 @@ export const SUBSCRIPTION_TIERS = {
         id: 'pro',
         name: 'Pro Angler',
         price: 9.99,
-        priceMonthly: 'price_pro_monthly', // Replace with actual Stripe price ID
+        priceMonthly: 'price_pro_monthly',
         priceYearly: 'price_pro_yearly',
         features: [
             'Unlimited spot access',
@@ -71,7 +62,7 @@ export const SUBSCRIPTION_TIERS = {
         id: 'elite',
         name: 'Master Angler',
         price: 29.99,
-        priceMonthly: 'price_elite_monthly', // Replace with actual Stripe price ID
+        priceMonthly: 'price_elite_monthly',
         priceYearly: 'price_elite_yearly',
         features: [
             'Everything in Pro',
@@ -97,7 +88,6 @@ export const SUBSCRIPTION_TIERS = {
 
 export type SubscriptionTier = keyof typeof SUBSCRIPTION_TIERS;
 
-// Feature access configuration
 export const FEATURE_ACCESS = {
     unlimited_spots: ['pro', 'elite'],
     unlimited_catches: ['pro', 'elite'],
@@ -116,7 +106,6 @@ export const FEATURE_ACCESS = {
 
 export type Feature = keyof typeof FEATURE_ACCESS;
 
-// Helper function to check feature access
 export const hasFeatureAccess = (
     userTier: SubscriptionTier,
     feature: Feature
@@ -125,7 +114,6 @@ export const hasFeatureAccess = (
     return allowedTiers.includes(userTier);
 };
 
-// Pricing display helpers
 export const formatPrice = (price: number): string => {
     return new Intl.NumberFormat('en-US', {
         style: 'currency',
@@ -134,10 +122,10 @@ export const formatPrice = (price: number): string => {
 };
 
 export const getAnnualDiscount = (monthlyPrice: number): number => {
-    const annualPrice = monthlyPrice * 12 * 0.75; // 25% discount
+    const annualPrice = monthlyPrice * 12 * 0.75;
     return monthlyPrice * 12 - annualPrice;
 };
 
 export const getAnnualPrice = (monthlyPrice: number): number => {
-    return monthlyPrice * 12 * 0.75; // 25% discount
+    return monthlyPrice * 12 * 0.75;
 };

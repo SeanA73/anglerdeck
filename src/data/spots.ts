@@ -35,6 +35,8 @@ export interface FishingSpot {
   bestTimes: string[];
   difficulty: "Beginner" | "Intermediate" | "Advanced";
   regulations: string[];
+  sponsored?: boolean;
+  sponsoredUrl?: string;
 }
 
 export const spots: FishingSpot[] = [
@@ -50,6 +52,8 @@ export const spots: FishingSpot[] = [
     saves: 2340,
     image: fishingSpot,
     featured: true,
+    sponsored: true,
+    sponsoredUrl: "https://example.com/book-crystal-creek-lodge",
     description: "A pristine mountain stream nestled in the heart of Colorado's Rocky Mountains. Crystal-clear waters teem with rainbow and brown trout, making it a paradise for fly fishing enthusiasts.",
     coordinates: { lat: 39.5501, lng: -105.7821 },
     waterTemperature: { current: 52, unit: "°F", trend: "stable" },

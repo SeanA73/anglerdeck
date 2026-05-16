@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect, Fragment } from "react";
 import { motion } from "framer-motion";
 import { MapPin, Star, Users, Bookmark, Search, Filter, X } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -19,6 +19,8 @@ import {
 import { WeatherBadge } from "@/components/weather/WeatherBadge";
 import { FishingScoreBadge } from "@/components/weather/FishingConditions";
 import { useWeather } from "@/hooks/useWeather";
+import { SEO } from "@/components/SEO";
+import { AdBanner } from "@/components/ads/AdBanner";
 
 type SortOption = "rating" | "saves" | "name";
 
@@ -31,7 +33,7 @@ const Spots = () => {
   const [showFilters, setShowFilters] = useState(false);
 
   const filteredAndSortedSpots = useMemo(() => {
-    let result = spots.filter((spot) => {
+    const result = spots.filter((spot) => {
       const matchesSearch =
         searchQuery === "" ||
         spot.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -83,6 +85,11 @@ const Spots = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Explore Fishing Spots Worldwide"
+        description="Browse 2,500+ fishing spots worldwide. Filter by country, species, freshwater or saltwater. Find your next perfect catch with ReelSpot."
+        canonicalPath="/spots"
+      />
       <Header />
 
       <main className="pt-24 pb-16">
@@ -137,9 +144,8 @@ const Spots = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className={`flex flex-wrap items-center justify-center gap-4 mb-8 ${
-              showFilters ? "block" : "hidden md:flex"
-            }`}
+            className={`flex flex-wrap items-center justify-center gap-4 mb-8 ${showFilters ? "block" : "hidden md:flex"
+              }`}
           >
             <div className="flex items-center gap-2">
               <span className="text-muted-foreground text-sm font-medium">Country:</span>
@@ -221,7 +227,17 @@ const Spots = () => {
               </motion.div>
             ) : (
               filteredAndSortedSpots.map((spot, index) => (
-                <SpotCard key={spot.id} spot={spot} index={index} />
+                <Fragment key={spot.id}>
+                  <SpotCard spot={spot} index={index} />
+                  {index === 5 && (
+                    <div className="col-span-full">
+                      <AdBanner
+                        slot={import.meta.env.VITE_ADSENSE_SLOT_SPOTS || ''}
+                        format="rectangle"
+                      />
+                    </div>
+                  )}
+                </Fragment>
               ))
             )}
           </div>
@@ -234,15 +250,34 @@ const Spots = () => {
 };
 
 const SpotCard = ({ spot, index }: { spot: FishingSpot; index: number }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setIsVisible(true);
+      },
+      { rootMargin: '200px' }
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+
   const { data: weather, isLoading: weatherLoading } = useWeather(
     spot.coordinates.lat,
     spot.coordinates.lng,
-    true
+    isVisible
   );
+
+  const imageSrc = spot.image.includes('unsplash.com')
+    ? `${spot.image}${spot.image.includes('?') ? '&' : '?'}w=600&h=400&fit=crop&auto=format`
+    : spot.image;
 
   return (
     <Link to={`/spot/${spot.slug}`}>
       <motion.div
+        ref={ref}
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: Math.min(index * 0.05, 0.3) }}
@@ -252,9 +287,12 @@ const SpotCard = ({ spot, index }: { spot: FishingSpot; index: number }) => {
         {/* Image */}
         <div className="relative h-56 overflow-hidden">
           <img
-            src={spot.image}
-            alt={spot.title}
+            src={imageSrc}
+            alt={`${spot.title} fishing spot in ${spot.location}`}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+            loading="lazy"
+            width={600}
+            height={400}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent" />
 
@@ -264,12 +302,17 @@ const SpotCard = ({ spot, index }: { spot: FishingSpot; index: number }) => {
               Featured
             </div>
           )}
+          {spot.sponsored && (
+            <div className="absolute top-4 left-24 px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-semibold">
+              Sponsored
+            </div>
+          )}
 
-          {/* Save Button */}
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
             onClick={(e) => e.preventDefault()}
+            aria-label="Save this spot"
             className="absolute top-4 right-4 w-10 h-10 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center text-foreground hover:text-accent transition-colors"
           >
             <Bookmark className="w-5 h-5" />

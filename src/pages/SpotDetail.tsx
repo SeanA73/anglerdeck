@@ -1,4 +1,5 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { 
@@ -40,6 +41,10 @@ import { UsageMeter } from "@/components/UsageMeter";
 import { SUBSCRIPTION_TIERS } from "@/lib/stripe";
 import { FishingConditions } from "@/components/weather/FishingConditions";
 import FishingAssistant from "@/components/ai/FishingAssistant";
+import { SEO, BASE_URL } from "@/components/SEO";
+import { AdBanner } from "@/components/ads/AdBanner";
+import { getBookingUrl, getAirbnbUrl, trackAffiliateClick } from "@/lib/affiliate";
+import { formatTemperature, getDefaultUseCelsius } from "@/lib/temperature";
 
 const WeatherIcon = ({ icon }: { icon: string }) => {
   switch (icon) {
@@ -79,6 +84,7 @@ const SpotDetail = () => {
   } = useSubscription();
   const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
   const [hasTrackedView, setHasTrackedView] = useState(false);
+  const [useCelsius, setUseCelsius] = useState(getDefaultUseCelsius);
 
   // Track spot view on mount (only for logged-in users)
   useEffect(() => {
@@ -134,9 +140,65 @@ const SpotDetail = () => {
     icon: "cloud",
   };
 
+  const spotSchema = {
+    "@context": "https://schema.org",
+    "@type": "TouristAttraction",
+    name: spot.title,
+    description: spot.description,
+    image: spot.image.startsWith("http") ? spot.image : `${BASE_URL}${spot.image}`,
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: spot.location,
+      addressCountry: spot.country,
+    },
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: spot.rating,
+      bestRating: 5,
+      worstRating: 1,
+      ratingCount: spot.saves,
+    },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: spot.coordinates.lat,
+      longitude: spot.coordinates.lng,
+    },
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: BASE_URL },
+      { "@type": "ListItem", position: 2, name: "Spots", item: `${BASE_URL}/spots` },
+      { "@type": "ListItem", position: 3, name: spot.title, item: `${BASE_URL}/spot/${spot.slug}` },
+    ],
+  };
+
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title={`${spot.title} — ${spot.location} Fishing Spot`}
+        description={`Fish for ${spot.species.join(", ")} at ${spot.title} in ${spot.location}. ${spot.description.slice(0, 120)}...`}
+        canonicalPath={`/spot/${spot.slug}`}
+        ogImage={spot.image}
+        ogType="article"
+      />
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(spotSchema)}</script>
+        <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
+      </Helmet>
       <Header />
+
+      <nav aria-label="Breadcrumb" className="container mx-auto px-4 pt-24">
+        <ol className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
+          <li><Link to="/" className="hover:text-foreground">Home</Link></li>
+          <li>/</li>
+          <li><Link to="/spots" className="hover:text-foreground">Spots</Link></li>
+          <li>/</li>
+          <li className="text-foreground font-medium">{spot.title}</li>
+        </ol>
+      </nav>
       
       {/* Upgrade Prompt Modal */}
       <UpgradePrompt
@@ -188,6 +250,7 @@ const SpotDetail = () => {
           animate={{ opacity: 1, x: 0 }}
           onClick={() => toggleSave("spot", spot.slug)}
           disabled={isToggling}
+          aria-label={spotIsSaved ? "Remove from saved spots" : "Save this spot"}
           className={`absolute top-24 right-4 lg:right-8 flex items-center gap-2 px-4 py-2 backdrop-blur-sm rounded-full transition-colors ${
             spotIsSaved 
               ? "bg-accent text-accent-foreground" 
@@ -224,6 +287,11 @@ const SpotDetail = () => {
                 {spot.featured && (
                   <span className="px-3 py-1 rounded-full bg-accent text-accent-foreground text-sm font-semibold">
                     Featured
+                  </span>
+                )}
+                {spot.sponsored && (
+                  <span className="px-3 py-1 rounded-full bg-primary text-primary-foreground text-sm font-semibold">
+                    Sponsored
                   </span>
                 )}
               </div>
@@ -283,6 +351,11 @@ const SpotDetail = () => {
               </div>
             </motion.div>
 
+            <AdBanner
+              slot={import.meta.env.VITE_ADSENSE_SLOT_SPOT_DETAIL || ''}
+              format="horizontal"
+            />
+
             {/* Weather & Conditions */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -292,12 +365,22 @@ const SpotDetail = () => {
             >
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-bold text-foreground">Current Conditions</h2>
-                {liveWeather && (
-                  <span className="text-xs text-accent flex items-center gap-1">
-                    <span className="w-2 h-2 bg-accent rounded-full animate-pulse" />
-                    Live
-                  </span>
-                )}
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setUseCelsius((c) => !c)}
+                    className="text-xs px-2 py-1 rounded-md border border-border text-muted-foreground hover:text-foreground"
+                    aria-label={useCelsius ? "Switch to Fahrenheit" : "Switch to Celsius"}
+                  >
+                    {useCelsius ? "°C" : "°F"}
+                  </button>
+                  {liveWeather && (
+                    <span className="text-xs text-accent flex items-center gap-1">
+                      <span className="w-2 h-2 bg-accent rounded-full animate-pulse" />
+                      Live
+                    </span>
+                  )}
+                </div>
               </div>
               
               <div className="grid sm:grid-cols-2 gap-6">
@@ -312,7 +395,7 @@ const SpotDetail = () => {
                     )}
                   </div>
                   <p className="text-3xl font-bold text-foreground mb-1">
-                    {displayWeather.temperature}°F
+                    {formatTemperature(displayWeather.temperature, useCelsius)}
                   </p>
                   <p className="text-sm text-muted-foreground mb-4">{displayWeather.condition}</p>
                   <div className="grid grid-cols-2 gap-3 text-sm">
@@ -442,6 +525,47 @@ const SpotDetail = () => {
               />
             )}
             
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+              className="bg-card rounded-2xl p-6 border border-border/50"
+            >
+              <h3 className="text-lg font-bold text-foreground mb-4">Plan Your Trip</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Find accommodation near {spot.location} for your fishing trip.
+              </p>
+              <a
+                href={getBookingUrl(spot.location)}
+                target="_blank"
+                rel="noopener noreferrer sponsored"
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-colors"
+                onClick={() => trackAffiliateClick('booking', spot.slug)}
+              >
+                Find Accommodation
+              </a>
+              <a
+                href={getAirbnbUrl(spot.location)}
+                target="_blank"
+                rel="noopener noreferrer sponsored"
+                className="w-full mt-2 flex items-center justify-center gap-2 px-4 py-3 bg-rose-500 text-white rounded-xl font-semibold hover:bg-rose-600 transition-colors"
+                onClick={() => trackAffiliateClick('airbnb', spot.slug)}
+              >
+                Find Cabins & Stays on Airbnb
+              </a>
+              {spot.sponsored && spot.sponsoredUrl && (
+                <a
+                  href={spot.sponsoredUrl}
+                  target="_blank"
+                  rel="noopener noreferrer sponsored"
+                  className="w-full mt-2 flex items-center justify-center gap-2 px-4 py-3 bg-accent text-accent-foreground rounded-xl font-semibold hover:opacity-90 transition-opacity"
+                  onClick={() => trackAffiliateClick('sponsored_spot', spot.slug)}
+                >
+                  Book Now — Featured Partner
+                </a>
+              )}
+            </motion.div>
+
             {/* Best Times */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -518,6 +642,7 @@ const SpotDetail = () => {
               <button 
                 onClick={() => user ? toggleSave("spot", spot.slug) : navigate("/auth")}
                 disabled={isToggling}
+                aria-label={spotIsSaved ? "Remove from saved spots" : "Save this spot"}
                 className="w-full px-6 py-3 bg-accent text-accent-foreground rounded-xl font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
               >
                 {isToggling ? (

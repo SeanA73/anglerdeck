@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { MapPin, Twitter, Instagram, Facebook, Youtube } from "lucide-react";
 import reelspotLogo from "@/assets/reelspot-logo.png";
+import { NewsletterSignup } from "@/components/NewsletterSignup";
 
 const Footer = () => {
   const footerLinks = {
@@ -26,7 +27,7 @@ const Footer = () => {
     Support: [
       { name: "Help Center", href: "/support" },
       { name: "Contact Us", href: "/contact" },
-      { name: "Fishing Guides", href: "/spots" },
+      { name: "Fishing Guides", href: "/guides" },
       { name: "Regulations", href: "/regulations" },
     ],
     Legal: [
@@ -52,9 +53,10 @@ const Footer = () => {
               <img src={reelspotLogo} alt="ReelSpot" className="w-10 h-10 rounded-xl shadow-lg" />
               <span className="text-xl font-bold text-foreground">ReelSpot</span>
             </motion.div>
-            <p className="text-muted-foreground mb-6 max-w-xs">
+            <p className="text-muted-foreground mb-4 max-w-xs">
               Your ultimate companion for discovering and sharing the best fishing spots worldwide.
             </p>
+            <NewsletterSignup className="mb-6 max-w-sm" compact />
             <div className="flex items-center gap-4">
               {[
                 { Icon: Twitter, href: "https://twitter.com/reelspot" },

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
@@ -9,6 +9,7 @@ import { Fish, MessageSquare, Lightbulb, Plus } from "lucide-react";
 import PostCard from "@/components/community/PostCard";
 import CreatePostDialog from "@/components/community/CreatePostDialog";
 import { useToast } from "@/hooks/use-toast";
+import { AdBanner } from "@/components/ads/AdBanner";
 
 type PostType = "all" | "catch" | "story" | "tip";
 
@@ -57,7 +58,7 @@ const CommunityFeed = () => {
 
       // Get likes and comments counts
       const postIds = postsData.map((p) => p.id);
-      
+
       const [likesResult, commentsResult, userLikesResult] = await Promise.all([
         supabase
           .from("post_likes")
@@ -147,8 +148,8 @@ const CommunityFeed = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      
-      <main className="flex-1 container mx-auto px-4 py-8">
+
+      <main className="flex-1 container mx-auto px-4 pb-8 pt-24">
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-foreground">Community Feed</h1>
@@ -198,13 +199,20 @@ const CommunityFeed = () => {
                 </Button>
               </div>
             ) : (
-              posts.map((post) => (
-                <PostCard
-                  key={post.id}
-                  post={post}
-                  onLike={handleLike}
-                  sessionId={sessionId}
-                />
+              posts.map((post, index) => (
+                <Fragment key={post.id}>
+                  <PostCard
+                    post={post}
+                    onLike={handleLike}
+                    sessionId={sessionId}
+                  />
+                  {(index + 1) % 5 === 0 && index < posts.length - 1 && (
+                    <AdBanner
+                      slot={import.meta.env.VITE_ADSENSE_SLOT_COMMUNITY || ''}
+                      format="rectangle"
+                    />
+                  )}
+                </Fragment>
               ))
             )}
           </TabsContent>
@@ -216,7 +224,7 @@ const CommunityFeed = () => {
         onOpenChange={setIsCreateOpen}
         sessionId={sessionId}
       />
-      
+
       <Footer />
     </div>
   );
