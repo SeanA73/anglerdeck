@@ -1,8 +1,16 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { MapPin, Twitter, Instagram, Facebook, Youtube } from "lucide-react";
+import { MapPin } from "lucide-react";
 import reelspotLogo from "@/assets/reelspot-logo.png";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
+
+// Social links — uncomment and add real handles before launch
+// const socialLinks = [
+//   { Icon: Twitter,   href: "https://twitter.com/reelspot" },
+//   { Icon: Instagram, href: "https://instagram.com/reelspot" },
+//   { Icon: Facebook,  href: "https://facebook.com/reelspot" },
+//   { Icon: Youtube,   href: "https://youtube.com/@reelspot" },
+// ];
 
 const Footer = () => {
   const footerLinks = {
@@ -56,26 +64,7 @@ const Footer = () => {
             <p className="text-muted-foreground mb-4 max-w-xs">
               Your ultimate companion for discovering and sharing the best fishing spots worldwide.
             </p>
-            <NewsletterSignup className="mb-6 max-w-sm" compact />
-            <div className="flex items-center gap-4">
-              {[
-                { Icon: Twitter, href: "https://twitter.com/reelspot" },
-                { Icon: Instagram, href: "https://instagram.com/reelspot" },
-                { Icon: Facebook, href: "https://facebook.com/reelspot" },
-                { Icon: Youtube, href: "https://youtube.com/@reelspot" },
-              ].map(({ Icon, href }, index) => (
-                <motion.a
-                  key={index}
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  whileHover={{ scale: 1.1, y: -2 }}
-                  className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center text-muted-foreground hover:text-accent hover:bg-muted/80 transition-colors"
-                >
-                  <Icon className="w-5 h-5" />
-                </motion.a>
-              ))}
-            </div>
+            <NewsletterSignup className="mb-6 max-w-sm" compact source="footer" />
           </div>
 
           {/* Links */}

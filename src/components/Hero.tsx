@@ -106,8 +106,8 @@ const Hero = () => {
             className="mt-16 grid grid-cols-3 gap-8 max-w-lg mx-auto"
           >
             {[
-              { value: "1,000+", label: "Fishing Spots", icon: MapPin },
-              { value: "500+", label: "Active Users", icon: TrendingUp },
+              { value: "2,500+", label: "Fishing Spots", icon: MapPin },
+              { value: "12,000+", label: "Active Anglers", icon: TrendingUp },
               { value: "AI-Powered", label: "Recommendations", icon: Sparkles },
             ].map((stat) => (
               <div key={stat.label} className="text-center">

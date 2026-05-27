@@ -48,7 +48,7 @@ const MapView = () => {
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
 
-      <main className="flex-1 flex flex-col">
+      <main className="flex-1 flex flex-col pt-16 lg:pt-20">
         {/* Header */}
         <div className="bg-card border-b px-4 py-4">
           <div className="container mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -111,8 +111,8 @@ const MapView = () => {
               </div>
             </div>
           }>
-            <LeafletMap 
-              filteredSpots={filteredSpots} 
+            <LeafletMap
+              filteredSpots={filteredSpots}
               onSpotSelect={setSelectedSpot}
             />
           </Suspense>

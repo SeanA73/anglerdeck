@@ -3,17 +3,25 @@ import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
 // Fallback values for when env vars aren't loaded
-const FALLBACK_PROJECT_ID = 'nhlsjqhrzmnpqmrupghr';
-const FALLBACK_URL = `https://${FALLBACK_PROJECT_ID}.supabase.co`;
-const FALLBACK_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5obHNqcWhyem1ucHFtcnVwZ2hyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxMzc3NDEsImV4cCI6MjA4NDcxMzc0MX0.npf5y_FASW4B4SCQtTX_Vfh6SZ-z-qDZhvBqnZKmJlg';
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || FALLBACK_URL;
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || FALLBACK_KEY;
+if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
+  if (import.meta.env.DEV) {
+    console.warn(
+      'Missing Supabase env vars. Copy .env.example to .env and add VITE_SUPABASE_URL + VITE_SUPABASE_PUBLISHABLE_KEY. Auth and database features will not work until then.'
+    );
+  } else {
+    throw new Error(
+      'Missing Supabase environment variables. Please check your .env file.'
+    );
+  }
+}
 
-// Import the supabase client like this:
-// import { supabase } from "@/integrations/supabase/client";
-
-export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+export const supabase = createClient<Database>(
+  SUPABASE_URL || 'https://placeholder.supabase.co',
+  SUPABASE_PUBLISHABLE_KEY || 'placeholder-key',
+  {
   auth: {
     storage: localStorage,
     persistSession: true,

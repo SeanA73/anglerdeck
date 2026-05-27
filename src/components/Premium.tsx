@@ -1,19 +1,19 @@
 import { motion } from "framer-motion";
 import { Check, Crown, Zap, Map } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-const premiumFeatures = [
-  "Unlimited spot saves and downloads",
-  "Exclusive detailed topographic maps",
-  "Priority access to new locations",
-  "Advanced weather forecasting",
-  "Private spots and personal notes",
-  "Expert guides and video tutorials",
-  "Ad-free experience",
-  "Early access to new features",
-];
+import { useNavigate } from "react-router-dom";
+import { SUBSCRIPTION_TIERS, getAnnualPrice } from "@/lib/stripe";
 
 const Premium = () => {
+  const navigate = useNavigate();
+  const pro = SUBSCRIPTION_TIERS.pro;
+
+  // Derive numbers directly from the single source of truth in stripe.ts
+  const monthlyPrice = pro.price;                          // 9.99
+  const annualTotal = getAnnualPrice(monthlyPrice);        // 9.99 * 12 * 0.75
+  const annualPerMonth = (annualTotal / 12).toFixed(2);
+  const savingsPct = Math.round((1 - 0.75) * 100);        // 25
+
   return (
     <section className="py-24 bg-background relative overflow-hidden">
       {/* Background Glow */}
@@ -38,7 +38,7 @@ const Premium = () => {
               <span className="text-gradient-amber"> Experience</span>
             </h2>
             <p className="text-muted-foreground max-w-xl mx-auto">
-              Get unlimited access to premium maps, exclusive spots, and expert content with ReelSpot Pro.
+              Get unlimited access to premium spots, AI-powered insights, and an ad-free experience with ReelSpot Pro.
             </p>
           </motion.div>
 
@@ -56,20 +56,28 @@ const Premium = () => {
             </div>
 
             <div className="grid md:grid-cols-2 gap-8 items-center">
-              {/* Left - Pricing */}
+              {/* Left — Pricing */}
               <div>
-                <div className="flex items-baseline gap-2 mb-2">
-                  <span className="text-5xl md:text-6xl font-bold text-foreground">$9.99</span>
+                <div className="flex items-baseline gap-2 mb-1">
+                  <span className="text-5xl md:text-6xl font-bold text-foreground">
+                    ${monthlyPrice}
+                  </span>
                   <span className="text-muted-foreground">/month</span>
                 </div>
                 <p className="text-muted-foreground mb-6">
-                  or $79.99/year (save 33%)
+                  or ${annualTotal.toFixed(2)}/year&nbsp;
+                  <span className="text-accent font-medium">(save {savingsPct}%)</span>
                 </p>
 
                 <div className="space-y-4 mb-8">
-                  <Button variant="premium" size="xl" className="w-full">
+                  <Button
+                    variant="premium"
+                    size="xl"
+                    className="w-full"
+                    onClick={() => navigate('/pricing')}
+                  >
                     <Zap className="w-5 h-5" />
-                    Start 7-Day Free Trial
+                    Start 14-Day Free Trial
                   </Button>
                   <p className="text-sm text-muted-foreground text-center">
                     Cancel anytime. No commitment.
@@ -77,9 +85,9 @@ const Premium = () => {
                 </div>
               </div>
 
-              {/* Right - Features */}
+              {/* Right — Features pulled from SUBSCRIPTION_TIERS */}
               <div className="space-y-4">
-                {premiumFeatures.map((feature, index) => (
+                {pro.features.map((feature, index) => (
                   <motion.div
                     key={feature}
                     initial={{ opacity: 0, x: 20 }}

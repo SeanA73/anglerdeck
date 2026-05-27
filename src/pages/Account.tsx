@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { User, Settings, HelpCircle } from "lucide-react";
 import Header from "@/components/Header";
@@ -17,17 +17,47 @@ import AccountOverview from "@/components/account/AccountOverview";
 import SavedSpotsList from "@/components/account/SavedSpotsList";
 import CatchHistoryList from "@/components/account/CatchHistoryList";
 import { SEO } from "@/components/SEO";
+import { useSubscription } from "@/hooks/useSubscription";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Account = () => {
   const { user, profile, loading: isLoading } = useAuth();
   const { resetOnboarding, startOnboarding } = useOnboarding();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const queryClient = useQueryClient();
+  const { subscription } = useSubscription();
 
   useEffect(() => {
     if (!isLoading && !user) {
       navigate("/auth");
     }
   }, [user, isLoading, navigate]);
+
+  // Show a success message when returning from Stripe Checkout
+  useEffect(() => {
+    const checkoutStatus = searchParams.get("checkout");
+    if (checkoutStatus === "success" && user) {
+      toast.success("🎉 Subscription activated! Welcome to the next level.", {
+        duration: 6000,
+      });
+      // Force-refresh subscription data so the tier badge updates immediately
+      queryClient.invalidateQueries({ queryKey: ["subscription", user.id] });
+      // Remove the query param without adding a history entry
+      setSearchParams((prev) => {
+        prev.delete("checkout");
+        return prev;
+      }, { replace: true });
+    }
+    if (checkoutStatus === "canceled") {
+      toast.info("Checkout canceled — your plan was not changed.");
+      setSearchParams((prev) => {
+        prev.delete("checkout");
+        return prev;
+      }, { replace: true });
+    }
+  }, [searchParams, user, queryClient, setSearchParams]);
 
   if (isLoading) {
     return (

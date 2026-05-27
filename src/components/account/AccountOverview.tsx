@@ -1,4 +1,4 @@
-import { Crown, Calendar, TrendingUp } from "lucide-react";
+import { Crown, Calendar, TrendingUp, Settings, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -6,6 +6,8 @@ import { Link } from "react-router-dom";
 import { useSubscription } from "@/hooks/useSubscription";
 import { SUBSCRIPTION_TIERS } from "@/lib/stripe";
 import { UsageSummary } from "@/components/UsageMeter";
+import { useState } from "react";
+import { toast } from "sonner";
 
 const tierColors: Record<string, string> = {
   free: "bg-muted text-muted-foreground",
@@ -20,7 +22,20 @@ const tierLabels: Record<string, string> = {
 };
 
 const AccountOverview = () => {
-  const { subscription, usageStats, isLoading } = useSubscription();
+  const { subscription, usageStats, isLoading, cancelSubscription } = useSubscription();
+  const [portalLoading, setPortalLoading] = useState(false);
+
+  const handleManageSubscription = async () => {
+    setPortalLoading(true);
+    try {
+      await cancelSubscription();
+      // cancelSubscription redirects to Stripe portal, so this line is rarely reached
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Could not open billing portal');
+    } finally {
+      setPortalLoading(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -77,6 +92,24 @@ const AccountOverview = () => {
                   : "Renews on "}
                 {new Date(subscription.current_period_end).toLocaleDateString()}
               </span>
+            </div>
+          )}
+
+          {isPremium && (
+            <div className="mt-4">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleManageSubscription}
+                disabled={portalLoading}
+              >
+                {portalLoading ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <Settings className="w-4 h-4 mr-2" />
+                )}
+                Manage Subscription
+              </Button>
             </div>
           )}
         </CardContent>

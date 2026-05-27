@@ -232,14 +232,17 @@ export const useSubscription = () => {
     // offline_map tracking to be implemented later
   };
 
-  // Placeholder functions - requires Stripe integration
-  const cancelSubscription = () => {
-    console.log('Cancel subscription - requires Stripe integration');
+  // Open the Stripe Billing Portal — handles cancel, resume, and plan changes
+  const openBillingPortal = async () => {
+    const { data, error } = await supabase.functions.invoke('create-portal-session');
+    if (error || !data?.url) {
+      throw new Error(error?.message ?? 'Could not open billing portal');
+    }
+    window.location.href = data.url;
   };
 
-  const resumeSubscription = () => {
-    console.log('Resume subscription - requires Stripe integration');
-  };
+  const cancelSubscription = openBillingPortal;
+  const resumeSubscription = openBillingPortal;
 
   return {
     subscription,

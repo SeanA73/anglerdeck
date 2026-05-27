@@ -117,9 +117,9 @@ export const CreateListingDialog = () => {
       toast.error('Maximum 5 images allowed');
       return;
     }
-    
+
     setImages(prev => [...prev, ...files]);
-    
+
     files.forEach(file => {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -136,42 +136,43 @@ export const CreateListingDialog = () => {
 
   const uploadImages = async (): Promise<string[]> => {
     const urls: string[] = [];
-    
+
     for (const file of images) {
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-      
+
       const { error: uploadError } = await supabase.storage
         .from('gear-images')
         .upload(fileName, file);
-      
+
       if (uploadError) throw uploadError;
-      
+
       const { data: { publicUrl } } = supabase.storage
         .from('gear-images')
         .getPublicUrl(fileName);
-      
+
       urls.push(publicUrl);
     }
-    
+
     return urls;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.title || !formData.category || !formData.price) {
       toast.error('Please fill in all required fields');
       return;
     }
 
     setUploading(true);
-    
+
     try {
       const imageUrls = await uploadImages();
       await createListingMutation.mutateAsync({ ...formData, imageUrls });
-    } catch (error: any) {
-      toast.error('Failed to upload images: ' + error.message);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+      toast.error('Failed to upload images: ' + errorMessage);
     } finally {
       setUploading(false);
     }
@@ -191,7 +192,7 @@ export const CreateListingDialog = () => {
         <DialogHeader>
           <DialogTitle>Create New Listing</DialogTitle>
         </DialogHeader>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Images */}
           <div>

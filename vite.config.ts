@@ -4,15 +4,16 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 import { VitePWA } from 'vite-plugin-pwa';
 import sitemap from 'vite-plugin-sitemap';
-import { spots } from './src/data/spots';
+import { spotSlugs } from './src/data/spotSlugs';
 
 const siteUrl = process.env.VITE_SITE_URL || 'https://reelspot.app';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
-    host: "::",
+    host: "127.0.0.1",
     port: 8080,
+    strictPort: true,
     hmr: {
       overlay: false,
     },
@@ -42,13 +43,14 @@ export default defineConfig(({ mode }) => ({
         ]
       }
     }),
-    sitemap({
-      hostname: siteUrl,
-      dynamicRoutes: spots.map((s) => `/spot/${s.slug}`),
-      exclude: ['/auth', '/account', '/catches'],
-      changefreq: 'weekly',
-      priority: 0.8,
-    }),
+    mode === 'production' &&
+      sitemap({
+        hostname: siteUrl,
+        dynamicRoutes: spotSlugs.map((slug) => `/spot/${slug}`),
+        exclude: ['/auth', '/account', '/catches'],
+        changefreq: 'weekly',
+        priority: 0.8,
+      }),
   ].filter(Boolean),
   resolve: {
     alias: {
