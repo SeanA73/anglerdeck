@@ -3,7 +3,7 @@ import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { HelpCircle, Book, MessageCircle, FileText, Search } from "lucide-react";
+import { HelpCircle, Book, MessageCircle, Search } from "lucide-react";
 import { motion } from "framer-motion";
 import {
   Accordion,
@@ -32,12 +32,6 @@ const Support = () => {
       title: "Community Guidelines",
       description: "Learn about our community standards and how to interact with other anglers.",
       articles: ["Posting guidelines", "Reporting inappropriate content", "Earning badges"],
-    },
-    {
-      icon: FileText,
-      title: "Marketplace Help",
-      description: "Everything you need to know about buying and selling gear.",
-      articles: ["Listing your gear", "Safe transactions", "Shipping guidelines"],
     },
   ];
 

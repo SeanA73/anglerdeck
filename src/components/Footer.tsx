@@ -20,12 +20,6 @@ const Footer = () => {
       { name: "My Catches", href: "/catches" },
       { name: "Community", href: "/community" },
     ],
-    Marketplace: [
-      { name: "Gear Shop", href: "/marketplace" },
-      { name: "Sell Your Gear", href: "/marketplace?action=sell" },
-      { name: "Featured Products", href: "/marketplace?tab=featured" },
-      { name: "Deals", href: "/marketplace?tab=deals" },
-    ],
     Premium: [
       { name: "Go Pro", href: "/pricing" },
       { name: "Pro Features", href: "/pricing#features" },

@@ -17,7 +17,6 @@ const Spots = lazy(() => import("./pages/Spots"));
 const MapView = lazy(() => import("./pages/MapView"));
 const CatchLog = lazy(() => import("./pages/CatchLog"));
 const CommunityFeed = lazy(() => import("./pages/CommunityFeed"));
-const Marketplace = lazy(() => import("./pages/Marketplace"));
 const Auth = lazy(() => import("./pages/Auth"));
 const Pricing = lazy(() => import("./pages/Pricing"));
 const Account = lazy(() => import("./pages/Account"));
@@ -65,7 +64,6 @@ const App = () => (
                 <Route path="/map" element={<MapView />} />
                 <Route path="/catches" element={<CatchLog />} />
                 <Route path="/community" element={<CommunityFeed />} />
-                <Route path="/marketplace" element={<Marketplace />} />
                 <Route path="/pricing" element={<Pricing />} />
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/account" element={<Account />} />

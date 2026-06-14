@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, X, MapPin, Crown, ShoppingBag, Map, Fish, MessageSquare, User, LogOut, Heart, Settings } from "lucide-react";
+import { Menu, X, MapPin, Crown, Map, Fish, MessageSquare, User, LogOut, Heart, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -24,7 +24,6 @@ const Header = () => {
     { name: "Map View", icon: Map, href: "/map" },
     { name: "My Catches", icon: Fish, href: "/catches" },
     { name: "Community", icon: MessageSquare, href: "/community" },
-    { name: "Gear Shop", icon: ShoppingBag, href: "/marketplace" },
     { name: "Go Pro", icon: Crown, href: "/pricing" },
   ];
 
