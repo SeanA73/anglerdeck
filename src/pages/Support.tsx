@@ -18,7 +18,7 @@ const Support = () => {
     {
       icon: Book,
       title: "Getting Started",
-      description: "Learn the basics of using ReelSpot to find and share fishing spots.",
+      description: "Learn the basics of using CastLog to find and share fishing spots.",
       articles: ["How to search for spots", "Creating your first catch log", "Understanding spot ratings"],
     },
     {
@@ -92,7 +92,7 @@ const Support = () => {
       questions: [
         {
           q: "What browsers are supported?",
-          a: "ReelSpot works best on Chrome, Firefox, Safari, and Edge. We recommend using the latest version of your preferred browser for the best experience.",
+          a: "CastLog works best on Chrome, Firefox, Safari, and Edge. We recommend using the latest version of your preferred browser for the best experience.",
         },
         {
           q: "Is my data secure?",

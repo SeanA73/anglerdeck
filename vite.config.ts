@@ -6,7 +6,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 import sitemap from 'vite-plugin-sitemap';
 import { spotSlugs } from './src/data/spotSlugs';
 
-const siteUrl = process.env.VITE_SITE_URL || 'https://reelspot.app';
+const siteUrl = process.env.VITE_SITE_URL || 'https://castlog.app';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -25,8 +25,8 @@ export default defineConfig(({ mode }) => ({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
       manifest: {
-        name: 'Reelspot',
-        short_name: 'Reelspot',
+        name: 'CastLog',
+        short_name: 'CastLog',
         description: 'Your Ultimate Fishing Companion',
         theme_color: '#ffffff',
         icons: [

@@ -99,7 +99,7 @@ const Account = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <SEO title="My Account" description="Manage your ReelSpot account" canonicalPath="/account" noIndex />
+      <SEO title="My Account" description="Manage your CastLog account" canonicalPath="/account" noIndex />
       <Header />
       <main className="container mx-auto px-4 py-16">
         <motion.div

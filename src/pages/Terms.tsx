@@ -18,7 +18,7 @@ const Terms = () => {
             <section>
               <h2 className="text-2xl font-semibold text-foreground mb-4">1. Acceptance of Terms</h2>
               <p className="text-muted-foreground">
-                By accessing or using ReelSpot, you agree to be bound by these Terms of Service. 
+                By accessing or using CastLog, you agree to be bound by these Terms of Service. 
                 If you do not agree to these terms, please do not use our services.
               </p>
             </section>
@@ -26,7 +26,7 @@ const Terms = () => {
             <section>
               <h2 className="text-2xl font-semibold text-foreground mb-4">2. Description of Service</h2>
               <p className="text-muted-foreground">
-                ReelSpot is a platform for discovering, sharing, and reviewing fishing spots. 
+                CastLog is a platform for discovering, sharing, and reviewing fishing spots. 
                 We provide tools for logging catches, connecting with other anglers, and 
                 accessing fishing-related content and products.
               </p>
@@ -80,7 +80,7 @@ const Terms = () => {
             <section>
               <h2 className="text-2xl font-semibold text-foreground mb-4">7. Disclaimer</h2>
               <p className="text-muted-foreground">
-                ReelSpot is provided "as is" without warranties of any kind. We do not guarantee 
+                CastLog is provided "as is" without warranties of any kind. We do not guarantee 
                 the accuracy of fishing spot information, weather data, or user-submitted content. 
                 Always verify local fishing regulations and conditions independently.
               </p>
@@ -89,7 +89,7 @@ const Terms = () => {
             <section>
               <h2 className="text-2xl font-semibold text-foreground mb-4">8. Limitation of Liability</h2>
               <p className="text-muted-foreground">
-                ReelSpot shall not be liable for any indirect, incidental, special, or consequential 
+                CastLog shall not be liable for any indirect, incidental, special, or consequential 
                 damages arising from your use of our services.
               </p>
             </section>
@@ -98,8 +98,8 @@ const Terms = () => {
               <h2 className="text-2xl font-semibold text-foreground mb-4">9. Contact</h2>
               <p className="text-muted-foreground">
                 For questions about these Terms, contact us at{" "}
-                <a href="mailto:legal@reelspot.com" className="text-accent hover:underline">
-                  legal@reelspot.com
+                <a href="mailto:legal@castlog.app" className="text-accent hover:underline">
+                  legal@castlog.app
                 </a>
               </p>
             </section>

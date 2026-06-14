@@ -1,7 +1,7 @@
 import { trackEvent } from '@/lib/analytics';
 
-const amazonTag = import.meta.env.VITE_AMAZON_AFFILIATE_TAG || 'reelspot-20';
-const clickbankHop = import.meta.env.VITE_CLICKBANK_HOP_ID || 'reelspot';
+const amazonTag = import.meta.env.VITE_AMAZON_AFFILIATE_TAG || 'castlog-20';
+const clickbankHop = import.meta.env.VITE_CLICKBANK_HOP_ID || 'castlog';
 export const bookingAffiliateId = import.meta.env.VITE_BOOKING_AFFILIATE_ID || '';
 export const airbnbAffiliateId = import.meta.env.VITE_AIRBNB_AFFILIATE_ID || '';
 

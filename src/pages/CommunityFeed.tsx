@@ -26,10 +26,10 @@ interface Post {
 }
 
 const getSessionId = () => {
-  let sessionId = localStorage.getItem("reelspot_session_id");
+  let sessionId = localStorage.getItem("castlog_session_id");
   if (!sessionId) {
     sessionId = crypto.randomUUID();
-    localStorage.setItem("reelspot_session_id", sessionId);
+    localStorage.setItem("castlog_session_id", sessionId);
   }
   return sessionId;
 };

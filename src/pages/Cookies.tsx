@@ -95,8 +95,8 @@ const Cookies = () => {
               <h2 className="text-2xl font-semibold text-foreground mb-4">Contact Us</h2>
               <p className="text-muted-foreground">
                 If you have questions about our use of cookies, contact us at{" "}
-                <a href="mailto:privacy@reelspot.com" className="text-accent hover:underline">
-                  privacy@reelspot.com
+                <a href="mailto:privacy@castlog.app" className="text-accent hover:underline">
+                  privacy@castlog.app
                 </a>
               </p>
             </section>

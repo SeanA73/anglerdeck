@@ -10,7 +10,7 @@ const testimonials = [
     location: "Colorado",
     avatar: "",
     rating: 5,
-    text: "ReelSpot helped me discover hidden fishing spots I never knew existed. Caught my biggest trout ever thanks to this app!",
+    text: "CastLog helped me discover hidden fishing spots I never knew existed. Caught my biggest trout ever thanks to this app!",
     achievement: "120 catches logged",
   },
   {
@@ -26,7 +26,7 @@ const testimonials = [
     location: "Oregon",
     avatar: "",
     rating: 5,
-    text: "I've tried other fishing apps, but ReelSpot's map view and species filters are unmatched. Worth every penny for Pro!",
+    text: "I've tried other fishing apps, but CastLog's map view and species filters are unmatched. Worth every penny for Pro!",
     achievement: "50+ spots explored",
   },
   {
@@ -100,7 +100,7 @@ const SocialProof = () => {
             Trusted by Anglers Worldwide
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto mb-12">
-            Join thousands of fishing enthusiasts who've discovered their next great catch with ReelSpot.
+            Join thousands of fishing enthusiasts who've discovered their next great catch with CastLog.
           </p>
 
           <div className="grid grid-cols-3 gap-8 max-w-3xl mx-auto">

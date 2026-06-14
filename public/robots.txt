@@ -4,4 +4,4 @@ Disallow: /account
 Disallow: /auth
 Disallow: /catches
 
-Sitemap: https://reelspot.app/sitemap.xml
+Sitemap: https://castlog.app/sitemap.xml

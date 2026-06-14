@@ -59,7 +59,7 @@ const Pricing = () => {
                         Choose Your Plan
                     </h1>
                     <p className="text-xl text-forest-100 max-w-2xl mx-auto">
-                        Unlock the full potential of ReelSpot with premium features,
+                        Unlock the full potential of CastLog with premium features,
                         AI-powered insights, and exclusive content
                     </p>
 

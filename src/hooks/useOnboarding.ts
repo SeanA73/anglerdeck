@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 
-const ONBOARDING_KEY = "reelspot-onboarding-completed";
-const ONBOARDING_STEP_KEY = "reelspot-onboarding-step";
+const ONBOARDING_KEY = "castlog-onboarding-completed";
+const ONBOARDING_STEP_KEY = "castlog-onboarding-step";
 
 export interface OnboardingStep {
   id: string;
@@ -15,7 +15,7 @@ export interface OnboardingStep {
 export const onboardingSteps: OnboardingStep[] = [
   {
     id: "welcome",
-    title: "Welcome to ReelSpot! 🎣",
+    title: "Welcome to CastLog! 🎣",
     description: "Let's take a quick tour to help you discover all the features available to you.",
     placement: "bottom",
   },

@@ -58,7 +58,7 @@ const Licenses = () => {
         >
           <h1 className="text-4xl font-bold text-foreground mb-4">Open Source Licenses</h1>
           <p className="text-muted-foreground mb-8">
-            ReelSpot is built with the help of amazing open source software. 
+            CastLog is built with the help of amazing open source software. 
             We're grateful to the developers and communities behind these projects.
           </p>
 
@@ -93,12 +93,12 @@ const Licenses = () => {
 
           <Card className="mt-8">
             <CardHeader>
-              <CardTitle>ReelSpot License</CardTitle>
+              <CardTitle>CastLog License</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">
-                © 2026 ReelSpot. All rights reserved. The ReelSpot name, logo, and all related 
-                marks are trademarks of ReelSpot. This application and its original content are 
+                © 2026 CastLog. All rights reserved. The CastLog name, logo, and all related 
+                marks are trademarks of CastLog. This application and its original content are 
                 protected by copyright law.
               </p>
             </CardContent>

@@ -11,7 +11,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import reelspotLogo from "@/assets/reelspot-logo.png";
+// TODO: image content still says ReelSpot, needs to be regenerated with CastLog branding.
+import castlogLogo from "@/assets/castlog-logo.png";
 import { useAuth } from "@/contexts/AuthContext";
 
 const Header = () => {
@@ -62,8 +63,8 @@ const Header = () => {
               whileHover={{ scale: 1.02 }}
               className="flex items-center gap-3"
             >
-              <img src={reelspotLogo} alt="ReelSpot" className="w-10 h-10 rounded-xl shadow-lg" />
-              <span className="text-xl font-bold text-foreground">ReelSpot</span>
+              <img src={castlogLogo} alt="CastLog" className="w-10 h-10 rounded-xl shadow-lg" />
+              <span className="text-xl font-bold text-foreground">CastLog</span>
             </motion.div>
           </Link>
 

@@ -9,7 +9,7 @@ interface SEOProps {
   noIndex?: boolean;
 }
 
-const BASE_URL = import.meta.env.VITE_SITE_URL || 'https://reelspot.app';
+const BASE_URL = import.meta.env.VITE_SITE_URL || 'https://castlog.app';
 
 export const SEO = ({
   title,
@@ -19,7 +19,7 @@ export const SEO = ({
   ogType = 'website',
   noIndex = false,
 }: SEOProps) => {
-  const fullTitle = title.includes('ReelSpot') ? title : `${title} | ReelSpot`;
+  const fullTitle = title.includes('CastLog') ? title : `${title} | CastLog`;
   const canonicalUrl = `${BASE_URL}${canonicalPath}`;
   const ogImageUrl = ogImage.startsWith('http') ? ogImage : `${BASE_URL}${ogImage}`;
 
@@ -35,7 +35,7 @@ export const SEO = ({
       <meta property="og:url" content={canonicalUrl} />
       <meta property="og:type" content={ogType} />
       <meta property="og:image" content={ogImageUrl} />
-      <meta property="og:site_name" content="ReelSpot" />
+      <meta property="og:site_name" content="CastLog" />
 
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={fullTitle} />

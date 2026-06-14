@@ -1,15 +1,16 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { MapPin } from "lucide-react";
-import reelspotLogo from "@/assets/reelspot-logo.png";
+// TODO: image content still says ReelSpot, needs to be regenerated with CastLog branding.
+import castlogLogo from "@/assets/castlog-logo.png";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
 
 // Social links — uncomment and add real handles before launch
 // const socialLinks = [
-//   { Icon: Twitter,   href: "https://twitter.com/reelspot" },
-//   { Icon: Instagram, href: "https://instagram.com/reelspot" },
-//   { Icon: Facebook,  href: "https://facebook.com/reelspot" },
-//   { Icon: Youtube,   href: "https://youtube.com/@reelspot" },
+//   { Icon: Twitter,   href: "https://twitter.com/castlog" },
+//   { Icon: Instagram, href: "https://instagram.com/castlog" },
+//   { Icon: Facebook,  href: "https://facebook.com/castlog" },
+//   { Icon: Youtube,   href: "https://youtube.com/@castlog" },
 // ];
 
 const Footer = () => {
@@ -52,8 +53,8 @@ const Footer = () => {
               viewport={{ once: true }}
               className="flex items-center gap-3 mb-6"
             >
-              <img src={reelspotLogo} alt="ReelSpot" className="w-10 h-10 rounded-xl shadow-lg" />
-              <span className="text-xl font-bold text-foreground">ReelSpot</span>
+              <img src={castlogLogo} alt="CastLog" className="w-10 h-10 rounded-xl shadow-lg" />
+              <span className="text-xl font-bold text-foreground">CastLog</span>
             </motion.div>
             <p className="text-muted-foreground mb-4 max-w-xs">
               Your ultimate companion for discovering and sharing the best fishing spots worldwide.
@@ -99,7 +100,7 @@ const Footer = () => {
         {/* Bottom */}
         <div className="mt-16 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground">
-            © 2026 ReelSpot. All rights reserved.
+            © 2026 CastLog. All rights reserved.
           </p>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <MapPin className="w-4 h-4 text-accent" />

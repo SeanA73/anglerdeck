@@ -31,7 +31,7 @@ interface CreatePostDialogProps {
 
 const CreatePostDialog = ({ open, onOpenChange, sessionId }: CreatePostDialogProps) => {
   const [authorName, setAuthorName] = useState(() =>
-    localStorage.getItem("reelspot_author_name") || ""
+    localStorage.getItem("castlog_author_name") || ""
   );
   const [content, setContent] = useState("");
   const [postType, setPostType] = useState<"catch" | "story" | "tip">("story");
@@ -74,7 +74,7 @@ const CreatePostDialog = ({ open, onOpenChange, sessionId }: CreatePostDialogPro
       });
 
       if (error) throw error;
-      localStorage.setItem("reelspot_author_name", name);
+      localStorage.setItem("castlog_author_name", name);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["posts"] });

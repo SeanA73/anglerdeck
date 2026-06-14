@@ -38,7 +38,7 @@ const Premium = () => {
               <span className="text-gradient-amber"> Experience</span>
             </h2>
             <p className="text-muted-foreground max-w-xl mx-auto">
-              Get unlimited access to premium spots, AI-powered insights, and an ad-free experience with ReelSpot Pro.
+              Get unlimited access to premium spots, AI-powered insights, and an ad-free experience with CastLog Pro.
             </p>
           </motion.div>
 
