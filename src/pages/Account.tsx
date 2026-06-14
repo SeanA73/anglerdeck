@@ -29,12 +29,6 @@ const Account = () => {
   const queryClient = useQueryClient();
   const { subscription } = useSubscription();
 
-  useEffect(() => {
-    if (!isLoading && !user) {
-      navigate("/auth");
-    }
-  }, [user, isLoading, navigate]);
-
   // Show a success message when returning from Stripe Checkout
   useEffect(() => {
     const checkoutStatus = searchParams.get("checkout");

@@ -8,6 +8,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import ScrollToTop from "@/components/ScrollToTop";
 import CookieConsent from "@/components/CookieConsent";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import { Loader2 } from "lucide-react";
 import { pageview } from "@/lib/analytics";
 
@@ -62,11 +63,11 @@ const App = () => (
                 <Route path="/spots" element={<Spots />} />
                 <Route path="/spot/:slug" element={<SpotDetail />} />
                 <Route path="/map" element={<MapView />} />
-                <Route path="/catches" element={<CatchLog />} />
-                <Route path="/community" element={<CommunityFeed />} />
+                <Route path="/catches" element={<ProtectedRoute><CatchLog /></ProtectedRoute>} />
+                <Route path="/community" element={<ProtectedRoute><CommunityFeed /></ProtectedRoute>} />
                 <Route path="/pricing" element={<Pricing />} />
                 <Route path="/auth" element={<Auth />} />
-                <Route path="/account" element={<Account />} />
+                <Route path="/account" element={<ProtectedRoute><Account /></ProtectedRoute>} />
                 <Route path="/guides" element={<Guides />} />
                 <Route path="/support" element={<Support />} />
                 <Route path="/contact" element={<Contact />} />

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Mail, Lock, User, Eye, EyeOff, Fish, Loader2, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -37,15 +37,20 @@ const Auth = () => {
   const isLogin = view === "login";
 
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  // Only honor internal paths — reject absolute/protocol-relative URLs (open-redirect guard).
+  const rawNext = searchParams.get("next");
+  const redirectTo =
+    rawNext && rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "/";
   const { toast } = useToast();
   const { signIn, signUp, user } = useAuth();
 
   // Redirect if already logged in
   useEffect(() => {
     if (user) {
-      navigate("/");
+      navigate(redirectTo, { replace: true });
     }
-  }, [user, navigate]);
+  }, [user, navigate, redirectTo]);
 
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -122,7 +127,7 @@ const Auth = () => {
             title: "Welcome back!",
             description: "You have successfully signed in.",
           });
-          navigate("/");
+          navigate(redirectTo);
         }
       } else {
         const { error } = await signUp(email, password, displayName);
@@ -145,7 +150,7 @@ const Auth = () => {
             title: "Account created!",
             description: "Welcome to CastLog! You are now signed in.",
           });
-          navigate("/");
+          navigate(redirectTo);
         }
       }
     } finally {
