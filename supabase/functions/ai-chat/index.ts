@@ -5,7 +5,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const SYSTEM_PROMPT = `You are CastLog's AI Fishing Assistant 🎣 - a friendly, knowledgeable guide for anglers of all skill levels.
+const SYSTEM_PROMPT = `You are AnglerDeck's AI Fishing Assistant 🎣 - a friendly, knowledgeable guide for anglers of all skill levels.
 
 Your expertise includes:
 - Fishing techniques for various species (bass, trout, catfish, walleye, etc.)
@@ -25,7 +25,7 @@ Guidelines:
 - Use relevant emojis sparingly for personality 🐟🎣
 - If you don't know something, say so honestly
 
-Current context: The user is on CastLog, a fishing spot discovery platform.`;
+Current context: The user is on AnglerDeck, a fishing spot discovery platform.`;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {

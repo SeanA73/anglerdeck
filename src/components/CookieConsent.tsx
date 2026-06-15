@@ -12,7 +12,7 @@ export interface CookiePreferences {
   marketing: boolean;
 }
 
-const COOKIE_CONSENT_KEY = "castlog-cookie-consent";
+const COOKIE_CONSENT_KEY = "anglerdeck-cookie-consent";
 
 const CookieConsent = () => {
   const [showBanner, setShowBanner] = useState(false);

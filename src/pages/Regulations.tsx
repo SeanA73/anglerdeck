@@ -61,7 +61,7 @@ const Regulations = () => {
                 <p className="text-muted-foreground">
                   Fishing regulations change frequently. The information on this page is for general guidance only. 
                   Always verify current regulations with official local authorities before fishing. 
-                  CastLog is not responsible for any violations resulting from outdated information.
+                  AnglerDeck is not responsible for any violations resulting from outdated information.
                 </p>
               </div>
             </div>

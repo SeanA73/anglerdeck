@@ -12,7 +12,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEO
-        title="CastLog - Find Your Perfect Fishing Spots"
+        title="AnglerDeck - Find Your Perfect Fishing Spots"
         description="Discover, save, and share the best fishing spots worldwide. Connect with fellow anglers and access expert tips."
         canonicalPath="/"
       />

@@ -1,4 +1,4 @@
-# CastLog
+# AnglerDeck
 
 Fishing spot discovery, catch logging, and community for anglers.
 

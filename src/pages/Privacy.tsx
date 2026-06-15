@@ -74,8 +74,8 @@ const Privacy = () => {
               <h2 className="text-2xl font-semibold text-foreground mb-4">6. Contact Us</h2>
               <p className="text-muted-foreground">
                 If you have any questions about this Privacy Policy, please contact us at{" "}
-                <a href="mailto:privacy@castlog.app" className="text-accent hover:underline">
-                  privacy@castlog.app
+                <a href="mailto:privacy@anglerdeck.com" className="text-accent hover:underline">
+                  privacy@anglerdeck.com
                 </a>
               </p>
             </section>

@@ -65,7 +65,7 @@ const PostCard = ({ post, onLike, sessionId }: PostCardProps) => {
   const [showComments, setShowComments] = useState(false);
   const [newComment, setNewComment] = useState("");
   const [authorName, setAuthorName] = useState(() => 
-    localStorage.getItem("castlog_author_name") || ""
+    localStorage.getItem("anglerdeck_author_name") || ""
   );
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -93,7 +93,7 @@ const PostCard = ({ post, onLike, sessionId }: PostCardProps) => {
         content: newComment.trim(),
       });
       if (error) throw error;
-      localStorage.setItem("castlog_author_name", name);
+      localStorage.setItem("anglerdeck_author_name", name);
     },
     onSuccess: () => {
       setNewComment("");

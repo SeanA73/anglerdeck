@@ -17,7 +17,7 @@ serve(async (req) => {
     const stripeSecret = Deno.env.get("STRIPE_SECRET_KEY");
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
-    const siteUrl = Deno.env.get("SITE_URL") || "https://castlog.app";
+    const siteUrl = Deno.env.get("SITE_URL") || "https://anglerdeck.com";
 
     if (!stripeSecret || !supabaseUrl || !supabaseAnonKey) {
       throw new Error("Missing server configuration");

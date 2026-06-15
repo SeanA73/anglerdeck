@@ -26,10 +26,10 @@ interface Post {
 }
 
 const getSessionId = () => {
-  let sessionId = localStorage.getItem("castlog_session_id");
+  let sessionId = localStorage.getItem("anglerdeck_session_id");
   if (!sessionId) {
     sessionId = crypto.randomUUID();
-    localStorage.setItem("castlog_session_id", sessionId);
+    localStorage.setItem("anglerdeck_session_id", sessionId);
   }
   return sessionId;
 };

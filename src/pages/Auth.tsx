@@ -148,7 +148,7 @@ const Auth = () => {
         } else {
           toast({
             title: "Account created!",
-            description: "Welcome to CastLog! You are now signed in.",
+            description: "Welcome to AnglerDeck! You are now signed in.",
           });
           navigate(redirectTo);
         }
@@ -160,7 +160,7 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <SEO title="Sign In" description="Sign in to CastLog" canonicalPath="/auth" noIndex />
+      <SEO title="Sign In" description="Sign in to AnglerDeck" canonicalPath="/auth" noIndex />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -177,7 +177,7 @@ const Auth = () => {
             <Fish className="w-8 h-8 text-accent" />
           </motion.div>
           <h1 className="text-2xl font-bold text-foreground">
-            {view === "login" ? "Welcome Back" : view === "signup" ? "Join CastLog" : "Reset Password"}
+            {view === "login" ? "Welcome Back" : view === "signup" ? "Join AnglerDeck" : "Reset Password"}
           </h1>
           <p className="text-muted-foreground mt-2">
             {view === "login"

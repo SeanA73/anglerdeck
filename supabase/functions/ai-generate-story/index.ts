@@ -51,14 +51,14 @@ ${toneInstruction}
 Keep it to 2-3 sentences. Include 1-2 relevant hashtags at the end.`;
     } else if (postType === "tip") {
       const topic = details?.topic || "general fishing";
-      prompt = `Write a helpful fishing tip about ${topic} for the CastLog community.
+      prompt = `Write a helpful fishing tip about ${topic} for the AnglerDeck community.
 
 ${toneInstruction}
 
 Keep it practical and actionable, 2-3 sentences max. Add 1-2 hashtags.`;
     } else {
       const topic = details?.topic || "a recent fishing trip";
-      prompt = `Write a short, engaging story about ${topic} for the CastLog fishing community.
+      prompt = `Write a short, engaging story about ${topic} for the AnglerDeck fishing community.
 
 ${toneInstruction}
 
@@ -78,7 +78,7 @@ Keep it to 2-3 sentences. Include 1-2 relevant hashtags.`;
         messages: [
           { 
             role: "system", 
-            content: "You are a creative writer helping anglers craft engaging social media posts for the CastLog fishing community. Keep posts authentic, relatable, and under 280 characters when possible." 
+            content: "You are a creative writer helping anglers craft engaging social media posts for the AnglerDeck fishing community. Keep posts authentic, relatable, and under 280 characters when possible." 
           },
           { role: "user", content: prompt },
         ],

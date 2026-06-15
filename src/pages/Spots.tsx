@@ -87,7 +87,7 @@ const Spots = () => {
     <div className="min-h-screen bg-background">
       <SEO
         title="Explore Fishing Spots Worldwide"
-        description="Browse 2,500+ fishing spots worldwide. Filter by country, species, freshwater or saltwater. Find your next perfect catch with CastLog."
+        description="Browse 2,500+ fishing spots worldwide. Filter by country, species, freshwater or saltwater. Find your next perfect catch with AnglerDeck."
         canonicalPath="/spots"
       />
       <Header />
