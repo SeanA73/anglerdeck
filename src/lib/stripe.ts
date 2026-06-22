@@ -38,8 +38,8 @@ export const SUBSCRIPTION_TIERS = {
         id: 'pro',
         name: 'Pro Angler',
         price: 9.99,
-        priceMonthly: 'price_pro_monthly',
-        priceYearly: 'price_pro_yearly',
+        priceMonthly: import.meta.env.VITE_STRIPE_PRICE_PRO_MONTHLY,
+        priceYearly: import.meta.env.VITE_STRIPE_PRICE_PRO_YEARLY,
         features: [
             'Unlimited spot access',
             'Unlimited catch logging',
@@ -62,8 +62,8 @@ export const SUBSCRIPTION_TIERS = {
         id: 'elite',
         name: 'Master Angler',
         price: 29.99,
-        priceMonthly: 'price_elite_monthly',
-        priceYearly: 'price_elite_yearly',
+        priceMonthly: import.meta.env.VITE_STRIPE_PRICE_ELITE_MONTHLY,
+        priceYearly: import.meta.env.VITE_STRIPE_PRICE_ELITE_YEARLY,
         features: [
             'Everything in Pro',
             'AI catch predictions',
@@ -113,17 +113,16 @@ export const hasFeatureAccess = (
 };
 
 export const formatPrice = (price: number): string => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-AU', {
         style: 'currency',
-        currency: 'USD',
+        currency: 'AUD',
     }).format(price);
 };
 
 export const getAnnualDiscount = (monthlyPrice: number): number => {
-    const annualPrice = monthlyPrice * 12 * 0.75;
+    const annualPrice = monthlyPrice * 12 * 0.8;
     return monthlyPrice * 12 - annualPrice;
 };
-
 export const getAnnualPrice = (monthlyPrice: number): number => {
-    return monthlyPrice * 12 * 0.75;
+    return monthlyPrice * 12 * 0.8;
 };
