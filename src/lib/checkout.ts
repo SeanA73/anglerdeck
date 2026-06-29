@@ -11,7 +11,7 @@ export const createCheckoutSession = async ({
   billingPeriod,
 }: CreateCheckoutParams): Promise<string> => {
   const { data, error } = await supabase.functions.invoke('create-checkout-session', {
-    body: { tier, billingPeriod },
+    body: { tier, interval: billingPeriod },
   });
 
   if (error) {
