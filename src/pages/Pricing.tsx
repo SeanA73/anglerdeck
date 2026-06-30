@@ -82,7 +82,7 @@ const Pricing = () => {
                         )}>
                             Annual
                             <Badge className="ml-2 bg-amber-500 text-white">
-                                Save 25%
+                                Save 20%
                             </Badge>
                         </span>
                     </div>
@@ -250,19 +250,6 @@ const Pricing = () => {
                     </h2>
 
                     <div className="space-y-4">
-                        <Card className="bg-forest-800/50 border-forest-700">
-                            <CardHeader>
-                                <CardTitle className="text-white text-lg">
-                                    Can I cancel anytime?
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-forest-200">
-                                    Yes! You can cancel your subscription at any time. Your access
-                                    will continue until the end of your billing period.
-                                </p>
-                            </CardContent>
-                        </Card>
 
                         <Card className="bg-forest-800/50 border-forest-700">
                             <CardHeader>

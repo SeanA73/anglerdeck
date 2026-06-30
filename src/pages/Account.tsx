@@ -31,23 +31,24 @@ const Account = () => {
 
   // Show a success message when returning from Stripe Checkout
   useEffect(() => {
-    const checkoutStatus = searchParams.get("checkout");
+    const checkoutStatus = searchParams.get("upgrade");
     if (checkoutStatus === "success" && user) {
       toast.success("🎉 Subscription activated! Welcome to the next level.", {
         duration: 6000,
       });
       // Force-refresh subscription data so the tier badge updates immediately
       queryClient.invalidateQueries({ queryKey: ["subscription", user.id] });
-      // Remove the query param without adding a history entry
+      // Remove the query params without adding a history entry
       setSearchParams((prev) => {
-        prev.delete("checkout");
+        prev.delete("upgrade");
+        prev.delete("session_id");
         return prev;
       }, { replace: true });
     }
     if (checkoutStatus === "canceled") {
       toast.info("Checkout canceled — your plan was not changed.");
       setSearchParams((prev) => {
-        prev.delete("checkout");
+        prev.delete("upgrade");
         return prev;
       }, { replace: true });
     }
@@ -140,6 +141,9 @@ const Account = () => {
 
             <TabsContent value="settings">
               <div className="space-y-6">
+                {/* Billing & Subscription */}
+                
+
                 {/* Profile Settings */}
                 <Card>
                   <CardHeader>
