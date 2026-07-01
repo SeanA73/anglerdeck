@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -22,7 +22,7 @@ export const useSpotReviews = (spotId: number) => {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
-  const fetchReviews = async () => {
+  const fetchReviews = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('spot_reviews')
@@ -37,11 +37,11 @@ export const useSpotReviews = (spotId: number) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [spotId]);
 
   useEffect(() => {
     fetchReviews();
-  }, [spotId]);
+  }, [fetchReviews]);
 
   const averageRating = reviews.length > 0
     ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length

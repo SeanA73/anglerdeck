@@ -1,3 +1,9 @@
+// Validate environment variables FIRST — before any other imports that might
+// depend on env vars. If any required var is missing or malformed, this throws
+// with a clear error message rather than letting undefined values propagate
+// into runtime code where they cause mysterious failures later.
+import "@/lib/env";
+
 import { createRoot } from "react-dom/client";
 import { HelmetProvider } from "react-helmet-async";
 import App from "./App.tsx";

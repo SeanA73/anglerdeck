@@ -78,6 +78,13 @@ export const useOnboarding = () => {
     localStorage.setItem(ONBOARDING_STEP_KEY, "0");
   }, []);
 
+  const completeOnboarding = useCallback(() => {
+    setIsOnboardingActive(false);
+    localStorage.setItem(ONBOARDING_KEY, "true");
+    localStorage.removeItem(ONBOARDING_STEP_KEY);
+    setHasCompletedOnboarding(true);
+  }, []);
+
   const nextStep = useCallback(() => {
     if (currentStep < onboardingSteps.length - 1) {
       const newStep = currentStep + 1;
@@ -86,7 +93,7 @@ export const useOnboarding = () => {
     } else {
       completeOnboarding();
     }
-  }, [currentStep]);
+  }, [currentStep, completeOnboarding]);
 
   const previousStep = useCallback(() => {
     if (currentStep > 0) {
@@ -97,13 +104,6 @@ export const useOnboarding = () => {
   }, [currentStep]);
 
   const skipOnboarding = useCallback(() => {
-    setIsOnboardingActive(false);
-    localStorage.setItem(ONBOARDING_KEY, "true");
-    localStorage.removeItem(ONBOARDING_STEP_KEY);
-    setHasCompletedOnboarding(true);
-  }, []);
-
-  const completeOnboarding = useCallback(() => {
     setIsOnboardingActive(false);
     localStorage.setItem(ONBOARDING_KEY, "true");
     localStorage.removeItem(ONBOARDING_STEP_KEY);

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -23,7 +23,10 @@ export const useReviewVotes = (reviewIds: string[]) => {
   const [votesData, setVotesData] = useState<Map<string, ReviewVoteData>>(new Map());
   const [loading, setLoading] = useState(true);
 
-  const fetchVotes = async () => {
+  // Stable key for the reviewIds array so useEffect deps are statically checkable
+  const reviewIdsKey = useMemo(() => reviewIds.join(','), [reviewIds]);
+
+  const fetchVotes = useCallback(async () => {
     if (reviewIds.length === 0) {
       setLoading(false);
       return;
@@ -72,11 +75,11 @@ export const useReviewVotes = (reviewIds: string[]) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [reviewIds, user?.id]);
 
   useEffect(() => {
     fetchVotes();
-  }, [reviewIds.join(','), user?.id]);
+  }, [fetchVotes, reviewIdsKey]);
 
   const toggleVote = async (reviewId: string) => {
     const currentData = votesData.get(reviewId);
