@@ -146,46 +146,25 @@ Replace Lovable boilerplate with real AnglerDeck setup instructions, env-var doc
 
 ---
 
-## Phase 4 — Dependencies & build
+## Phase 4 — Dependencies & build ✅ COMPLETE
 
-**Goal:** no known CVEs in prod deps, faster initial load. **Estimated: half a day.**
+**Goal:** no known CVEs in prod deps, faster initial load.
 
-### 4.1 Patch the 26 vulnerabilities
-```bash
-npm audit fix
-```
-Most are in transitive deps (picomatch, postcss, ws, yaml). Re-run `npm run build` to confirm nothing broke. If audit fix wants a major version bump, evaluate manually before accepting.
+### 4.1 Patch vulnerabilities ✅ DONE
+Ran `npm audit fix` — reduced from 26 vulnerabilities (2 low, 8 moderate, 15 high, 1 critical) to 2 (1 moderate, 1 high). Fixes applied via patch/minor bumps within existing package.json ranges: @babel/* 7.29.0 → 7.29.7, react-router 6.30.1 → 6.30.4 (XSS via open redirect), vite 5.4.19 → 5.4.21, vitest 3.2.4 → 3.2.6 (critical UI server RCE), postcss 8.5.6 → 8.5.16, rollup 4.24.0 → 4.62.2, plus transitive deps.
 
-### 4.2 Code-split the main bundle
-Currently 666 KB → split routes with React.lazy:
-```ts
-const SpotDetail = lazy(() => import('./pages/SpotDetail'));
-const MapView = lazy(() => import('./pages/MapView'));
-const FishingAssistant = lazy(() => import('./pages/FishingAssistant'));
-// wrap <Routes> in <Suspense fallback={<Spinner />}>
-```
-Target: initial JS < 300 KB gzipped.
+**Deferred:** esbuild ≤ 0.24.2 (dev-server can serve source code cross-origin). Fix requires Vite 5 → 8 major bump. Dev-time only. Real impact very low (source is public on GitHub anyway). Added to Phase 8 pre-launch checklist.
 
-### 4.3 Configure manualChunks in vite.config.ts
-```ts
-build: {
-  rollupOptions: {
-    output: {
-      manualChunks: {
-        'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-        'ui-vendor': ['@radix-ui/react-dialog', /* etc */],
-        'supabase': ['@supabase/supabase-js'],
-        'stripe': ['@stripe/stripe-js'],
-      }
-    }
-  }
-}
-```
+### 4.2 Route-based code splitting ✅ ALREADY DONE
+`src/App.tsx` already uses `React.lazy()` around every page import with a `<Suspense>` fallback showing a spinner. All page-level chunks split correctly at build time (Auth, Account, Pricing, Spots, SpotDetail, MapView, FishingAssistant, LeafletMap, CommunityFeed, CatchLog, plus the smaller legal/support pages). No further action needed — the work happened in an earlier session before this roadmap phase was reached.
 
-### 4.4 Update browserslist
-```bash
-npx update-browserslist-db@latest
-```
+### 4.3 manualChunks configuration ⚠️ ATTEMPTED, REVERTED
+Attempted list-based `manualChunks` config in `vite.config.ts` grouping React/Radix/Supabase/Stripe/utils vendors. Result: main chunk GREW from 666KB → 721KB with no vendor chunks appearing. Reverted the config. Root cause not diagnosed — likely conflict with Vite's automatic chunking heuristics.
+
+The main chunk at 721KB (218KB gzipped) is dominated by React + Radix (many primitives via shadcn) + Supabase client + TanStack Query + Framer Motion, all imported eagerly through AuthProvider/TooltipProvider/QueryClient in App.tsx. Further reduction would require refactoring AuthProvider to defer Supabase imports. Not worth the churn given Stage 1 launch focus.
+
+### 4.4 Update browserslist ✅ DONE
+Ran `npm update caniuse-lite baseline-browser-mapping` to silence build warning. Note: `npx update-browserslist-db@latest` crashed on Bun v1.2.23 on Windows; falling back to plain npm was the fix.
 
 ---
 
@@ -261,6 +240,7 @@ Run through these the day before flipping DNS:
 - [ ] One end-to-end test: sign up → subscribe to Pro → use AI feature → cancel → verify tier downgrades on next period end
 - [ ] Existing test subscriptions cancelled in Stripe live mode
 - [ ] **Implement proper upgrade/downgrade flow (Phase 2.8 deferred item)** — use Stripe's subscription update API for tier transitions to prevent duplicate parallel subscriptions
+- [ ] Upgrade Vite 5 → 8 to close remaining esbuild dev-server vulnerability (deferred from Phase 4.1 — dev-time only, low real impact, but should be done before public launch)
 
 ---
 
