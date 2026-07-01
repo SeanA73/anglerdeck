@@ -185,9 +185,11 @@ When you return to this phase, focus on:
 
 **Goal:** when something breaks in prod, you find out before the user emails you. **Launch scope only: Sentry. Defer rest to Stage 4.**
 
-### 6.1 Error tracking (KEEP FOR LAUNCH)
+### 6.1 Error tracking 🟡 DEFERRED (user decision)
 Add Sentry free tier to main.tsx and edge functions. Replace console.error calls with Sentry.captureException.
 **Estimated: 1 hour.**
+
+**Deferred to post-launch by user decision.** Trade-off: launch without visibility into user-facing errors. Bugs may go undetected until users complain. Revisit BEFORE any real marketing push — running paid ads to a broken app while blind to errors is much worse than launching quietly and adding observability once traffic starts.
 
 ### 6.2 Analytics (DEFERRED)
 PostHog/Plausible — post-launch.
@@ -241,6 +243,7 @@ Run through these the day before flipping DNS:
 - [ ] Existing test subscriptions cancelled in Stripe live mode
 - [ ] **Implement proper upgrade/downgrade flow (Phase 2.8 deferred item)** — use Stripe's subscription update API for tier transitions to prevent duplicate parallel subscriptions
 - [ ] Upgrade Vite 5 → 8 to close remaining esbuild dev-server vulnerability (deferred from Phase 4.1 — dev-time only, low real impact, but should be done before public launch)
+- [ ] Reconsider Sentry (Phase 6.1) — you deferred this. Before any paid marketing spend, add Sentry so you can see bugs users hit. Free tier is 5,000 errors/month, ~1 hour setup.
 
 ---
 
