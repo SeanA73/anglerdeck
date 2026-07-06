@@ -1,111 +1,74 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ExternalLink } from "lucide-react";
-import { motion } from "framer-motion";
 import { SEO } from "@/components/SEO";
 
 const Licenses = () => {
-  const licenses = [
-    {
-      name: "React",
-      license: "MIT License",
-      url: "https://github.com/facebook/react/blob/main/LICENSE",
-    },
-    {
-      name: "Tailwind CSS",
-      license: "MIT License",
-      url: "https://github.com/tailwindlabs/tailwindcss/blob/master/LICENSE",
-    },
-    {
-      name: "Leaflet",
-      license: "BSD 2-Clause License",
-      url: "https://github.com/Leaflet/Leaflet/blob/main/LICENSE",
-    },
-    {
-      name: "Framer Motion",
-      license: "MIT License",
-      url: "https://github.com/framer/motion/blob/main/LICENSE.md",
-    },
-    {
-      name: "Lucide Icons",
-      license: "ISC License",
-      url: "https://github.com/lucide-icons/lucide/blob/main/LICENSE",
-    },
-    {
-      name: "Radix UI",
-      license: "MIT License",
-      url: "https://github.com/radix-ui/primitives/blob/main/LICENSE",
-    },
-    {
-      name: "shadcn/ui",
-      license: "MIT License",
-      url: "https://github.com/shadcn-ui/ui/blob/main/LICENSE.md",
-    },
-    {
-      name: "Recharts",
-      license: "MIT License",
-      url: "https://github.com/recharts/recharts/blob/master/LICENSE",
-    },
-  ];
-
   return (
     <div className="min-h-screen bg-background">
-      <SEO title="Open Source Licenses" description="Attribution and licenses for the open source software that powers AnglerDeck." canonicalPath="/licenses" />
+      <SEO
+        title="Open Source Licenses"
+        description="Attribution and licenses for the open source software that powers AnglerDeck."
+        canonicalPath="/licenses"
+      />
       <Header />
-      <main className="container mx-auto px-4 py-16 max-w-4xl">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <h1 className="text-4xl font-bold text-foreground mb-4">Open Source Licenses</h1>
-          <p className="text-muted-foreground mb-8">
-            AnglerDeck is built with the help of amazing open source software. 
-            We're grateful to the developers and communities behind these projects.
+      <main className="container mx-auto px-4 py-16 max-w-3xl">
+        <article className="prose prose-invert max-w-none">
+          <h1 className="text-3xl font-bold text-foreground mb-2">Open Source Licenses</h1>
+          <p className="text-sm text-muted-foreground mb-8">Last updated: 6 July 2026</p>
+
+          <p className="text-muted-foreground mb-6">
+            AnglerDeck is built on the shoulders of many open source projects. We are
+            grateful to the maintainers and contributors of the following libraries. Each
+            is used under its respective open source licence.
           </p>
 
-          <div className="grid gap-4">
-            {licenses.map((lib, index) => (
-              <motion.div
-                key={lib.name}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
-              >
-                <Card>
-                  <CardContent className="p-4 flex items-center justify-between">
-                    <div>
-                      <h3 className="font-semibold text-foreground">{lib.name}</h3>
-                      <p className="text-sm text-muted-foreground">{lib.license}</p>
-                    </div>
-                    <a
-                      href={lib.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1 text-sm text-accent hover:underline"
-                    >
-                      View License
-                      <ExternalLink className="w-4 h-4" />
-                    </a>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
+          <h2 className="text-xl font-semibold text-foreground mt-8 mb-3">Core framework</h2>
+          <ul className="text-muted-foreground mb-6 list-disc pl-6 space-y-1">
+            <li><strong>React</strong> (MIT) — facebook.github.io/react</li>
+            <li><strong>Vite</strong> (MIT) — vitejs.dev</li>
+            <li><strong>TypeScript</strong> (Apache 2.0) — typescriptlang.org</li>
+            <li><strong>React Router</strong> (MIT) — reactrouter.com</li>
+          </ul>
 
-          <Card className="mt-8">
-            <CardHeader>
-              <CardTitle>AnglerDeck License</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">
-                © 2026 AnglerDeck. All rights reserved. The AnglerDeck name, logo, and all related 
-                marks are trademarks of AnglerDeck. This application and its original content are 
-                protected by copyright law.
-              </p>
-            </CardContent>
-          </Card>
-        </motion.div>
+          <h2 className="text-xl font-semibold text-foreground mt-8 mb-3">UI and styling</h2>
+          <ul className="text-muted-foreground mb-6 list-disc pl-6 space-y-1">
+            <li><strong>Tailwind CSS</strong> (MIT) — tailwindcss.com</li>
+            <li><strong>shadcn/ui</strong> (MIT) — ui.shadcn.com</li>
+            <li><strong>Radix UI</strong> (MIT) — radix-ui.com</li>
+            <li><strong>Lucide Icons</strong> (ISC) — lucide.dev</li>
+            <li><strong>Framer Motion</strong> (MIT) — framer.com/motion</li>
+            <li><strong>Sonner</strong> (MIT) — sonner.emilkowal.ski</li>
+          </ul>
+
+          <h2 className="text-xl font-semibold text-foreground mt-8 mb-3">Data and networking</h2>
+          <ul className="text-muted-foreground mb-6 list-disc pl-6 space-y-1">
+            <li><strong>Supabase JS Client</strong> (MIT) — supabase.com</li>
+            <li><strong>TanStack Query</strong> (MIT) — tanstack.com/query</li>
+            <li><strong>Zod</strong> (MIT) — zod.dev</li>
+            <li><strong>date-fns</strong> (MIT) — date-fns.org</li>
+          </ul>
+
+          <h2 className="text-xl font-semibold text-foreground mt-8 mb-3">Maps</h2>
+          <ul className="text-muted-foreground mb-6 list-disc pl-6 space-y-1">
+            <li><strong>Leaflet</strong> (BSD-2-Clause) — leafletjs.com</li>
+            <li><strong>React Leaflet</strong> (Hippocratic) — react-leaflet.js.org</li>
+            <li><strong>OpenStreetMap tile data</strong> (ODbL) — openstreetmap.org/copyright</li>
+          </ul>
+
+          <h2 className="text-xl font-semibold text-foreground mt-8 mb-3">Payments and services</h2>
+          <ul className="text-muted-foreground mb-6 list-disc pl-6 space-y-1">
+            <li><strong>Stripe JS SDK</strong> (MIT) — stripe.com</li>
+            <li><strong>react-helmet-async</strong> (Apache 2.0)</li>
+          </ul>
+
+          <h2 className="text-xl font-semibold text-foreground mt-8 mb-3">Full attribution</h2>
+          <p className="text-muted-foreground mb-6">
+            The Service depends on many additional transitive libraries. Full licence
+            information is available in our repository at github.com/SeanA73/anglerdeck.
+            If you believe your project should be credited here or is not being properly
+            attributed, please contact legal@anglerdeck.com.
+          </p>
+        </article>
       </main>
       <Footer />
     </div>
