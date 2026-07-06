@@ -248,6 +248,20 @@ Run through these the day before flipping DNS:
 - [ ] Verify cookie banner (CookieConsent component) matches Cookies.tsx text: essential cookies always on, analytics opt-in only, currently no analytics active
 - [ ] Verify FishingAssistant renders on SpotDetail for logged-in Pro/Elite users on both desktop and mobile. Component is imported and rendered (SpotDetail.tsx line 668) but during Phase 7.5 mobile audit did not appear on the test viewport — could be tier-gating, hydration, CSS, or something else. Fix before launch.
 - [ ] Mobile responsive audit passed at iPhone SE (375px) for Pricing, Home, Map, Account, Auth. Confirm same on physical device before flipping DNS (iPad + tablet sizes deferred to Stage 4).
+- [ ] Upgrade Supabase to Pro plan ($25/month) BEFORE public launch — Free tier has no backups AND auto-pauses after 7 days of inactivity. Both are bad for a customer-facing app taking real money.
+- [x] Deployed to Hostinger VPS 72.60.42.216 with SSL via Certbot (Let's Encrypt, expires 2026-10-04)
+- [x] DNS: anglerdeck.com A record + www CNAME, both pointing at VPS (Hostinger)
+- [x] nginx config at /etc/nginx/sites-available/anglerdeck (static site, SPA fallback, security headers)
+- [x] Email forwarders: privacy@, legal@, security@, support@ → shadidawizz73@gmail.com via Hostinger Starter Business Email
+- [x] UptimeRobot monitor for https://anglerdeck.com (5-min interval, email alerts)
+- [x] DEPLOY.md written and committed
+- [x] Supabase project renamed to AnglerDeck; Site URL fixed to https://anglerdeck.com
+- [x] Landing page live at https://anglerdeck.com with waitlist signup (Supabase waitlist table)
+- [ ] Regenerate anglerdeck-logo.png with correct AnglerDeck branding (currently shows "ReelSpot" — visible on every real-app page)
+- [ ] Verify auth flow end-to-end after rate limit clears
+- [ ] Upgrade Supabase to Pro plan ($25/month) for backups + no auto-pause BEFORE public re-launch
+- [ ] Swap Stripe test keys → live keys (identity verification, recreate products/prices, new webhook)
+- [ ] Swap coming-soon page back to real app: `cd /var/www/anglerdeck && git pull && npm run build`
 ---
 
 ## Phase 9 — Path B Multi-Revenue Layer (Affiliate + AdSense)
