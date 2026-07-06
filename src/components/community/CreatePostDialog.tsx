@@ -200,7 +200,7 @@ const CreatePostDialog = ({ open, onOpenChange, sessionId }: CreatePostDialogPro
               <div className="relative">
                 <img
                   src={imagePreview}
-                  alt="Preview"
+                  alt="Photo preview for your post"
                   className="w-full h-48 object-cover rounded-lg"
                 />
                 <Button

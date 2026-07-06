@@ -195,7 +195,7 @@ export const ReviewForm = ({ onSubmit, submitting }: ReviewFormProps) => {
             <div className="flex flex-wrap gap-2">
               {photoPreviewUrls.map((url, index) => (
                 <div key={index} className="relative w-20 h-20 rounded-lg overflow-hidden border border-border">
-                  <img src={url} alt="" className="w-full h-full object-cover" />
+                  <img src={url} alt={`Review photo ${index + 1} preview`} className="w-full h-full object-cover" />
                   <button
                     type="button"
                     onClick={() => removePhoto(index)}

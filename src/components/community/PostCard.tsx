@@ -141,7 +141,7 @@ const PostCard = ({ post, onLike, sessionId }: PostCardProps) => {
           <div className="mt-4 rounded-lg overflow-hidden">
             <img
               src={post.image_url}
-              alt="Post image"
+              alt={`Post photo by ${post.author_name}`}
               className="w-full max-h-96 object-cover"
             />
           </div>
