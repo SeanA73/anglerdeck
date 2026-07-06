@@ -246,7 +246,8 @@ Run through these the day before flipping DNS:
 - [ ] Reconsider Sentry (Phase 6.1) — you deferred this. Before any paid marketing spend, add Sentry so you can see bugs users hit. Free tier is 5,000 errors/month, ~1 hour setup.
 - [ ] Set up privacy@anglerdeck.com, legal@anglerdeck.com, security@anglerdeck.com email addresses (or forwarders to shadidawizz73@gmail.com) — promised in Privacy/Terms/Cookies/Licenses pages
 - [ ] Verify cookie banner (CookieConsent component) matches Cookies.tsx text: essential cookies always on, analytics opt-in only, currently no analytics active
-
+- [ ] Verify FishingAssistant renders on SpotDetail for logged-in Pro/Elite users on both desktop and mobile. Component is imported and rendered (SpotDetail.tsx line 668) but during Phase 7.5 mobile audit did not appear on the test viewport — could be tier-gating, hydration, CSS, or something else. Fix before launch.
+- [ ] Mobile responsive audit passed at iPhone SE (375px) for Pricing, Home, Map, Account, Auth. Confirm same on physical device before flipping DNS (iPad + tablet sizes deferred to Stage 4).
 ---
 
 ## Phase 9 — Path B Multi-Revenue Layer (Affiliate + AdSense)
