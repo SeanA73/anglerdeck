@@ -21,7 +21,7 @@ const Header = () => {
   const navigate = useNavigate();
 
   const navItems = [
-    { name: "Explore Spots", icon: MapPin, href: "/" },
+    { name: "Explore Spots", icon: MapPin, href: "/spots" },
     { name: "Map View", icon: Map, href: "/map" },
     { name: "My Catches", icon: Fish, href: "/catches" },
     { name: "Community", icon: MessageSquare, href: "/community" },
