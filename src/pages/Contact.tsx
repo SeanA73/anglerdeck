@@ -9,6 +9,7 @@ import { Mail, MessageSquare, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { toast } from "sonner";
+import { SEO } from "@/components/SEO";
 
 const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -27,6 +28,7 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO title="Contact Us" description="Get in touch with the AnglerDeck team. Support, feedback, partnerships, and general enquiries." canonicalPath="/contact" />
       <Header />
       <main className="container mx-auto px-4 py-16">
         <motion.div

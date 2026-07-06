@@ -12,6 +12,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import FishingAssistant from "@/components/ai/FishingAssistant";
+import { SEO } from "@/components/SEO";
 
 const Support = () => {
   const helpTopics = [
@@ -108,6 +109,7 @@ const Support = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO title="Help & Support" description="Get help with AnglerDeck. FAQs, contact info, and support resources for anglers using our platform." canonicalPath="/support" />
       <Header />
       <main className="container mx-auto px-4 py-16">
         <motion.div

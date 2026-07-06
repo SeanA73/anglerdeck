@@ -3,6 +3,7 @@ import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertTriangle, ExternalLink, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
+import { SEO } from "@/components/SEO";
 
 const Regulations = () => {
   const regions = [
@@ -39,6 +40,7 @@ const Regulations = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO title="Fishing Regulations" description="State-by-state fishing regulations for Australia. Bag limits, size limits, seasons, and licensing requirements." canonicalPath="/regulations" />
       <Header />
       <main className="container mx-auto px-4 py-16">
         <motion.div

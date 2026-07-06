@@ -22,6 +22,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { SEO } from "@/components/SEO";
 
 // Lazy load the map component to avoid SSR issues
 const LeafletMap = lazy(() => import("@/components/map/LeafletMap"));
@@ -46,6 +47,7 @@ const MapView = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <SEO title="Interactive Fishing Map" description="Find fishing spots near you. Filter by species, water type, difficulty, and more on our interactive map of Australia's best angling locations." canonicalPath="/map" />
       <Header />
 
       <main className="flex-1 flex flex-col pt-16 lg:pt-20">

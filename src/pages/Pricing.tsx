@@ -13,6 +13,7 @@ import { toast } from 'sonner';
 import { createCheckoutSession } from '@/lib/checkout';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { SEO } from '@/components/SEO';
 
 const Pricing = () => {
     const [isAnnual, setIsAnnual] = useState(false);
@@ -46,6 +47,7 @@ const Pricing = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-forest-900 via-forest-800 to-forest-900">
+            <SEO title="Pricing — AnglerDeck Pro & Elite" description="Choose the plan that matches your fishing. Free forever, or upgrade to Pro for unlimited spots and AI insights, or Elite for personalized guidance." canonicalPath="/pricing" />
             <Header />
 
             {/* Content */}

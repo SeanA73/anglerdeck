@@ -44,6 +44,7 @@ import { UpgradePrompt } from "@/components/UpgradePrompt";
 import { UsageMeter } from "@/components/UsageMeter";
 import { SUBSCRIPTION_TIERS } from "@/lib/stripe";
 import { useAuth } from "@/contexts/AuthContext";
+import { SEO } from "@/components/SEO";
 
 interface CatchLog {
   id: string;
@@ -283,6 +284,7 @@ const CatchLog = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <SEO title="My Catches" description="Log your catches, track your fishing history, and analyze what's working. A private catch journal for AnglerDeck subscribers." canonicalPath="/catches" noIndex />
       <Header />
 
       {/* ... (Upgrade Prompt kept same) ... */}

@@ -3,6 +3,7 @@ import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ExternalLink } from "lucide-react";
 import { motion } from "framer-motion";
+import { SEO } from "@/components/SEO";
 
 const Licenses = () => {
   const licenses = [
@@ -50,6 +51,7 @@ const Licenses = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO title="Open Source Licenses" description="Attribution and licenses for the open source software that powers AnglerDeck." canonicalPath="/licenses" />
       <Header />
       <main className="container mx-auto px-4 py-16 max-w-4xl">
         <motion.div

@@ -1,10 +1,12 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
+import { SEO } from "@/components/SEO";
 
 const Terms = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEO title="Terms of Service" description="Terms and conditions for using AnglerDeck. User agreement, acceptable use, subscription terms, and disclaimers." canonicalPath="/terms" />
       <Header />
       <main className="container mx-auto px-4 py-16 max-w-4xl">
         <motion.div

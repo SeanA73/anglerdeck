@@ -1,10 +1,12 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
+import { SEO } from "@/components/SEO";
 
 const Privacy = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEO title="Privacy Policy" description="How AnglerDeck collects, uses, and protects your data. GDPR-compliant privacy policy for Australian users." canonicalPath="/privacy" />
       <Header />
       <main className="container mx-auto px-4 py-16 max-w-4xl">
         <motion.div

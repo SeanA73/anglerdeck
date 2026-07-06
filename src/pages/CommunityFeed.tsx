@@ -11,6 +11,7 @@ import PostCard from "@/components/community/PostCard";
 import CreatePostDialog from "@/components/community/CreatePostDialog";
 import { useToast } from "@/hooks/use-toast";
 import { AdBanner } from "@/components/ads/AdBanner";
+import { SEO } from "@/components/SEO";
 
 type PostType = "all" | "catch" | "story" | "tip";
 
@@ -148,6 +149,7 @@ const CommunityFeed = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <SEO title="Community Feed" description="Share catches, ask questions, and connect with anglers across Australia. Join the AnglerDeck community." canonicalPath="/community" noIndex />
       <Header />
 
       <main className="flex-1 container mx-auto px-4 pb-8 pt-24">
