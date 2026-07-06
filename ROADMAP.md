@@ -244,6 +244,8 @@ Run through these the day before flipping DNS:
 - [ ] **Implement proper upgrade/downgrade flow (Phase 2.8 deferred item)** — use Stripe's subscription update API for tier transitions to prevent duplicate parallel subscriptions
 - [ ] Upgrade Vite 5 → 8 to close remaining esbuild dev-server vulnerability (deferred from Phase 4.1 — dev-time only, low real impact, but should be done before public launch)
 - [ ] Reconsider Sentry (Phase 6.1) — you deferred this. Before any paid marketing spend, add Sentry so you can see bugs users hit. Free tier is 5,000 errors/month, ~1 hour setup.
+- [ ] Set up privacy@anglerdeck.com, legal@anglerdeck.com, security@anglerdeck.com email addresses (or forwarders to shadidawizz73@gmail.com) — promised in Privacy/Terms/Cookies/Licenses pages
+- [ ] Verify cookie banner (CookieConsent component) matches Cookies.tsx text: essential cookies always on, analytics opt-in only, currently no analytics active
 
 ---
 
