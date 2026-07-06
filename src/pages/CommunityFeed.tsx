@@ -4,8 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Fish, MessageSquare, Lightbulb, Plus } from "lucide-react";
+import { Fish, MessageSquare, Lightbulb, Plus, RefreshCw } from "lucide-react";
 import PostCard from "@/components/community/PostCard";
 import CreatePostDialog from "@/components/community/CreatePostDialog";
 import { useToast } from "@/hooks/use-toast";
@@ -41,7 +42,7 @@ const CommunityFeed = () => {
   const queryClient = useQueryClient();
   const sessionId = getSessionId();
 
-  const { data: posts = [], isLoading } = useQuery({
+  const { data: posts = [], isLoading, error, refetch } = useQuery({
     queryKey: ["posts", activeTab],
     queryFn: async () => {
       let query = supabase
@@ -182,8 +183,36 @@ const CommunityFeed = () => {
 
           <TabsContent value={activeTab} className="space-y-6">
             {isLoading ? (
-              <div className="text-center py-12 text-muted-foreground">
-                Loading posts...
+              <div className="space-y-6">
+                {[1, 2, 3].map((i) => (
+                  <Card key={i} className="animate-pulse">
+                    <CardContent className="p-6 space-y-4">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-full bg-muted" />
+                        <div className="space-y-2 flex-1">
+                          <div className="h-4 bg-muted rounded w-1/4" />
+                          <div className="h-3 bg-muted rounded w-1/6" />
+                        </div>
+                      </div>
+                      <div className="h-4 bg-muted rounded w-3/4" />
+                      <div className="h-4 bg-muted rounded w-1/2" />
+                      <div className="h-48 bg-muted rounded" />
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : error ? (
+              <div className="text-center py-12 bg-card rounded-lg border">
+                <RefreshCw className="w-12 h-12 mx-auto text-destructive/60 mb-4" />
+                <h3 className="text-lg font-medium text-foreground mb-2">
+                  Couldn't load the community feed
+                </h3>
+                <p className="text-muted-foreground mb-4">
+                  Something went wrong. Please try again.
+                </p>
+                <Button onClick={() => refetch()} variant="outline">
+                  Retry
+                </Button>
               </div>
             ) : posts.length === 0 ? (
               <div className="text-center py-12 bg-card rounded-lg border">

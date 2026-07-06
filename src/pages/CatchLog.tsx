@@ -102,7 +102,7 @@ const CatchLog = () => {
   });
 
   // Fetch catches
-  const { data: catches = [], isLoading } = useQuery({
+  const { data: catches = [], isLoading, error, refetch } = useQuery({
     queryKey: ["catches"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -612,6 +612,19 @@ const CatchLog = () => {
               </Card>
             ))}
           </div>
+        ) : error ? (
+          <Card className="p-12 text-center">
+            <Fish className="w-16 h-16 mx-auto text-destructive/60 mb-4" />
+            <h3 className="text-xl font-semibold text-foreground mb-2">
+              Couldn't load your catches
+            </h3>
+            <p className="text-muted-foreground mb-4">
+              Something went wrong on our end. Please try again.
+            </p>
+            <Button onClick={() => refetch()} variant="outline">
+              Retry
+            </Button>
+          </Card>
         ) : catches.length === 0 ? (
           <Card className="p-12 text-center">
             <Fish className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
