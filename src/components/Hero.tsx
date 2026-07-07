@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { MapPin, Compass, Sparkles, TrendingUp } from "lucide-react";
+import { MapPin, Compass, Sparkles, Fish } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import heroImage from "@/assets/hero-fishing.jpg";
@@ -32,7 +32,7 @@ const Hero = () => {
           >
             <Compass className="w-4 h-4 text-accent" />
             <span className="text-sm font-medium text-foreground">
-              Your Ultimate Fishing Companion
+              A Curated Fishing Guide
             </span>
           </motion.div>
 
@@ -54,8 +54,8 @@ const Hero = () => {
             transition={{ duration: 0.7, delay: 0.4 }}
             className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10"
           >
-            Find, save, and share the best fishing spots worldwide. Get AI-powered recommendations,
-            real-time water conditions, and connect with fellow anglers.
+            A curated guide to fishing spots around the world. Save your favorites, log your
+            catches, and get AI-powered recommendations for what's biting.
           </motion.p>
 
           {/* CTA Buttons */}
@@ -106,9 +106,9 @@ const Hero = () => {
             className="mt-16 grid grid-cols-3 gap-8 max-w-lg mx-auto"
           >
             {[
-              { value: "2,500+", label: "Fishing Spots", icon: MapPin },
-              { value: "12,000+", label: "Active Anglers", icon: TrendingUp },
-              { value: "AI-Powered", label: "Recommendations", icon: Sparkles },
+              { value: "Spot Discovery", label: "Curated fishing spots worldwide", icon: MapPin },
+              { value: "Catch Log", label: "Track every catch with photos and notes", icon: Fish },
+              { value: "AI Assistant", label: "Species and technique recommendations", icon: Sparkles },
             ].map((stat) => (
               <div key={stat.label} className="text-center">
                 <div className="flex justify-center mb-2">
