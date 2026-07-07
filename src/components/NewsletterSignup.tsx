@@ -20,10 +20,8 @@ export const NewsletterSignup = ({ className = '', compact = false, source = 'we
     setSubmitting(true);
     try {
       const { error } = await supabase
-        .from('newsletter_subscribers')
-        .insert({ email: email.trim().toLowerCase(), source })
-        .select()
-        .single();
+      .from('newsletter_subscribers')
+      .insert({ email: email.trim().toLowerCase(), source });
 
       if (error) {
         // Unique constraint → already subscribed
