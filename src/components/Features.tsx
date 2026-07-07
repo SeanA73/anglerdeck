@@ -1,36 +1,36 @@
 import { motion } from "framer-motion";
-import { MapPin, Users, BookOpen, Shield, Wifi, Search } from "lucide-react";
+import { MapPin, Cloud, Sparkles, Fish, Map, ScrollText } from "lucide-react";
 
 const features = [
   {
     icon: MapPin,
-    title: "Smart Location Finder",
-    description: "Discover verified fishing spots with detailed info on weather, water conditions, and best times to fish.",
+    title: "Curated Spot Discovery",
+    description: "Browse a growing library of fishing spots with location, species, weather, and access details.",
   },
   {
-    icon: Wifi,
-    title: "Offline Access",
-    description: "Download maps and spot details for offline use. Never lose access in remote areas.",
+    icon: Cloud,
+    title: "Live Weather Conditions",
+    description: "Real-time weather and a fishing conditions score for every spot, based on temperature, wind, pressure, and cloud cover.",
   },
   {
-    icon: Users,
-    title: "Angler Community",
-    description: "Share your catches, connect with local anglers, and learn from experienced fishermen.",
+    icon: Sparkles,
+    title: "AI Fishing Assistant",
+    description: "Ask AI for species tips, technique suggestions, and recommendations for any spot. Available on Pro and Elite plans.",
   },
   {
-    icon: BookOpen,
-    title: "Expert Content",
-    description: "Access exclusive guides, seasonal tips, and up-to-date fishing regulations for every region.",
+    icon: Fish,
+    title: "Personal Catch Log",
+    description: "Log every catch with photos, weight, length, location, and notes. Build your personal fishing history.",
   },
   {
-    icon: Search,
-    title: "Advanced Filters",
-    description: "Filter by fish species, season, technique, and get AI-powered recommendations.",
+    icon: Map,
+    title: "Interactive Map",
+    description: "Explore fishing spots on a live map with species filters, water type filters, and clustering for nearby locations.",
   },
   {
-    icon: Shield,
-    title: "Verified Spots",
-    description: "Every location is community-verified with honest reviews and real catch photos.",
+    icon: ScrollText,
+    title: "Regulations Reference",
+    description: "Quick links to official fishing authorities in the US, Canada, UK, Australia, and more. Always verify with local rules before fishing.",
   },
 ];
 

@@ -28,4 +28,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Supabase CLI local state (not committed)
 supabase/.temp/
+
+# Deployment artifact (has hardcoded env values, kept local)
+coming-soon.html
