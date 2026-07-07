@@ -30,7 +30,6 @@ const Footer = () => {
     Support: [
       { name: "Help Center", href: "/support" },
       { name: "Contact Us", href: "/contact" },
-      { name: "Fishing Guides", href: "/guides" },
       { name: "Regulations", href: "/regulations" },
     ],
     Legal: [

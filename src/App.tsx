@@ -28,7 +28,6 @@ const Privacy = lazy(() => import("./pages/Privacy"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Cookies = lazy(() => import("./pages/Cookies"));
 const Licenses = lazy(() => import("./pages/Licenses"));
-const Guides = lazy(() => import("./pages/Guides"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -68,7 +67,6 @@ const App = () => (
                 <Route path="/pricing" element={<Pricing />} />
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/account" element={<ProtectedRoute><Account /></ProtectedRoute>} />
-                <Route path="/guides" element={<Guides />} />
                 <Route path="/support" element={<Support />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/regulations" element={<Regulations />} />
