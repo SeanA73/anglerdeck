@@ -1,6 +1,6 @@
 import { useState, useMemo, useRef, useEffect, Fragment } from "react";
 import { motion } from "framer-motion";
-import { MapPin, Star, Users, Bookmark, Search, Filter, X } from "lucide-react";
+import { MapPin, Bookmark, Search, Filter, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -22,14 +22,14 @@ import { useWeather } from "@/hooks/useWeather";
 import { SEO } from "@/components/SEO";
 import { AdBanner } from "@/components/ads/AdBanner";
 
-type SortOption = "rating" | "saves" | "name";
+type SortOption = "name";
 
 const Spots = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("ALL");
   const [selectedSpecies, setSelectedSpecies] = useState("ALL");
   const [selectedType, setSelectedType] = useState<string>("ALL");
-  const [sortBy, setSortBy] = useState<SortOption>("rating");
+  const [sortBy, setSortBy] = useState<SortOption>("name");
   const [showFilters, setShowFilters] = useState(false);
 
   const filteredAndSortedSpots = useMemo(() => {
@@ -55,10 +55,6 @@ const Spots = () => {
     // Sort results
     result.sort((a, b) => {
       switch (sortBy) {
-        case "rating":
-          return b.rating - a.rating;
-        case "saves":
-          return b.saves - a.saves;
         case "name":
           return a.title.localeCompare(b.title);
         default:
@@ -74,7 +70,7 @@ const Spots = () => {
     setSelectedCountry("ALL");
     setSelectedSpecies("ALL");
     setSelectedType("ALL");
-    setSortBy("rating");
+    setSortBy("name");
   };
 
   const hasActiveFilters =
@@ -185,8 +181,6 @@ const Spots = () => {
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="rating">Highest Rated</SelectItem>
-                  <SelectItem value="saves">Most Saved</SelectItem>
                   <SelectItem value="name">Name (A-Z)</SelectItem>
                 </SelectContent>
               </Select>
@@ -370,17 +364,6 @@ const SpotCard = ({ spot, index }: { spot: FishingSpot; index: number }) => {
                 {s}
               </span>
             ))}
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1">
-              <Star className="w-4 h-4 text-accent fill-accent" />
-              <span className="text-sm font-medium text-foreground">{spot.rating}</span>
-            </div>
-            <div className="flex items-center gap-1 text-muted-foreground">
-              <Users className="w-4 h-4" />
-              <span className="text-sm">{spot.saves.toLocaleString()} saves</span>
-            </div>
           </div>
         </div>
       </motion.div>

@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import { Link } from "react-router-dom";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { MapPin, Star, Thermometer, Wind } from "lucide-react";
+import { MapPin, Thermometer, Wind } from "lucide-react";
 import { FishingSpot } from "@/data/spots";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -105,10 +105,6 @@ const SpotPopupContent = ({ spot }: { spot: FishingSpot }) => {
       
       <div className="flex items-center justify-between mb-2">
         <Badge variant="secondary">{spot.type}</Badge>
-        <div className="flex items-center gap-1 text-sm">
-          <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
-          {spot.rating}
-        </div>
       </div>
       <Link to={`/spot/${spot.slug}`}>
         <Button size="sm" className="w-full">View Details</Button>

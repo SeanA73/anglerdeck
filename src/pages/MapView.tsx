@@ -1,7 +1,7 @@
 import { useState, useMemo, lazy, Suspense } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { MapPin, Star, Filter, X, Loader2 } from "lucide-react";
+import { MapPin, Filter, X, Loader2 } from "lucide-react";
 import { spots, FishingSpot } from "@/data/spots";
 import { countries } from "@/components/CountrySelector";
 import Header from "@/components/Header";
@@ -170,10 +170,6 @@ const MapView = () => {
                         </p>
                         <div className="flex items-center gap-2 mt-1">
                           <Badge variant="secondary" className="text-xs">{spot.type}</Badge>
-                          <span className="text-xs flex items-center gap-1">
-                            <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
-                            {spot.rating}
-                          </span>
                         </div>
                       </div>
                     </motion.div>

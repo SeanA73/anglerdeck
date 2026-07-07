@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { MapPin, Star, Users, Bookmark, RefreshCw } from "lucide-react";
+import { MapPin, Bookmark, RefreshCw } from "lucide-react";
 import { useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { spots } from "@/data/spots";
@@ -185,19 +185,6 @@ const FeaturedSpotCard = ({ spot, index }: { spot: typeof spots[0]; index: numbe
                 {s}
               </span>
             ))}
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1">
-              <Star className="w-4 h-4 text-accent fill-accent" />
-              <span className="text-sm font-medium text-foreground">
-                {spot.rating}
-              </span>
-            </div>
-            <div className="flex items-center gap-1 text-muted-foreground">
-              <Users className="w-4 h-4" />
-              <span className="text-sm">{spot.saves.toLocaleString()} saves</span>
-            </div>
           </div>
         </div>
       </motion.div>

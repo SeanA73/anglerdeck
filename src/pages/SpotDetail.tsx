@@ -32,6 +32,7 @@ import { countries } from "@/components/CountrySelector";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useWeather } from "@/hooks/useWeather";
+import { useSpotReviews } from "@/hooks/useSpotReviews";
 import { useSavedItems } from "@/hooks/useSavedItems";
 import { useAuth } from "@/contexts/AuthContext";
 import { SpotReviews } from "@/components/spots/SpotReviews";
@@ -106,6 +107,8 @@ const SpotDetail = () => {
     !!spot
   );
 
+  const { averageRating, reviewCount } = useSpotReviews(spot?.id ?? 0);
+
   const spotsLimit = subscription 
     ? SUBSCRIPTION_TIERS[subscription.tier].limits.spotsPerMonth 
     : 10;
@@ -150,13 +153,6 @@ const SpotDetail = () => {
       "@type": "PostalAddress",
       addressLocality: spot.location,
       addressCountry: spot.country,
-    },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: spot.rating,
-      bestRating: 5,
-      worstRating: 1,
-      ratingCount: spot.saves,
     },
     geo: {
       "@type": "GeoCoordinates",
@@ -303,14 +299,13 @@ const SpotDetail = () => {
                   <MapPin className="w-4 h-4" />
                   <span>{spot.location}, {countryName}</span>
                 </div>
-                <div className="flex items-center gap-1">
-                  <Star className="w-4 h-4 text-accent fill-accent" />
-                  <span className="text-foreground font-medium">{spot.rating}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Bookmark className="w-4 h-4" />
-                  <span>{spot.saves.toLocaleString()} saves</span>
-                </div>
+                {reviewCount > 0 && (
+                  <div className="flex items-center gap-1">
+                    <Star className="w-4 h-4 text-accent fill-accent" />
+                    <span className="text-foreground font-medium">{averageRating.toFixed(1)}</span>
+                    <span>{reviewCount} review{reviewCount !== 1 ? 's' : ''}</span>
+                  </div>
+                )}
               </div>
             </motion.div>
           </div>

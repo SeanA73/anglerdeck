@@ -1,4 +1,4 @@
-import { MapPin, Star, Heart, ExternalLink } from "lucide-react";
+import { MapPin, Heart, ExternalLink } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -86,10 +86,6 @@ const SavedSpotsList = () => {
                         <MapPin className="w-3.5 h-3.5" />
                         {spot.location}
                       </div>
-                    </div>
-                    <div className="flex items-center gap-1 text-sm">
-                      <Star className="w-4 h-4 fill-accent text-accent" />
-                      <span className="font-medium">{spot.rating}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 mt-3">
