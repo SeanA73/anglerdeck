@@ -21,9 +21,9 @@ const Index = () => {
       <Features />
       <section className="container mx-auto px-4 lg:px-8 py-12">
         <div className="max-w-xl mx-auto text-center">
-          <h2 className="text-2xl font-bold text-foreground mb-2">Stay in the loop</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-2">Join the newsletter</h2>
           <p className="text-muted-foreground mb-4">
-            Weekly fishing tips, hot spots, and gear deals — straight to your inbox.
+            We're launching a monthly newsletter with fishing tips, spot highlights, and updates. Leave your email to be notified when the first issue goes out.
           </p>
           <NewsletterSignup />
         </div>

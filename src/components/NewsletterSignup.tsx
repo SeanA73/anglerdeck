@@ -28,13 +28,13 @@ export const NewsletterSignup = ({ className = '', compact = false, source = 'we
       if (error) {
         // Unique constraint → already subscribed
         if (error.code === '23505') {
-          toast.info("You're already subscribed — we'll keep the tips coming!");
+          toast.info("You're already on the list.");
         } else {
           throw error;
         }
       } else {
         trackEvent('newsletter_signup', { email_domain: email.split('@')[1], source });
-        toast.success('You\'re in! Weekly fishing tips coming your way.');
+        toast.success("You're on the list. We'll email when the monthly newsletter launches.");
       }
       setEmail('');
     } catch (err) {
@@ -49,7 +49,7 @@ export const NewsletterSignup = ({ className = '', compact = false, source = 'we
     <form onSubmit={handleEmailSignup} className={`flex gap-2 ${compact ? 'flex-col sm:flex-row' : ''} ${className}`}>
       <Input
         type="email"
-        placeholder="Get weekly fishing tips & hot spots..."
+        placeholder="your@email.com"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         className="flex-1"
