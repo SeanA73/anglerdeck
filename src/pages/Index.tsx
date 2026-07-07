@@ -1,7 +1,6 @@
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import FeaturedSpots from "@/components/FeaturedSpots";
-import SocialProof from "@/components/SocialProof";
 import Features from "@/components/Features";
 import Footer from "@/components/Footer";
 import OnboardingTour from "@/components/OnboardingTour";
@@ -19,7 +18,6 @@ const Index = () => {
       <Header />
       <Hero />
       <FeaturedSpots />
-      <SocialProof />
       <Features />
       <section className="container mx-auto px-4 lg:px-8 py-12">
         <div className="max-w-xl mx-auto text-center">
