@@ -238,8 +238,8 @@ Other projects (Tackle Tycoon, Arena FPS, Homevra, Meal Picker) stay parked.
 - [ ] Logo regenerated
 - [x] Auth flow verified end-to-end
 - [ ] Spots strategy resolved
-- [ ] Affiliate products handled
-- [ ] AdSense renders removed until approval
+- [x] Affiliate products handled  (deleted July 18)
+- [x] AdSense renders removed until approval (removed July 18)
 - [ ] Community feed hidden from nav
 - [ ] Stripe swapped to live mode
 - [x] Supabase Pro upgrade decision made
