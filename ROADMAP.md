@@ -226,6 +226,26 @@ Privacy.tsx, Terms.tsx, Cookies.tsx, Licenses.tsx — read through, remove Lovab
 ### 7.5 Mobile responsive audit (LAUNCH ESSENTIAL)
 Pricing cards, map view, AI assistant chat are the most likely to break on small screens.
 
+
+## 🎯 LAUNCH DATE: August 1, 2026
+
+Two weeks from July 18, 2026. Coming-soon page comes off, real app goes public.
+
+**Focus rule:** Between now and August 1, AnglerDeck is the only active project.
+Other projects (Tackle Tycoon, Arena FPS, Homevra, Meal Picker) stay parked.
+
+**Launch-blocking items (post below in the checklist):**
+- [ ] Logo regenerated
+- [ ] Auth flow verified end-to-end
+- [ ] Spots strategy resolved (delete or seed real)
+- [ ] Affiliate products handled (delete or gate)
+- [ ] AdSense renders removed until approval
+- [ ] Community feed hidden from nav
+- [ ] Stripe swapped to live mode
+- [ ] Supabase Pro upgrade decision made
+- [ ] Coming-soon.html replaced with real app
+
+Everything else = post-launch.
 ---
 
 ## Phase 8 — Pre-launch checklist
