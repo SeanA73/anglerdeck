@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, X, MapPin, Crown, Map, Fish, MessageSquare, User, LogOut, Heart, Settings } from "lucide-react";
+import { Menu, X, MapPin, Crown, Map, Fish, User, LogOut, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -24,7 +24,6 @@ const Header = () => {
     { name: "Explore Spots", icon: MapPin, href: "/spots" },
     { name: "Map View", icon: Map, href: "/map" },
     { name: "My Catches", icon: Fish, href: "/catches" },
-    { name: "Community", icon: MessageSquare, href: "/community" },
     { name: "Go Pro", icon: Crown, href: "/pricing" },
   ];
 
@@ -115,10 +114,6 @@ const Header = () => {
                   <DropdownMenuItem onClick={() => navigate("/catches")}>
                     <Fish className="mr-2 h-4 w-4" />
                     My Catches
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate("/community")}>
-                    <Heart className="mr-2 h-4 w-4" />
-                    Saved Items
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleSignOut} className="text-destructive">

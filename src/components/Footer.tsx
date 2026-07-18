@@ -19,7 +19,6 @@ const Footer = () => {
       { name: "Fishing Spots", href: "/spots" },
       { name: "Map View", href: "/map" },
       { name: "My Catches", href: "/catches" },
-      { name: "Community", href: "/community" },
     ],
     Premium: [
       { name: "Go Pro", href: "/pricing" },

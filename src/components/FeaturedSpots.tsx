@@ -43,7 +43,7 @@ const FeaturedSpots = () => {
             Featured Spots
           </h2>
           <p className="text-muted-foreground max-w-xl mx-auto">
-            Discover handpicked fishing locations verified by our community of anglers.
+            A curated collection of fishing locations to explore.
           </p>
         </motion.div>
 
