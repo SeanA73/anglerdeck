@@ -236,7 +236,7 @@ Other projects (Tackle Tycoon, Arena FPS, Homevra, Meal Picker) stay parked.
 
 **Launch-blocking items:**
 - [ ] Logo regenerated
-- [ ] Auth flow verified end-to-end
+- [x] Auth flow verified end-to-end
 - [ ] Spots strategy resolved
 - [ ] Affiliate products handled
 - [ ] AdSense renders removed until approval
