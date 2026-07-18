@@ -240,7 +240,7 @@ Other projects (Tackle Tycoon, Arena FPS, Homevra, Meal Picker) stay parked.
 - [ ] Spots strategy resolved
 - [x] Affiliate products handled  (deleted July 18)
 - [x] AdSense renders removed until approval (removed July 18)
-- [ ] Community feed hidden from nav
+- [x] Community feed hidden from nav (hidden July 18 — route still works via direct URL)
 - [ ] Stripe swapped to live mode
 - [x] Supabase Pro upgrade decision made
 - [ ] Coming-soon.html replaced with real app
