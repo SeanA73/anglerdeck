@@ -242,7 +242,7 @@ Other projects (Tackle Tycoon, Arena FPS, Homevra, Meal Picker) stay parked.
 - [ ] AdSense renders removed until approval
 - [ ] Community feed hidden from nav
 - [ ] Stripe swapped to live mode
-- [ ] Supabase Pro upgrade decision made
+- [x] Supabase Pro upgrade decision made
 - [ ] Coming-soon.html replaced with real app
 
 Everything else = post-launch.
