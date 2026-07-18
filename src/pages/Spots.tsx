@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useEffect, Fragment } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { MapPin, Bookmark, Search, Filter, X } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -20,7 +20,6 @@ import { WeatherBadge } from "@/components/weather/WeatherBadge";
 import { FishingScoreBadge } from "@/components/weather/FishingConditions";
 import { useWeather } from "@/hooks/useWeather";
 import { SEO } from "@/components/SEO";
-import { AdBanner } from "@/components/ads/AdBanner";
 
 type SortOption = "name";
 
@@ -221,17 +220,7 @@ const Spots = () => {
               </motion.div>
             ) : (
               filteredAndSortedSpots.map((spot, index) => (
-                <Fragment key={spot.id}>
-                  <SpotCard spot={spot} index={index} />
-                  {index === 5 && (
-                    <div className="col-span-full">
-                      <AdBanner
-                        slot={import.meta.env.VITE_ADSENSE_SLOT_SPOTS || ''}
-                        format="rectangle"
-                      />
-                    </div>
-                  )}
-                </Fragment>
+                <SpotCard key={spot.id} spot={spot} index={index} />
               ))
             )}
           </div>

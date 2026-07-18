@@ -43,7 +43,6 @@ import { SUBSCRIPTION_TIERS } from "@/lib/stripe";
 import { FishingConditions } from "@/components/weather/FishingConditions";
 import FishingAssistant from "@/components/ai/FishingAssistant";
 import { SEO, BASE_URL } from "@/components/SEO";
-import { AdBanner } from "@/components/ads/AdBanner";
 import { getBookingUrl, getAirbnbUrl, trackAffiliateClick } from "@/lib/affiliate";
 import { formatTemperature, getDefaultUseCelsius } from "@/lib/temperature";
 
@@ -345,11 +344,6 @@ const SpotDetail = () => {
                 </div>
               </div>
             </motion.div>
-
-            <AdBanner
-              slot={import.meta.env.VITE_ADSENSE_SLOT_SPOT_DETAIL || ''}
-              format="horizontal"
-            />
 
             {/* Weather & Conditions */}
             <motion.div

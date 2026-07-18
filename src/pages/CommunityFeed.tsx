@@ -1,4 +1,4 @@
-import { useState, useEffect, Fragment } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
@@ -10,7 +10,6 @@ import { Fish, MessageSquare, Lightbulb, Plus, RefreshCw } from "lucide-react";
 import PostCard from "@/components/community/PostCard";
 import CreatePostDialog from "@/components/community/CreatePostDialog";
 import { useToast } from "@/hooks/use-toast";
-import { AdBanner } from "@/components/ads/AdBanner";
 import { SEO } from "@/components/SEO";
 
 type PostType = "all" | "catch" | "story" | "tip";
@@ -230,20 +229,13 @@ const CommunityFeed = () => {
                 </Button>
               </div>
             ) : (
-              posts.map((post, index) => (
-                <Fragment key={post.id}>
-                  <PostCard
-                    post={post}
-                    onLike={handleLike}
-                    sessionId={sessionId}
-                  />
-                  {(index + 1) % 5 === 0 && index < posts.length - 1 && (
-                    <AdBanner
-                      slot={import.meta.env.VITE_ADSENSE_SLOT_COMMUNITY || ''}
-                      format="rectangle"
-                    />
-                  )}
-                </Fragment>
+              posts.map((post) => (
+                <PostCard
+                  key={post.id}
+                  post={post}
+                  onLike={handleLike}
+                  sessionId={sessionId}
+                />
               ))
             )}
           </TabsContent>
