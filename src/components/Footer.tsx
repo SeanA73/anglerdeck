@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { MapPin } from "lucide-react";
-// TODO: image content still says CastLog/ReelSpot, needs to be regenerated with AnglerDeck branding.
 import anglerdeckLogo from "@/assets/anglerdeck-logo.png";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
 

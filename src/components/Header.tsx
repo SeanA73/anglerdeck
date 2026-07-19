@@ -11,7 +11,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-// TODO: image content still says CastLog/ReelSpot, needs to be regenerated with AnglerDeck branding.
 import anglerdeckLogo from "@/assets/anglerdeck-logo.png";
 import { useAuth } from "@/contexts/AuthContext";
 
