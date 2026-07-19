@@ -235,7 +235,7 @@ Two weeks from July 18, 2026. Coming-soon page comes off, real app goes public.
 Other projects (Tackle Tycoon, Arena FPS, Homevra, Meal Picker) stay parked.
 
 **Launch-blocking items:**
-- [ ] Logo regenerated
+- [x] Logo regenerated (new fish mark generated in Midjourney July 19)
 - [x] Auth flow verified end-to-end
 - [ ] Spots strategy resolved
 - [x] Affiliate products handled  (deleted July 18)
