@@ -44,7 +44,7 @@ import { FishingConditions } from "@/components/weather/FishingConditions";
 import FishingAssistant from "@/components/ai/FishingAssistant";
 import { SEO, BASE_URL } from "@/components/SEO";
 import { getBookingUrl, getAirbnbUrl, trackAffiliateClick } from "@/lib/affiliate";
-import { formatTemperature, getDefaultUseCelsius } from "@/lib/temperature";
+import { formatTemperature, formatWindSpeed, getDefaultUseCelsius } from "@/lib/temperature";
 
 const WeatherIcon = ({ icon }: { icon: string }) => {
   switch (icon) {
@@ -394,7 +394,7 @@ const SpotDetail = () => {
                     </div>
                     <div className="flex items-center gap-2 text-muted-foreground">
                       <Wind className="w-4 h-4" />
-                      <span>{displayWeather.windSpeed} mph {displayWeather.windDirection}</span>
+                      <span>{formatWindSpeed(displayWeather.windSpeed, useCelsius)} {displayWeather.windDirection}</span>
                     </div>
                   </div>
                 </div>
@@ -417,8 +417,8 @@ const SpotDetail = () => {
                 </div>
               </div>
 
-              {/* Tide Chart */}
-              {spot.type === "Saltwater" && (
+              {/* Tide Chart — hidden until a live tide feed exists (static N/A data) */}
+              {spot.type === "Saltwater" && spot.tides.nextHigh !== "N/A" && (
                 <div className="mt-6 bg-muted/50 rounded-xl p-5">
                   <div className="flex items-center gap-2 mb-4">
                     <Waves className="w-5 h-5 text-accent" />

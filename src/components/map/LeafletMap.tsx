@@ -10,6 +10,9 @@ import { Badge } from "@/components/ui/badge";
 import { useWeather } from "@/hooks/useWeather";
 import { FishingScoreBadge } from "@/components/weather/FishingConditions";
 import { Skeleton } from "@/components/ui/skeleton";
+import { formatTemperature, formatWindSpeed, getDefaultUseCelsius } from "@/lib/temperature";
+
+const useMetric = getDefaultUseCelsius();
 
 // Fix default marker icon issue with Leaflet + Vite
 delete (L.Icon.Default.prototype as unknown as Record<string, unknown>)._getIconUrl;
@@ -79,11 +82,11 @@ const SpotPopupContent = ({ spot }: { spot: FishingSpot }) => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1 text-sm font-medium">
                 <Thermometer className="w-3.5 h-3.5 text-accent" />
-                <span>{weather.temperature}°F</span>
+                <span>{formatTemperature(weather.temperature, useMetric)}</span>
               </div>
               <div className="flex items-center gap-1 text-sm text-muted-foreground">
                 <Wind className="w-3.5 h-3.5" />
-                <span>{weather.windSpeed}mph</span>
+                <span>{formatWindSpeed(weather.windSpeed, useMetric)}</span>
               </div>
             </div>
             <div className="flex items-center justify-between">

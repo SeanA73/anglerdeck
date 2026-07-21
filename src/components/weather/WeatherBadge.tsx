@@ -1,6 +1,9 @@
 import { Sun, Cloud, CloudRain, CloudSun, CloudSnow, CloudLightning, Wind, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
+import { formatTemperature, formatWindSpeed, getDefaultUseCelsius } from "@/lib/temperature";
+
+const useMetric = getDefaultUseCelsius();
 
 interface WeatherBadgeProps {
   temperature?: number;
@@ -76,12 +79,12 @@ export function WeatherBadge({
         className
       )}>
         <WeatherIcon icon={icon} className="w-3.5 h-3.5" />
-        <span className="text-foreground">{temperature}°F</span>
+        <span className="text-foreground">{formatTemperature(temperature, useMetric)}</span>
         {windSpeed !== undefined && (
           <>
             <span className="text-muted-foreground">•</span>
             <Wind className="w-3 h-3 text-muted-foreground" />
-            <span className="text-muted-foreground">{windSpeed}mph</span>
+            <span className="text-muted-foreground">{formatWindSpeed(windSpeed, useMetric)}</span>
           </>
         )}
       </div>
@@ -97,7 +100,7 @@ export function WeatherBadge({
       <div className="flex items-center gap-3">
         <WeatherIcon icon={icon} className="w-8 h-8" />
         <div>
-          <p className="text-lg font-bold text-foreground">{temperature}°F</p>
+          <p className="text-lg font-bold text-foreground">{formatTemperature(temperature, useMetric)}</p>
           <p className="text-sm text-muted-foreground">{condition}</p>
         </div>
       </div>
@@ -107,7 +110,7 @@ export function WeatherBadge({
           {windSpeed !== undefined && (
             <div className="flex items-center gap-1">
               <Wind className="w-4 h-4" />
-              <span>{windSpeed} mph {windDirection}</span>
+              <span>{formatWindSpeed(windSpeed, useMetric)} {windDirection}</span>
             </div>
           )}
           {humidity !== undefined && (
