@@ -22,7 +22,6 @@ const Footer = () => {
     Premium: [
       { name: "Go Pro", href: "/pricing" },
       { name: "Pro Features", href: "/pricing#features" },
-      { name: "Elite Membership", href: "/pricing#elite" },
       { name: "Compare Plans", href: "/pricing" },
     ],
     Support: [

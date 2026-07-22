@@ -40,15 +40,8 @@ export const UpgradePrompt = ({
   const proFeatures = [
     'Unlimited spot views',
     'Unlimited catch logs',
-    'Advanced weather data',
-    'Priority support',
-  ];
-
-  const eliteFeatures = [
-    'Everything in Pro',
-    'Offline maps',
-    'AI recommendations',
-    'Premium badge',
+    'AI Fishing Assistant',
+    'Ad-free experience',
   ];
 
   return (
@@ -124,34 +117,6 @@ export const UpgradePrompt = ({
             </ul>
           </motion.div>
 
-          {/* Elite Plan */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="rounded-xl border border-border bg-card p-4"
-          >
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <Zap className="w-5 h-5 text-accent" />
-                <span className="font-bold text-lg">Elite</span>
-              </div>
-              <div className="text-right">
-                <span className="text-2xl font-bold">
-                  ${SUBSCRIPTION_TIERS.elite.price}
-                </span>
-                <span className="text-muted-foreground">/mo</span>
-              </div>
-            </div>
-            <ul className="space-y-1.5 text-sm">
-              {eliteFeatures.map((f) => (
-                <li key={f} className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-accent flex-shrink-0" />
-                  <span>{f}</span>
-                </li>
-              ))}
-            </ul>
-          </motion.div>
         </div>
 
         <div className="mt-6 flex flex-col gap-2">

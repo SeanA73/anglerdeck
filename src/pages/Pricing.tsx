@@ -47,7 +47,7 @@ const Pricing = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-forest-900 via-forest-800 to-forest-900">
-            <SEO title="Pricing — AnglerDeck Pro & Elite" description="Choose the plan that matches your fishing. Free forever, or upgrade to Pro for unlimited spots and AI insights, or Elite for personalized guidance." canonicalPath="/pricing" />
+            <SEO title="Pricing — AnglerDeck Pro" description="Choose the plan that matches your fishing. Free forever, or upgrade to Pro for unlimited spots, catch logging, and the AI Fishing Assistant." canonicalPath="/pricing" />
             <Header />
 
             {/* Content */}
@@ -61,8 +61,8 @@ const Pricing = () => {
                         Choose Your Plan
                     </h1>
                     <p className="text-xl text-forest-100 max-w-2xl mx-auto">
-                        Unlock the full potential of AnglerDeck with premium features,
-                        AI-powered insights, and exclusive content
+                        Unlock the full potential of AnglerDeck with unlimited access
+                        and AI-powered insights
                     </p>
 
                     {/* Annual/Monthly Toggle */}
@@ -195,7 +195,10 @@ const Pricing = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.3 }}
                     >
-                        <Card className="relative overflow-hidden bg-gradient-to-br from-purple-500/20 to-purple-600/20 border-2 border-purple-500 backdrop-blur">
+                        <Card className="relative overflow-hidden bg-gradient-to-br from-purple-500/10 to-purple-600/10 border border-purple-500/40 backdrop-blur opacity-80">
+                            <Badge className="absolute top-4 right-4 bg-purple-500 text-white">
+                                Coming Soon
+                            </Badge>
                             <CardHeader>
                                 <div className="flex items-center gap-2 mb-2">
                                     <Crown className="w-5 h-5 text-purple-400" />
@@ -230,10 +233,10 @@ const Pricing = () => {
                                 </ul>
 
                                 <Button
-                                    className="w-full bg-purple-500 hover:bg-purple-600 text-white font-semibold"
-                                    onClick={() => handleSubscribe('elite')}
+                                    className="w-full bg-purple-500/50 text-white font-semibold cursor-not-allowed"
+                                    disabled
                                 >
-                                    Upgrade to Elite
+                                    Coming Soon
                                 </Button>
                             </CardContent>
                         </Card>
@@ -256,13 +259,13 @@ const Pricing = () => {
                         <Card className="bg-forest-800/50 border-forest-700">
                             <CardHeader>
                                 <CardTitle className="text-white text-lg">
-                                    Is there a free trial?
+                                    Can I cancel anytime?
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <p className="text-forest-200">
-                                    Yes! We offer a 14-day free trial of the Pro tier. No credit
-                                    card required.
+                                    Yes. Cancel from your account page at any time and you keep
+                                    Pro access until the end of your billing period. No lock-in.
                                 </p>
                             </CardContent>
                         </Card>

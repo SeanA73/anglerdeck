@@ -10,9 +10,8 @@ const Premium = () => {
 
   // Derive numbers directly from the single source of truth in stripe.ts
   const monthlyPrice = pro.price;                          // 9.99
-  const annualTotal = getAnnualPrice(monthlyPrice);        // 9.99 * 12 * 0.75
-  const annualPerMonth = (annualTotal / 12).toFixed(2);
-  const savingsPct = Math.round((1 - 0.75) * 100);        // 25
+  const annualTotal = getAnnualPrice(monthlyPrice);        // 9.99 * 12 * 0.8
+  const savingsPct = 20;                                   // matches getAnnualPrice discount
 
   return (
     <section className="py-24 bg-background relative overflow-hidden">
@@ -77,7 +76,7 @@ const Premium = () => {
                     onClick={() => navigate('/pricing')}
                   >
                     <Zap className="w-5 h-5" />
-                    Start 14-Day Free Trial
+                    Upgrade to Pro
                   </Button>
                   <p className="text-sm text-muted-foreground text-center">
                     Cancel anytime. No commitment.
