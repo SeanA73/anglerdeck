@@ -38,7 +38,7 @@ import {
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { getSpotById, spots } from "@/data/spots";
+import { useSpots } from "@/hooks/useSpots";
 import { useSubscription } from "@/hooks/useSubscription";
 import { UpgradePrompt } from "@/components/UpgradePrompt";
 import { UsageMeter } from "@/components/UsageMeter";
@@ -77,6 +77,8 @@ const speciesOptions = [
 ];
 
 const CatchLog = () => {
+  const { data: spots = [] } = useSpots();
+  const getSpotById = (id: number) => spots.find((s) => s.id === id);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingCatch, setEditingCatch] = useState<CatchLog | null>(null);
   const [photoFile, setPhotoFile] = useState<File | null>(null);

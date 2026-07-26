@@ -4,7 +4,8 @@ import { MapPin, Bookmark, Search, Filter, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { spots, FishingSpot } from "@/data/spots";
+import { FishingSpot } from "@/data/spots";
+import { useSpots } from "@/hooks/useSpots";
 import CountrySelector, { countries } from "@/components/CountrySelector";
 import FishSpeciesFilter from "@/components/FishSpeciesFilter";
 import { Input } from "@/components/ui/input";
@@ -30,6 +31,7 @@ const Spots = () => {
   const [selectedType, setSelectedType] = useState<string>("ALL");
   const [sortBy, setSortBy] = useState<SortOption>("name");
   const [showFilters, setShowFilters] = useState(false);
+  const { data: spots = [], isLoading: spotsLoading } = useSpots();
 
   const filteredAndSortedSpots = useMemo(() => {
     const result = spots.filter((spot) => {
@@ -205,7 +207,15 @@ const Spots = () => {
 
           {/* Spots Grid */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-            {filteredAndSortedSpots.length === 0 ? (
+            {spotsLoading ? (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="col-span-full text-center py-16"
+              >
+                <p className="text-muted-foreground text-lg">Loading spots…</p>
+              </motion.div>
+            ) : filteredAndSortedSpots.length === 0 ? (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}

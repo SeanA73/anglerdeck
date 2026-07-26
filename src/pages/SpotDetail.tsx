@@ -27,7 +27,8 @@ import {
   CloudSnow,
   CloudLightning
 } from "lucide-react";
-import { getSpotBySlug, FishingSpot } from "@/data/spots";
+import { FishingSpot } from "@/data/spots";
+import { useSpotBySlug } from "@/hooks/useSpots";
 import { countries } from "@/components/CountrySelector";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -72,7 +73,7 @@ const TrendIcon = ({ trend }: { trend: string }) => {
 const SpotDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const spot = getSpotBySlug(slug || "");
+  const { spot, isLoading: spotLoading } = useSpotBySlug(slug || "");
   const { user } = useAuth();
   const { isSaved, toggleSave, isToggling } = useSavedItems();
   const { 
@@ -112,6 +113,14 @@ const SpotDetail = () => {
     ? SUBSCRIPTION_TIERS[subscription.tier].limits.spotsPerMonth 
     : 10;
   const spotsRemaining = getRemainingUsage('spots');
+
+  if (spotLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-muted-foreground">Loading spot…</p>
+      </div>
+    );
+  }
 
   if (!spot) {
     return (

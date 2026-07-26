@@ -1,26 +1,30 @@
 import { motion } from "framer-motion";
 import { MapPin, Bookmark, RefreshCw } from "lucide-react";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { spots } from "@/data/spots";
+import { FishingSpot } from "@/data/spots";
+import { useSpots } from "@/hooks/useSpots";
 import { countries } from "./CountrySelector";
 import { Button } from "./ui/button";
 import { WeatherBadge } from "./weather/WeatherBadge";
 import { FishingScoreBadge } from "./weather/FishingConditions";
 import { useWeather } from "@/hooks/useWeather";
-const getRandomSpots = (count: number) => {
-  const shuffled = [...spots].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, count);
-};
-
 const FeaturedSpots = () => {
-  const [randomSpots, setRandomSpots] = useState(() => getRandomSpots(6));
+  const { data: spots = [] } = useSpots();
+  const [shuffleKey, setShuffleKey] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const randomSpots = useMemo(() => {
+    const shuffled = [...spots].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, 6);
+    // shuffleKey intentionally re-triggers the shuffle
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [spots, shuffleKey]);
 
   const handleRefresh = useCallback(() => {
     setIsRefreshing(true);
     setTimeout(() => {
-      setRandomSpots(getRandomSpots(6));
+      setShuffleKey((k) => k + 1);
       setIsRefreshing(false);
     }, 300);
   }, []);
@@ -93,7 +97,7 @@ const FeaturedSpots = () => {
 };
 
 // Separate component for each spot card to enable individual weather hooks
-const FeaturedSpotCard = ({ spot, index }: { spot: typeof spots[0]; index: number }) => {
+const FeaturedSpotCard = ({ spot, index }: { spot: FishingSpot; index: number }) => {
   const { data: weather, isLoading: weatherLoading } = useWeather(
     spot.coordinates.lat,
     spot.coordinates.lng,

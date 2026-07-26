@@ -2,7 +2,8 @@ import { useState, useMemo, lazy, Suspense } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { MapPin, Filter, X, Loader2 } from "lucide-react";
-import { spots, FishingSpot } from "@/data/spots";
+import { FishingSpot } from "@/data/spots";
+import { useSpots } from "@/hooks/useSpots";
 import { countries } from "@/components/CountrySelector";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -31,6 +32,7 @@ const MapView = () => {
   const [selectedType, setSelectedType] = useState<string>("ALL");
   const [selectedCountry, setSelectedCountry] = useState<string>("ALL");
   const [selectedSpot, setSelectedSpot] = useState<FishingSpot | null>(null);
+  const { data: spots = [] } = useSpots();
 
   const filteredSpots = useMemo(() => {
     return spots.filter((spot) => {
@@ -38,12 +40,12 @@ const MapView = () => {
       const countryMatch = selectedCountry === "ALL" || spot.country === selectedCountry;
       return typeMatch && countryMatch;
     });
-  }, [selectedType, selectedCountry]);
+  }, [spots, selectedType, selectedCountry]);
 
   const uniqueCountries = useMemo(() => {
     const countryCodes = [...new Set(spots.map(spot => spot.country))];
     return countries.filter(c => countryCodes.includes(c.code));
-  }, []);
+  }, [spots]);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">

@@ -3,17 +3,20 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useSavedItems } from "@/hooks/useSavedItems";
-import { spots } from "@/data/spots";
+import { useSpots } from "@/hooks/useSpots";
 
 const SavedSpotsList = () => {
   const { getSavedByType, toggleSave, isLoading } = useSavedItems();
+  const { data: spots = [] } = useSpots();
 
   const savedSpots = getSavedByType("spot");
 
-  // Map saved spot IDs to actual spot data
+  // Saved items store the spot slug (older rows may store the numeric id)
   const spotDetails = savedSpots
     .map((saved) => {
-      const spot = spots.find((s) => String(s.id) === saved.item_id);
+      const spot = spots.find(
+        (s) => s.slug === saved.item_id || String(s.id) === saved.item_id
+      );
       if (!spot) return null;
       return { ...spot, savedAt: saved.created_at };
     })
