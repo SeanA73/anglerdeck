@@ -1,6 +1,6 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import { MapPin, Bookmark, Search, Filter, X } from "lucide-react";
+import { MapPin, Bookmark, Search, Filter, X, Navigation } from "lucide-react";
 import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -21,8 +21,16 @@ import { WeatherBadge } from "@/components/weather/WeatherBadge";
 import { FishingScoreBadge } from "@/components/weather/FishingConditions";
 import { useWeather } from "@/hooks/useWeather";
 import { SEO } from "@/components/SEO";
+import { toast } from "sonner";
+import {
+  COUNTRY_CENTROIDS,
+  distanceKm,
+  formatDistance,
+  getVisitorCountry,
+  requestPreciseLocation,
+} from "@/lib/geo";
 
-type SortOption = "name";
+type SortOption = "name" | "distance";
 
 const Spots = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -32,6 +40,47 @@ const Spots = () => {
   const [sortBy, setSortBy] = useState<SortOption>("name");
   const [showFilters, setShowFilters] = useState(false);
   const { data: spots = [], isLoading: spotsLoading } = useSpots();
+
+  // Visitor location: country is inferred from the browser timezone (no
+  // prompt, no network). Precise coordinates only arrive if the visitor
+  // taps "Near me" and grants permission.
+  const [origin, setOrigin] = useState<{ lat: number; lng: number } | null>(null);
+  const [locating, setLocating] = useState(false);
+  const [didAutoSelectCountry, setDidAutoSelectCountry] = useState(false);
+
+  useEffect(() => {
+    if (didAutoSelectCountry || spots.length === 0) return;
+
+    const country = getVisitorCountry();
+    if (!country) {
+      setDidAutoSelectCountry(true);
+      return;
+    }
+    // Only pre-select if we actually have spots there, otherwise show everything.
+    if (spots.some((s) => s.country === country)) {
+      setSelectedCountry(country);
+      if (COUNTRY_CENTROIDS[country]) {
+        setOrigin(COUNTRY_CENTROIDS[country]);
+        setSortBy("distance");
+      }
+    }
+    setDidAutoSelectCountry(true);
+  }, [spots, didAutoSelectCountry]);
+
+  const handleNearMe = async () => {
+    setLocating(true);
+    try {
+      const coords = await requestPreciseLocation();
+      setOrigin(coords);
+      setSortBy("distance");
+      setSelectedCountry("ALL");
+      toast.success("Sorting spots by distance from you");
+    } catch {
+      toast.error("Couldn't get your location. Check browser permissions.");
+    } finally {
+      setLocating(false);
+    }
+  };
 
   const filteredAndSortedSpots = useMemo(() => {
     const result = spots.filter((spot) => {
@@ -56,6 +105,9 @@ const Spots = () => {
     // Sort results
     result.sort((a, b) => {
       switch (sortBy) {
+        case "distance":
+          if (!origin) return a.title.localeCompare(b.title);
+          return distanceKm(origin, a.coordinates) - distanceKm(origin, b.coordinates);
         case "name":
           return a.title.localeCompare(b.title);
         default:
@@ -64,7 +116,7 @@ const Spots = () => {
     });
 
     return result;
-  }, [searchQuery, selectedCountry, selectedSpecies, selectedType, sortBy]);
+  }, [spots, searchQuery, selectedCountry, selectedSpecies, selectedType, sortBy, origin]);
 
   const clearFilters = () => {
     setSearchQuery("");
@@ -84,7 +136,7 @@ const Spots = () => {
     <div className="min-h-screen bg-background">
       <SEO
         title="Explore Fishing Spots Worldwide"
-        description="Browse 2,500+ fishing spots worldwide. Filter by country, species, freshwater or saltwater. Find your next perfect catch with AnglerDeck."
+        description="Browse curated fishing spots across Australia, the US and Canada. Filter by country, species, freshwater or saltwater. Find your next perfect catch with AnglerDeck."
         canonicalPath="/spots"
       />
       <Header />
@@ -183,8 +235,22 @@ const Spots = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="name">Name (A-Z)</SelectItem>
+                  <SelectItem value="distance" disabled={!origin}>
+                    Nearest first
+                  </SelectItem>
                 </SelectContent>
               </Select>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleNearMe}
+                disabled={locating}
+                className="gap-1.5"
+              >
+                <Navigation className="w-4 h-4" />
+                {locating ? "Locating…" : "Near me"}
+              </Button>
             </div>
 
             {hasActiveFilters && (
@@ -230,7 +296,12 @@ const Spots = () => {
               </motion.div>
             ) : (
               filteredAndSortedSpots.map((spot, index) => (
-                <SpotCard key={spot.id} spot={spot} index={index} />
+                <SpotCard
+                  key={spot.id}
+                  spot={spot}
+                  index={index}
+                  distance={origin ? distanceKm(origin, spot.coordinates) : undefined}
+                />
               ))
             )}
           </div>
@@ -242,7 +313,15 @@ const Spots = () => {
   );
 };
 
-const SpotCard = ({ spot, index }: { spot: FishingSpot; index: number }) => {
+const SpotCard = ({
+  spot,
+  index,
+  distance,
+}: {
+  spot: FishingSpot;
+  index: number;
+  distance?: number;
+}) => {
   const ref = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -328,6 +407,9 @@ const SpotCard = ({ spot, index }: { spot: FishingSpot; index: number }) => {
             <span className="text-sm">
               {spot.location},{" "}
               {countries.find((c) => c.code === spot.country)?.name || spot.country}
+              {distance !== undefined && (
+                <span className="text-accent"> · {formatDistance(distance)} away</span>
+              )}
             </span>
           </div>
 
