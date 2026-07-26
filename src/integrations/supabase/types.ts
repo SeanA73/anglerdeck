@@ -331,6 +331,102 @@ export type Database = {
         }
         Relationships: []
       }
+      newsletter_subscribers: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          source: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          source?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          source?: string | null
+        }
+        Relationships: []
+      }
+      spots: {
+        Row: {
+          best_times: Json
+          coordinates: Json
+          country: string
+          created_at: string
+          description: string
+          difficulty: string
+          featured: boolean
+          id: number
+          image_key: string
+          location: string
+          recommended_gear: Json
+          regulations: Json
+          slug: string
+          species: Json
+          sponsored: boolean | null
+          sponsored_url: string | null
+          tides: Json
+          title: string
+          type: string
+          updated_at: string
+          water_temperature: Json
+          weather: Json
+        }
+        Insert: {
+          best_times: Json
+          coordinates: Json
+          country: string
+          created_at?: string
+          description: string
+          difficulty: string
+          featured?: boolean
+          id?: number
+          image_key?: string
+          location: string
+          recommended_gear: Json
+          regulations?: Json
+          slug: string
+          species?: Json
+          sponsored?: boolean | null
+          sponsored_url?: string | null
+          tides: Json
+          title: string
+          type: string
+          updated_at?: string
+          water_temperature: Json
+          weather: Json
+        }
+        Update: {
+          best_times?: Json
+          coordinates?: Json
+          country?: string
+          created_at?: string
+          description?: string
+          difficulty?: string
+          featured?: boolean
+          id?: number
+          image_key?: string
+          location?: string
+          recommended_gear?: Json
+          regulations?: Json
+          slug?: string
+          species?: Json
+          sponsored?: boolean | null
+          sponsored_url?: string | null
+          tides?: Json
+          title?: string
+          type?: string
+          updated_at?: string
+          water_temperature?: Json
+          weather?: Json
+        }
+        Relationships: []
+      }
       spot_reviews: {
         Row: {
           author_name: string

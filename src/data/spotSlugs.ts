@@ -1,4 +1,10 @@
-/** Spot slugs for sitemap generation (no asset imports). */
+/**
+ * Build-time FALLBACK slug list for sitemap generation.
+ *
+ * The sitemap normally reads slugs live from the Supabase `spots` table
+ * (see vite.config.ts). This list is only used if Supabase is unreachable
+ * during a production build, so it does not need to be kept perfectly in sync.
+ */
 export const spotSlugs = [
   'sydney-harbour-kingfish',
   'port-phillip-bay-snapper',

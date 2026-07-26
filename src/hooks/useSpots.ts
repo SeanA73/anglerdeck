@@ -52,15 +52,14 @@ export const useSpots = () =>
   useQuery({
     queryKey: ["spots"],
     queryFn: async (): Promise<FishingSpot[]> => {
-      // `spots` is not yet in the generated Supabase types.
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from("spots")
         .select("*")
         .order("id", { ascending: true });
 
       if (error) throw error;
-      return ((data ?? []) as SpotRow[]).map(mapRow);
+      // jsonb columns come back as `Json`; SpotRow narrows them to their shapes.
+      return ((data ?? []) as unknown as SpotRow[]).map(mapRow);
     },
     staleTime: 1000 * 60 * 60, // 1 hour — catalog changes rarely
     gcTime: 1000 * 60 * 60 * 2,
