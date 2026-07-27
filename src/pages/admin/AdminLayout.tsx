@@ -1,5 +1,5 @@
 import { NavLink, Outlet, Link } from "react-router-dom";
-import { MapPin, ShoppingBag, CreditCard, Users, ArrowLeft, ShieldCheck } from "lucide-react";
+import { MapPin, ShoppingBag, CreditCard, Users, ShieldAlert, Megaphone, ArrowLeft, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -7,6 +7,8 @@ const navItems = [
   { to: "/admin/affiliate", label: "Affiliate", icon: ShoppingBag, end: false },
   { to: "/admin/subscriptions", label: "Subscriptions", icon: CreditCard, end: false },
   { to: "/admin/users", label: "Users", icon: Users, end: false },
+  { to: "/admin/moderation", label: "Moderation", icon: ShieldAlert, end: false },
+  { to: "/admin/marketing", label: "Marketing", icon: Megaphone, end: false },
 ];
 
 const AdminLayout = () => (

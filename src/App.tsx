@@ -35,6 +35,8 @@ const AdminSpots = lazy(() => import("./pages/admin/AdminSpots"));
 const AdminAffiliate = lazy(() => import("./pages/admin/AdminAffiliate"));
 const AdminSubscriptions = lazy(() => import("./pages/admin/AdminSubscriptions"));
 const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
+const AdminModeration = lazy(() => import("./pages/admin/AdminModeration"));
+const AdminMarketing = lazy(() => import("./pages/admin/AdminMarketing"));
 
 const queryClient = new QueryClient();
 
@@ -85,6 +87,8 @@ const App = () => (
                   <Route path="affiliate" element={<AdminAffiliate />} />
                   <Route path="subscriptions" element={<AdminSubscriptions />} />
                   <Route path="users" element={<AdminUsers />} />
+                  <Route path="moderation" element={<AdminModeration />} />
+                  <Route path="marketing" element={<AdminMarketing />} />
                 </Route>
                 <Route path="*" element={<NotFound />} />
               </Routes>
