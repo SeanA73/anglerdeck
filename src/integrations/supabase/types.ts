@@ -249,6 +249,7 @@ export type Database = {
           created_at: string
           display_name: string | null
           id: string
+          role: string
           updated_at: string
           user_id: string
         }
@@ -258,6 +259,7 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          role?: string
           updated_at?: string
           user_id: string
         }
@@ -267,10 +269,97 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          role?: string
           updated_at?: string
           user_id?: string
         }
         Relationships: []
+      }
+      affiliate_products: {
+        Row: {
+          affiliate_url: string
+          category: string | null
+          commission_rate: number | null
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          merchant: string | null
+          price: number | null
+          tags: string[] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          affiliate_url: string
+          category?: string | null
+          commission_rate?: number | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          merchant?: string | null
+          price?: number | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          affiliate_url?: string
+          category?: string | null
+          commission_rate?: number | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          merchant?: string | null
+          price?: number | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      affiliate_clicks: {
+        Row: {
+          clicked_at: string
+          conversion_amount: number | null
+          conversion_date: string | null
+          converted: boolean
+          id: string
+          product_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          clicked_at?: string
+          conversion_amount?: number | null
+          conversion_date?: string | null
+          converted?: boolean
+          id?: string
+          product_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          clicked_at?: string
+          conversion_amount?: number | null
+          conversion_date?: string | null
+          converted?: boolean
+          id?: string
+          product_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_clicks_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       review_votes: {
         Row: {

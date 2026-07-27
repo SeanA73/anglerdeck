@@ -9,6 +9,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import ScrollToTop from "@/components/ScrollToTop";
 import CookieConsent from "@/components/CookieConsent";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import AdminRoute from "@/components/AdminRoute";
 import { Loader2 } from "lucide-react";
 import { pageview } from "@/lib/analytics";
 
@@ -29,6 +30,11 @@ const Terms = lazy(() => import("./pages/Terms"));
 const Cookies = lazy(() => import("./pages/Cookies"));
 const Licenses = lazy(() => import("./pages/Licenses"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const AdminLayout = lazy(() => import("./pages/admin/AdminLayout"));
+const AdminSpots = lazy(() => import("./pages/admin/AdminSpots"));
+const AdminAffiliate = lazy(() => import("./pages/admin/AdminAffiliate"));
+const AdminSubscriptions = lazy(() => import("./pages/admin/AdminSubscriptions"));
+const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
 
 const queryClient = new QueryClient();
 
@@ -74,6 +80,12 @@ const App = () => (
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/cookies" element={<Cookies />} />
                 <Route path="/licenses" element={<Licenses />} />
+                <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
+                  <Route index element={<AdminSpots />} />
+                  <Route path="affiliate" element={<AdminAffiliate />} />
+                  <Route path="subscriptions" element={<AdminSubscriptions />} />
+                  <Route path="users" element={<AdminUsers />} />
+                </Route>
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
