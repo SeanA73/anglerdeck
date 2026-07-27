@@ -1,4 +1,15 @@
-export const GA_ID = import.meta.env.VITE_GA_ID;
+const RAW_GA_ID = import.meta.env.VITE_GA_ID;
+
+/**
+ * A real GA4 measurement ID is "G-" followed by an alphanumeric suffix. The
+ * placeholder shipped in .env.example (G-XXXXXXXXXX) is a non-empty string, so
+ * a plain truthiness check happily loads gtag against an ID that measures
+ * nothing — which looks like working analytics until you go looking for data.
+ */
+const isRealGaId = (id?: string): boolean =>
+  !!id && /^G-[A-Z0-9]+$/.test(id) && !/^G-X+$/.test(id);
+
+export const GA_ID = isRealGaId(RAW_GA_ID) ? RAW_GA_ID : undefined;
 
 declare global {
   interface Window {
