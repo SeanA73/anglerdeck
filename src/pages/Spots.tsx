@@ -4,6 +4,7 @@ import { MapPin, Bookmark, Search, Filter, X, Navigation } from "lucide-react";
 import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { AdBanner } from "@/components/ads/AdBanner";
 import { FishingSpot } from "@/data/spots";
 import { useSpots } from "@/hooks/useSpots";
 import CountrySelector, { countries } from "@/components/CountrySelector";
@@ -305,6 +306,9 @@ const Spots = () => {
               ))
             )}
           </div>
+
+          {/* AdSense (hidden for Pro/Elite) */}
+          <AdBanner slot={import.meta.env.VITE_ADSENSE_SLOT_SPOTS ?? ""} format="horizontal" />
         </div>
       </main>
 

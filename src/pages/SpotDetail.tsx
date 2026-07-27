@@ -45,6 +45,8 @@ import { FishingConditions } from "@/components/weather/FishingConditions";
 import FishingAssistant from "@/components/ai/FishingAssistant";
 import { SEO, BASE_URL } from "@/components/SEO";
 import { getBookingUrl, getAirbnbUrl, trackAffiliateClick } from "@/lib/affiliate";
+import { AffiliateGear } from "@/components/ads/AffiliateGear";
+import { AdBanner } from "@/components/ads/AdBanner";
 import { formatTemperature, formatWindSpeed, getDefaultUseCelsius } from "@/lib/temperature";
 
 const WeatherIcon = ({ icon }: { icon: string }) => {
@@ -623,6 +625,12 @@ const SpotDetail = () => {
                 </ul>
               </div>
             </motion.div>
+
+            {/* Affiliate gear (admin-curated, renders nothing when catalog is empty) */}
+            <AffiliateGear spotType={spot.type} species={spot.species} />
+
+            {/* AdSense (hidden for Pro/Elite) */}
+            <AdBanner slot={import.meta.env.VITE_ADSENSE_SLOT_SPOT_DETAIL ?? ""} />
 
             {/* CTA */}
             <motion.div

@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { AdBanner } from "@/components/ads/AdBanner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -240,6 +241,9 @@ const CommunityFeed = () => {
             )}
           </TabsContent>
         </Tabs>
+
+        {/* AdSense (hidden for Pro/Elite) */}
+        <AdBanner slot={import.meta.env.VITE_ADSENSE_SLOT_COMMUNITY ?? ""} format="horizontal" />
       </main>
 
       <CreatePostDialog
