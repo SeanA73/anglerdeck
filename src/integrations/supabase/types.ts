@@ -275,6 +275,33 @@ export type Database = {
         }
         Relationships: []
       }
+      regs_audit_log: {
+        Row: {
+          audited_at: string
+          countries: string[]
+          id: string
+          notes: string | null
+          quarter_group: string
+          spots_updated: number
+        }
+        Insert: {
+          audited_at?: string
+          countries: string[]
+          id?: string
+          notes?: string | null
+          quarter_group: string
+          spots_updated?: number
+        }
+        Update: {
+          audited_at?: string
+          countries?: string[]
+          id?: string
+          notes?: string | null
+          quarter_group?: string
+          spots_updated?: number
+        }
+        Relationships: []
+      }
       affiliate_products: {
         Row: {
           affiliate_url: string
