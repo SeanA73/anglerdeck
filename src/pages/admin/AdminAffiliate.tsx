@@ -15,19 +15,36 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Pencil, Loader2, MousePointerClick, TrendingUp, Package } from "lucide-react";
+import { normalizeAmazonUrl } from "@/lib/affiliate";
+import { Plus, Pencil, Loader2, MousePointerClick, TrendingUp, Package, Import, Wand2 } from "lucide-react";
 
 interface Product {
   id: string;
   title: string;
   description: string | null;
   price: number | null;
+  image_url: string | null;
   affiliate_url: string;
   commission_rate: number | null;
   merchant: string | null;
   category: string | null;
+  tags: string[] | null;
   is_active: boolean;
 }
+
+/** Infer spot-matching tags from a product title. */
+const suggestTags = (title: string): string[] => {
+  const t = title.toLowerCase();
+  const out = new Set<string>();
+  if (/\bfly\b|fly.?fish|tippet|tapered leader|waders|nymph|streamer/.test(t)) out.add("fly fishing");
+  if (/salt|surf|offshore|jig|boat|pier|trolling|snapper|kingfish|tuna|marlin/.test(t)) out.add("saltwater");
+  if (/freshwater|telescopic|bass|trout|pike|walleye|carp|zander|perch|spinnerbait|crankbait/.test(t)) out.add("freshwater");
+  for (const sp of ["trout", "bass", "pike", "salmon", "carp", "walleye", "zander", "snapper", "tuna", "barramundi"]) {
+    if (t.includes(sp)) out.add(sp);
+  }
+  if (out.size === 0) ["freshwater", "saltwater", "fly fishing"].forEach((x) => out.add(x));
+  return [...out];
+};
 
 interface Click {
   id: string;
@@ -39,7 +56,7 @@ interface Click {
 
 const emptyForm = {
   title: "", description: "", price: "", affiliate_url: "",
-  commission_rate: "", merchant: "", category: "",
+  commission_rate: "", merchant: "", category: "", tags: "", image_url: "",
 };
 
 const AdminAffiliate = () => {
@@ -47,13 +64,15 @@ const AdminAffiliate = () => {
   const queryClient = useQueryClient();
   const [editing, setEditing] = useState<Product | "new" | null>(null);
   const [form, setForm] = useState(emptyForm);
+  const [bulkOpen, setBulkOpen] = useState(false);
+  const [bulkText, setBulkText] = useState("");
 
   const { data: products, isLoading: productsLoading } = useQuery({
     queryKey: ["admin-affiliate-products"],
     queryFn: async (): Promise<Product[]> => {
       const { data, error } = await supabase
         .from("affiliate_products")
-        .select("id, title, description, price, affiliate_url, commission_rate, merchant, category, is_active")
+        .select("id, title, description, price, image_url, affiliate_url, commission_rate, merchant, category, tags, is_active")
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data ?? [];
@@ -92,10 +111,14 @@ const AdminAffiliate = () => {
         title: form.title,
         description: form.description || null,
         price: form.price ? Number(form.price) : null,
+        image_url: form.image_url || null,
         affiliate_url: form.affiliate_url,
         commission_rate: form.commission_rate ? Number(form.commission_rate) : null,
         merchant: form.merchant || null,
         category: form.category || null,
+        tags: form.tags
+          ? form.tags.split(",").map((t) => t.trim().toLowerCase()).filter(Boolean)
+          : null,
       };
       if (editing === "new") {
         const { error } = await supabase.from("affiliate_products").insert(payload);
@@ -131,6 +154,48 @@ const AdminAffiliate = () => {
       toast({ title: "Update failed", description: e.message, variant: "destructive" }),
   });
 
+  const bulkImport = useMutation({
+    mutationFn: async () => {
+      const lines = bulkText.split("\n").map((l) => l.trim()).filter(Boolean);
+      const rows: { title: string; affiliate_url: string; merchant: string; is_active: boolean }[] = [];
+      const skipped: string[] = [];
+      for (const line of lines) {
+        // Optional "URL | Title" format; bare URL otherwise
+        const [urlPart, titlePart] = line.split("|").map((s) => s.trim());
+        const normalized = normalizeAmazonUrl(urlPart);
+        if (!normalized) {
+          skipped.push(line);
+          continue;
+        }
+        const asin = normalized.match(/\/dp\/([A-Z0-9]{10})/)?.[1] ?? "unknown";
+        rows.push({
+          title: titlePart || `DRAFT — ${asin}`,
+          affiliate_url: normalized,
+          merchant: "amazon",
+          is_active: false, // drafts stay off the site until finished
+        });
+      }
+      if (rows.length) {
+        const { error } = await supabase.from("affiliate_products").insert(rows);
+        if (error) throw error;
+      }
+      return { imported: rows.length, skipped: skipped.length };
+    },
+    onSuccess: ({ imported, skipped }) => {
+      queryClient.invalidateQueries({ queryKey: ["admin-affiliate-products"] });
+      toast({
+        title: `Imported ${imported} draft${imported === 1 ? "" : "s"}`,
+        description: skipped
+          ? `${skipped} line(s) skipped (no ASIN found). Drafts are inactive until you add a title and activate them.`
+          : "Drafts are inactive until you add a title and activate them.",
+      });
+      setBulkOpen(false);
+      setBulkText("");
+    },
+    onError: (e: Error) =>
+      toast({ title: "Import failed", description: e.message, variant: "destructive" }),
+  });
+
   const openEdit = (p: Product | "new") => {
     setEditing(p);
     setForm(
@@ -144,8 +209,20 @@ const AdminAffiliate = () => {
             commission_rate: p.commission_rate != null ? String(p.commission_rate) : "",
             merchant: p.merchant ?? "",
             category: p.category ?? "",
+            tags: (p.tags ?? []).join(", "),
+            image_url: p.image_url ?? "",
           }
     );
+  };
+
+  /** Paste any Amazon URL → canonical tagged link + merchant autofill. */
+  const handleUrlChange = (raw: string) => {
+    const normalized = normalizeAmazonUrl(raw);
+    setForm((f) => ({
+      ...f,
+      affiliate_url: normalized ?? raw,
+      merchant: normalized ? "amazon" : f.merchant,
+    }));
   };
 
   if (productsLoading) {
@@ -160,10 +237,16 @@ const AdminAffiliate = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Affiliate Dashboard</h1>
-        <Button onClick={() => openEdit("new")}>
-          <Plus className="w-4 h-4 mr-1.5" />
-          Add product
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => setBulkOpen(true)}>
+            <Import className="w-4 h-4 mr-1.5" />
+            Bulk import
+          </Button>
+          <Button onClick={() => openEdit("new")}>
+            <Plus className="w-4 h-4 mr-1.5" />
+            Add product
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -272,9 +355,12 @@ const AdminAffiliate = () => {
               <Label>Affiliate URL</Label>
               <Input
                 value={form.affiliate_url}
-                onChange={(e) => setForm({ ...form, affiliate_url: e.target.value })}
-                placeholder="https://…"
+                onChange={(e) => handleUrlChange(e.target.value)}
+                placeholder="Paste any Amazon product URL — auto-converts to your tagged link"
               />
+              <p className="text-xs text-muted-foreground mt-1">
+                Amazon URLs are cleaned and re-tagged automatically (tag=anglerdeck-20).
+              </p>
             </div>
             <div>
               <Label>Description</Label>
@@ -320,6 +406,34 @@ const AdminAffiliate = () => {
                 />
               </div>
             </div>
+            <div>
+              <div className="flex items-center justify-between">
+                <Label>Tags (comma-separated, match spots)</Label>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 text-xs"
+                  onClick={() => setForm({ ...form, tags: suggestTags(form.title).join(", ") })}
+                  disabled={!form.title}
+                >
+                  <Wand2 className="w-3 h-3 mr-1" /> Suggest from title
+                </Button>
+              </div>
+              <Input
+                value={form.tags}
+                onChange={(e) => setForm({ ...form, tags: e.target.value })}
+                placeholder="fly fishing, trout, freshwater…"
+              />
+            </div>
+            <div>
+              <Label>Image URL (optional)</Label>
+              <Input
+                value={form.image_url}
+                onChange={(e) => setForm({ ...form, image_url: e.target.value })}
+                placeholder="https://m.media-amazon.com/images/…"
+              />
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditing(null)}>Cancel</Button>
@@ -329,6 +443,39 @@ const AdminAffiliate = () => {
             >
               {saveMutation.isPending && <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />}
               Save
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={bulkOpen} onOpenChange={setBulkOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Bulk import Amazon URLs</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label>One product per line — any Amazon URL format works</Label>
+            <Textarea
+              rows={8}
+              value={bulkText}
+              onChange={(e) => setBulkText(e.target.value)}
+              placeholder={
+                "https://www.amazon.com/dp/B0C49KX7XD\nhttps://www.amazon.com/Some-Product/dp/B0EXAMPLE1?ref=sr_1_3 | Telescopic Rod Combo"
+              }
+            />
+            <p className="text-xs text-muted-foreground">
+              ASINs are extracted and links rebuilt with your tag. Add "| Title" after a URL to
+              name it now. Everything imports as an <strong>inactive draft</strong> — finish
+              titles/tags in the table, then flip the Active switch.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setBulkOpen(false)}>Cancel</Button>
+            <Button
+              onClick={() => bulkImport.mutate()}
+              disabled={bulkImport.isPending || !bulkText.trim()}
+            >
+              {bulkImport.isPending && <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />}
+              Import
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -8,6 +8,25 @@ export const airbnbAffiliateId = import.meta.env.VITE_AIRBNB_AFFILIATE_ID || '';
 export const buildAmazonUrl = (asin: string) =>
   `https://www.amazon.com/dp/${asin}?tag=${amazonTag}`;
 
+/** Pull the 10-character ASIN out of any Amazon product URL shape. */
+export const extractAsin = (url: string): string | null => {
+  const m =
+    url.match(/(?:\/dp\/|\/gp\/product\/|\/gp\/aw\/d\/|\/product\/)([A-Z0-9]{10})(?:[/?]|$)/i) ??
+    url.match(/[?&]asin=([A-Z0-9]{10})/i);
+  return m ? m[1].toUpperCase() : null;
+};
+
+/**
+ * Turn any pasted Amazon URL (search-result links, links with tracking
+ * params, mobile links, someone else's tag…) into the canonical short form
+ * carrying OUR affiliate tag. Returns null when no ASIN can be found.
+ */
+export const normalizeAmazonUrl = (url: string): string | null => {
+  if (!/amazon\.[a-z.]+\//i.test(url)) return null;
+  const asin = extractAsin(url);
+  return asin ? buildAmazonUrl(asin) : null;
+};
+
 export const buildClickbankUrl = (vendorPath: string) =>
   `https://${vendorPath}?hop=${clickbankHop}`;
 
