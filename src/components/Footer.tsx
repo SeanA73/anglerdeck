@@ -95,9 +95,16 @@ const Footer = () => {
 
         {/* Bottom */}
         <div className="mt-16 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-muted-foreground">
-            © 2026 AnglerDeck. All rights reserved.
-          </p>
+          <div>
+            <p className="text-sm text-muted-foreground">
+              © 2026 AnglerDeck. All rights reserved.
+            </p>
+            <p className="text-xs text-muted-foreground/80 mt-1 max-w-md">
+              As an Amazon Associate, AnglerDeck earns from qualifying purchases.
+              Some links on this site are affiliate links — we may earn a
+              commission at no extra cost to you.
+            </p>
+          </div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <MapPin className="w-4 h-4 text-accent" />
             Made for anglers, everywhere
