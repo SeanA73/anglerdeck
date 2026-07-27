@@ -52,6 +52,10 @@ const EnvSchema = z.object({
 
   // Affiliate tracking IDs (Phase 9 — Path B multi-revenue layer)
   VITE_AMAZON_AFFILIATE_TAG: z.string().optional(),
+  // Amazon OneLink adInstanceId (Associates Central → Tools → OneLink).
+  // Redirects non-US visitors to their local Amazon store so international
+  // clicks can actually earn. Unset = US-only links.
+  VITE_AMAZON_ONELINK_ID: z.string().optional(),
   VITE_CLICKBANK_HOP_ID: z.string().optional(),
   VITE_BOOKING_AFFILIATE_ID: z.string().optional(),
   VITE_AIRBNB_AFFILIATE_ID: z.string().optional(),

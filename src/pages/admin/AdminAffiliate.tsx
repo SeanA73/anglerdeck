@@ -175,19 +175,31 @@ const AdminAffiliate = () => {
           is_active: false, // drafts stay off the site until finished
         });
       }
+      let imported = 0;
       if (rows.length) {
-        const { error } = await supabase.from("affiliate_products").insert(rows);
+        // affiliate_url is unique — ignoreDuplicates re-imports the same list
+        // safely instead of erroring. .select() reports only the new rows.
+        const { data, error } = await supabase
+          .from("affiliate_products")
+          .upsert(rows, { onConflict: "affiliate_url", ignoreDuplicates: true })
+          .select("id");
         if (error) throw error;
+        imported = data?.length ?? 0;
       }
-      return { imported: rows.length, skipped: skipped.length };
+      return { imported, duplicates: rows.length - imported, skipped: skipped.length };
     },
-    onSuccess: ({ imported, skipped }) => {
+    onSuccess: ({ imported, duplicates, skipped }) => {
       queryClient.invalidateQueries({ queryKey: ["admin-affiliate-products"] });
+      const notes = [
+        duplicates ? `${duplicates} already in the catalog` : null,
+        skipped ? `${skipped} line(s) skipped (no ASIN found)` : null,
+      ].filter(Boolean);
       toast({
         title: `Imported ${imported} draft${imported === 1 ? "" : "s"}`,
-        description: skipped
-          ? `${skipped} line(s) skipped (no ASIN found). Drafts are inactive until you add a title and activate them.`
-          : "Drafts are inactive until you add a title and activate them.",
+        description: [
+          ...notes,
+          "Drafts are inactive until you add a title and activate them.",
+        ].join(". "),
       });
       setBulkOpen(false);
       setBulkText("");

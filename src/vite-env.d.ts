@@ -8,6 +8,7 @@ interface ImportMetaEnv {
   readonly VITE_GA_ID?: string;
   readonly VITE_SITE_URL?: string;
   readonly VITE_AMAZON_AFFILIATE_TAG?: string;
+  readonly VITE_AMAZON_ONELINK_ID?: string;
   readonly VITE_CLICKBANK_HOP_ID?: string;
   readonly VITE_BOOKING_AFFILIATE_ID?: string;
   readonly VITE_AIRBNB_AFFILIATE_ID?: string;

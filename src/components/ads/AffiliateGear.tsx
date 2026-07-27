@@ -1,9 +1,11 @@
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { ShoppingBag, ExternalLink } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { trackAffiliateClick } from "@/lib/affiliate";
+import { loadOneLinkScript } from "@/lib/onelink";
 
 interface GearProduct {
   id: string;
@@ -49,6 +51,13 @@ export const AffiliateGear = ({ spotType, species = [], limit = 4 }: AffiliateGe
       return data ?? [];
     },
   });
+
+  // OneLink rewrites our amazon.com links to the visitor's local store at click
+  // time. Only pull the script in once there are actually links to rewrite.
+  const hasAmazonProduct = products?.some((p) => p.merchant === "amazon") ?? false;
+  useEffect(() => {
+    if (hasAmazonProduct) loadOneLinkScript();
+  }, [hasAmazonProduct]);
 
   if (!products?.length) return null;
 
