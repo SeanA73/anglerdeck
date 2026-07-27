@@ -10,6 +10,19 @@ import { z } from "zod";
  * Add new env vars here as they're introduced. See .env.local (gitignored)
  * for actual values; see .env.example (if it exists) for documentation.
  */
+/**
+ * An optional var that may legitimately be present-but-blank.
+ *
+ * `.env` files can only express "unset" as an empty string, and .env.example
+ * ships blank placeholders that get copied forward. Vite surfaces those as ""
+ * rather than undefined, so a bare `z.string().startsWith(...).optional()`
+ * would fail validation on a blank line — and because parseEnv() throws at
+ * import time, that takes the whole app down rather than just disabling the
+ * feature. Treat blank as absent.
+ */
+const optionalVar = (schema: z.ZodType<string>) =>
+  z.preprocess((v) => (v === "" ? undefined : v), schema.optional());
+
 const EnvSchema = z.object({
   // Supabase — required for auth, DB, edge function calls
   VITE_SUPABASE_URL: z
@@ -48,23 +61,25 @@ const EnvSchema = z.object({
   // ------------------------------------------------------------------
 
   // Google Analytics 4 measurement ID
-  VITE_GA_ID: z.string().startsWith("G-").optional(),
+  VITE_GA_ID: optionalVar(z.string().startsWith("G-", "VITE_GA_ID must start with G-")),
 
   // Affiliate tracking IDs (Phase 9 — Path B multi-revenue layer)
-  VITE_AMAZON_AFFILIATE_TAG: z.string().optional(),
+  VITE_AMAZON_AFFILIATE_TAG: optionalVar(z.string()),
   // Amazon OneLink adInstanceId (Associates Central → Tools → OneLink).
   // Redirects non-US visitors to their local Amazon store so international
   // clicks can actually earn. Unset = US-only links.
-  VITE_AMAZON_ONELINK_ID: z.string().optional(),
-  VITE_CLICKBANK_HOP_ID: z.string().optional(),
-  VITE_BOOKING_AFFILIATE_ID: z.string().optional(),
-  VITE_AIRBNB_AFFILIATE_ID: z.string().optional(),
+  VITE_AMAZON_ONELINK_ID: optionalVar(z.string()),
+  VITE_CLICKBANK_HOP_ID: optionalVar(z.string()),
+  VITE_BOOKING_AFFILIATE_ID: optionalVar(z.string()),
+  VITE_AIRBNB_AFFILIATE_ID: optionalVar(z.string()),
 
   // Google AdSense (Phase 9 — approval required first)
-  VITE_ADSENSE_CLIENT_ID: z.string().startsWith("ca-pub-").optional(),
-  VITE_ADSENSE_SLOT_SPOTS: z.string().optional(),
-  VITE_ADSENSE_SLOT_SPOT_DETAIL: z.string().optional(),
-  VITE_ADSENSE_SLOT_COMMUNITY: z.string().optional(),
+  VITE_ADSENSE_CLIENT_ID: optionalVar(
+    z.string().startsWith("ca-pub-", "VITE_ADSENSE_CLIENT_ID must start with ca-pub-")
+  ),
+  VITE_ADSENSE_SLOT_SPOTS: optionalVar(z.string()),
+  VITE_ADSENSE_SLOT_SPOT_DETAIL: optionalVar(z.string()),
+  VITE_ADSENSE_SLOT_COMMUNITY: optionalVar(z.string()),
 });
 
 /**
