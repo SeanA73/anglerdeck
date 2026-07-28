@@ -17,6 +17,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadEnv } from "vite";
+import { isIndexable, INDEX_THRESHOLD } from "./spot-quality.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "..");
@@ -104,16 +105,19 @@ function withBody(html, contentHtml) {
   );
 }
 
+/** Renders a <ul>, tolerating null/undefined or a non-array value. */
 const list = (items) =>
-  items?.length
+  Array.isArray(items) && items.length
     ? `<ul>${items.map((i) => `<li>${esc(i)}</li>`).join("")}</ul>`
     : "";
 
 function spotContent(spot, all) {
   const country = COUNTRY_NAMES[spot.country] || spot.country;
-  const gear = spot.recommended_gear || {};
+  const gear = (spot.recommended_gear && typeof spot.recommended_gear === "object")
+    ? spot.recommended_gear
+    : {};
   const nearby = all
-    .filter((s) => s.id !== spot.id)
+    .filter((s) => s.id !== spot.id && s.coordinates?.lat != null)
     .map((s) => ({ s, km: distanceKm(spot.coordinates, s.coordinates) }))
     .sort((a, b) => a.km - b.km)
     .slice(0, 5);
@@ -228,16 +232,21 @@ async function main() {
     write(route.path, html);
   }
 
+  let indexed = 0;
   for (const spot of spots) {
     const country = COUNTRY_NAMES[spot.country] || spot.country;
     const title = `${spot.title} — Fishing in ${spot.location}, ${country} | AnglerDeck`;
     const description = String(spot.description || "").slice(0, 155);
+    const indexable = isIndexable(spot);
+    if (indexable) indexed++;
 
     let html = withHead(template, {
       title,
       description,
       canonical: `${SITE_URL}/spot/${spot.slug}`,
       jsonLd: spotJsonLd(spot),
+      // Thin pages stay crawlable and keep passing link equity, but out of the index.
+      noIndex: !indexable,
     });
     html = withBody(html, spotContent(spot, spots));
     write(`/spot/${spot.slug}`, html);
@@ -246,6 +255,11 @@ async function main() {
   console.log(
     `[prerender] wrote ${STATIC_ROUTES.length} static routes and ${spots.length} spot pages`
   );
+  if (spots.length) {
+    console.log(
+      `[prerender] ${indexed} indexable, ${spots.length - indexed} noindex (quality score < ${INDEX_THRESHOLD})`
+    );
+  }
 }
 
 main().catch((err) => {
