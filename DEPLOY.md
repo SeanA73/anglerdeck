@@ -101,6 +101,20 @@ npm run build   # rebuild so new env values get baked in
 - VITE_STRIPE_PRICE_ELITE_MONTHLY
 - VITE_STRIPE_PRICE_ELITE_YEARLY
 
+**AdSense vars** (publisher ID and slot IDs are public — they ship in the page source):
+- VITE_ADSENSE_CLIENT_ID=ca-pub-2356680512865218
+- VITE_ADSENSE_SLOT_SPOTS=6021548634
+- VITE_ADSENSE_SLOT_SPOT_DETAIL=4604405042
+- VITE_ADSENSE_SLOT_COMMUNITY=1087831864
+
+⚠️ **Auto ads must stay OFF for anglerdeck.com in the AdSense console.** The
+AdSense loader in `index.html` only loads the library; ads render solely where
+`<AdBanner>` places them, and that component hides ads from Pro and Elite
+subscribers. Enabling Auto ads would let Google inject ads anywhere — including
+for paying users who were promised an ad-free experience.
+
+`public/ads.txt` authorises Google to sell this inventory. Do not remove it.
+
 Secret keys (STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, OPENAI_API_KEY) live in Supabase Edge Function Secrets, NOT in this file.
 
 ## SSL certificate renewal

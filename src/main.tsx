@@ -9,6 +9,10 @@ import { HelmetProvider } from "react-helmet-async";
 import App from "./App.tsx";
 import "./index.css";
 import { initAnalytics } from "@/lib/analytics";
+import { initGoogleConsentDefaults } from "@/lib/cookieConsent";
+
+// Consent Mode defaults must be set before any Google tag (AdSense) loads.
+initGoogleConsentDefaults();
 
 initAnalytics();
 

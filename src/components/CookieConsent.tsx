@@ -5,14 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import CookiePreferencesDialog from "./CookiePreferencesDialog";
 
-export interface CookiePreferences {
-  essential: boolean;
-  functional: boolean;
-  analytics: boolean;
-  marketing: boolean;
-}
+import {
+  COOKIE_CONSENT_KEY,
+  writeConsent,
+  type CookiePreferences,
+} from "@/lib/cookieConsent";
 
-const COOKIE_CONSENT_KEY = "anglerdeck-cookie-consent";
+export type { CookiePreferences };
 
 const CookieConsent = () => {
   const [showBanner, setShowBanner] = useState(false);
@@ -44,7 +43,8 @@ const CookieConsent = () => {
   }, []);
 
   const savePreferences = (prefs: CookiePreferences) => {
-    localStorage.setItem(COOKIE_CONSENT_KEY, JSON.stringify(prefs));
+    // Persists, notifies listeners (ads/analytics) and updates Google Consent Mode.
+    writeConsent(prefs);
     setPreferences(prefs);
     setShowBanner(false);
     setShowPreferences(false);
