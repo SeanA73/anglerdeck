@@ -53,24 +53,49 @@ export const COUNTRY_CENTROIDS: Record<string, { lat: number; lng: number }> = {
   GB: { lat: 54.0, lng: -2.0 },
 };
 
-export const getVisitorCountry = (): string | null => {
-  if (typeof Intl === "undefined") return null;
-
+/** Raw IANA timezone, or "" when unavailable. */
+export const getVisitorTimezone = (): string => {
+  if (typeof Intl === "undefined") return "";
   try {
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
-    // Exact matches first, then prefixes (longest prefix wins, so that
-    // "America/Toronto" beats the generic "America/" → US entry).
-    if (TIMEZONE_COUNTRY[tz]) return TIMEZONE_COUNTRY[tz];
-
-    const prefixes = Object.keys(TIMEZONE_COUNTRY)
-      .filter((k) => k.endsWith("/") && tz.startsWith(k))
-      .sort((a, b) => b.length - a.length);
-    if (prefixes.length > 0) return TIMEZONE_COUNTRY[prefixes[0]];
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || "";
   } catch {
-    /* fall through to locale */
+    return "";
   }
+};
 
-  // Locale fallback, e.g. "en-AU" → AU
+/**
+ * Country from timezone alone. Returns null when the zone is not in the map.
+ *
+ * Deliberately has no locale fallback: a very large share of non-US users
+ * browse with `navigator.language === "en-US"` (the Windows default), so
+ * trusting locale misidentifies them as American. Use this wherever a wrong
+ * answer is worse than no answer — measurement units, for instance.
+ */
+export const getVisitorCountryStrict = (): string | null => {
+  const tz = getVisitorTimezone();
+  if (!tz) return null;
+
+  // Exact matches first, then prefixes (longest wins, so "America/Toronto"
+  // beats the generic "America/" → US entry).
+  if (TIMEZONE_COUNTRY[tz]) return TIMEZONE_COUNTRY[tz];
+
+  const prefixes = Object.keys(TIMEZONE_COUNTRY)
+    .filter((k) => k.endsWith("/") && tz.startsWith(k))
+    .sort((a, b) => b.length - a.length);
+
+  return prefixes.length > 0 ? TIMEZONE_COUNTRY[prefixes[0]] : null;
+};
+
+/**
+ * Best-effort country, falling back to the locale region.
+ *
+ * Fine for soft personalisation like pre-selecting a country filter, where a
+ * wrong guess is harmless and the user can simply change it.
+ */
+export const getVisitorCountry = (): string | null => {
+  const fromTimezone = getVisitorCountryStrict();
+  if (fromTimezone) return fromTimezone;
+
   const locale = typeof navigator !== "undefined" ? navigator.language : "";
   const region = locale?.split("-")[1];
   return region ? region.toUpperCase() : null;
