@@ -37,6 +37,23 @@ async function fetchSpotSlugs(env: Record<string, string>): Promise<string[]> {
     const rows = await res.json();
     if (!Array.isArray(rows) || rows.length === 0) throw new Error('no rows returned');
 
+    // Review counts feed the quality gate, so the sitemap and the prerendered
+    // robots tags reach the same verdict.
+    try {
+      const rres = await fetch(`${url}/rest/v1/spot_reviews?select=spot_id`, {
+        headers: { apikey: key, Authorization: `Bearer ${key}` },
+      });
+      if (rres.ok) {
+        const counts = new Map<number, number>();
+        for (const r of (await rres.json()) as { spot_id: number }[]) {
+          counts.set(r.spot_id, (counts.get(r.spot_id) ?? 0) + 1);
+        }
+        for (const row of rows) row.reviewCount = counts.get(row.id) ?? 0;
+      }
+    } catch {
+      /* review counts are optional — fall back to zero */
+    }
+
     const indexable = rows.filter(isIndexable);
     console.log(
       `[sitemap] ${indexable.length} of ${rows.length} spots pass the quality gate`

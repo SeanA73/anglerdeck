@@ -31,9 +31,13 @@ export function spotScore(spot) {
   if (arr(spot.regulations).length >= 3) score += 1;
   if (arr(spot.best_times).length >= 3) score += 1;
   if (arr(spot.recommended_gear?.essential).length >= 4) score += 1;
-  // Verified access detail is the strongest signal that a page is genuinely
-  // useful rather than templated, so it is worth two points.
+  // Verified access detail is a strong signal that a page is genuinely useful
+  // rather than templated, so it is worth two points.
   if (hasAccessDetail(spot.access)) score += 2;
+  // Angler reviews are first-hand experience — the one thing that cannot be
+  // researched or generated — so they count for the most.
+  if ((spot.reviewCount ?? 0) >= 1) score += 2;
+  if ((spot.reviewCount ?? 0) >= 3) score += 1;
   return score;
 }
 

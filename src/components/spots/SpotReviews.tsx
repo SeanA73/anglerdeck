@@ -67,9 +67,19 @@ export const SpotReviews = ({ spotId, spotTitle }: SpotReviewsProps) => {
             ))}
           </>
         ) : reviews.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
-            <MessageSquare className="w-12 h-12 mx-auto mb-3 opacity-30" />
-            <p>No reviews yet. Be the first to share your experience!</p>
+          <div className="text-center py-8 px-4">
+            <MessageSquare className="w-12 h-12 mx-auto mb-3 opacity-30 text-muted-foreground" />
+            <p className="text-foreground font-medium">
+              No one has reported from {spotTitle} yet
+            </p>
+            <p className="text-sm text-muted-foreground mt-2 max-w-md mx-auto">
+              If you've fished here, a few lines genuinely helps the next angler —
+              what was biting, how the access held up, what you'd do differently.
+              Two minutes is plenty.
+            </p>
+            <p className="text-sm text-accent mt-3">
+              We give a free month of Pro for three helpful reports.
+            </p>
           </div>
         ) : (
           reviews.map((review) => (
