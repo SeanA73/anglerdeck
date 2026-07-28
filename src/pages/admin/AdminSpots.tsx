@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Pencil, ExternalLink, AlertTriangle, Loader2 } from "lucide-react";
+import type { SpotAccess } from "@/data/spots";
 
 interface AdminSpot {
   id: number;
@@ -31,6 +32,7 @@ interface AdminSpot {
   updated_at: string;
   water_temperature: { current: number; unit: string; trend: string };
   regulations: string[];
+  access: SpotAccess | null;
 }
 
 const STALE_DAYS = 180;
@@ -50,6 +52,9 @@ const AdminSpots = () => {
   const [form, setForm] = useState({
     title: "", location: "", waterTemp: "", trend: "stable",
     regulations: "", featured: false, sponsored: false, sponsoredUrl: "",
+    // Access details — leave blank rather than guessing.
+    shore: false, boat: false, ramp: "", parking: "", walkIn: "",
+    facilities: "", accessNotes: "", accessSource: "",
   });
 
   const { data: spots, isLoading } = useQuery({
@@ -57,7 +62,7 @@ const AdminSpots = () => {
     queryFn: async (): Promise<AdminSpot[]> => {
       const { data, error } = await supabase
         .from("spots")
-        .select("id, slug, title, location, country, featured, sponsored, sponsored_url, updated_at, water_temperature, regulations")
+        .select("id, slug, title, location, country, featured, sponsored, sponsored_url, updated_at, water_temperature, regulations, access")
         .order("id");
       if (error) throw error;
       return (data ?? []) as unknown as AdminSpot[];
@@ -113,7 +118,35 @@ const AdminSpots = () => {
       featured: spot.featured,
       sponsored: spot.sponsored ?? false,
       sponsoredUrl: spot.sponsored_url ?? "",
+      shore: spot.access?.shore ?? false,
+      boat: spot.access?.boat ?? false,
+      ramp: spot.access?.ramp ?? "",
+      parking: spot.access?.parking ?? "",
+      walkIn: spot.access?.walkIn ?? "",
+      facilities: (spot.access?.facilities ?? []).join(", "),
+      accessNotes: spot.access?.notes ?? "",
+      accessSource: spot.access?.sourceUrl ?? "",
     });
+  };
+
+  /** Builds the access object, or null when nothing has been filled in. */
+  const buildAccess = (): SpotAccess | null => {
+    const facilities = form.facilities
+      .split(",")
+      .map((f) => f.trim())
+      .filter(Boolean);
+
+    const access: SpotAccess = {};
+    if (form.shore) access.shore = true;
+    if (form.boat) access.boat = true;
+    if (form.ramp.trim()) access.ramp = form.ramp.trim();
+    if (form.parking.trim()) access.parking = form.parking.trim();
+    if (form.walkIn.trim()) access.walkIn = form.walkIn.trim();
+    if (facilities.length) access.facilities = facilities;
+    if (form.accessNotes.trim()) access.notes = form.accessNotes.trim();
+    if (form.accessSource.trim()) access.sourceUrl = form.accessSource.trim();
+
+    return Object.keys(access).length ? access : null;
   };
 
   const saveEdit = () => {
@@ -133,6 +166,7 @@ const AdminSpots = () => {
           featured: form.featured,
           sponsored: form.sponsored,
           sponsored_url: form.sponsored ? form.sponsoredUrl || null : null,
+          access: buildAccess(),
         },
       },
       { onSuccess: () => setEditing(null) }
@@ -320,6 +354,87 @@ const AdminSpots = () => {
                 />
               </div>
             )}
+
+            <div className="border-t border-border pt-4 mt-2">
+              <h4 className="font-semibold text-sm mb-1">Access details</h4>
+              <p className="text-xs text-muted-foreground mb-3">
+                Only fill in what you know or can verify. Blank fields are hidden
+                on the page — that is better than a confident guess.
+              </p>
+
+              <div className="flex flex-wrap gap-4 mb-3">
+                <div className="flex items-center gap-1.5">
+                  <Switch
+                    id="edit-shore"
+                    checked={form.shore}
+                    onCheckedChange={(v) => setForm({ ...form, shore: v })}
+                  />
+                  <Label htmlFor="edit-shore">Land-based</Label>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Switch
+                    id="edit-boat"
+                    checked={form.boat}
+                    onCheckedChange={(v) => setForm({ ...form, boat: v })}
+                  />
+                  <Label htmlFor="edit-boat">Boat access</Label>
+                </div>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-3">
+                <div>
+                  <Label>Boat ramp</Label>
+                  <Input
+                    value={form.ramp}
+                    onChange={(e) => setForm({ ...form, ramp: e.target.value })}
+                    placeholder="e.g. Rose Bay public ramp, 2 km"
+                  />
+                </div>
+                <div>
+                  <Label>Parking</Label>
+                  <Input
+                    value={form.parking}
+                    onChange={(e) => setForm({ ...form, parking: e.target.value })}
+                    placeholder="e.g. Free car park, ~30 spaces"
+                  />
+                </div>
+                <div>
+                  <Label>Walk in</Label>
+                  <Input
+                    value={form.walkIn}
+                    onChange={(e) => setForm({ ...form, walkIn: e.target.value })}
+                    placeholder="e.g. 200 m on a formed track"
+                  />
+                </div>
+                <div>
+                  <Label>Facilities (comma separated)</Label>
+                  <Input
+                    value={form.facilities}
+                    onChange={(e) => setForm({ ...form, facilities: e.target.value })}
+                    placeholder="Toilets, BBQ, Cleaning table"
+                  />
+                </div>
+              </div>
+
+              <div className="mt-3">
+                <Label>Access notes</Label>
+                <Textarea
+                  rows={2}
+                  value={form.accessNotes}
+                  onChange={(e) => setForm({ ...form, accessNotes: e.target.value })}
+                  placeholder="Permits, 4WD only, tide-dependent access, seasonal closures…"
+                />
+              </div>
+
+              <div className="mt-3">
+                <Label>Source URL</Label>
+                <Input
+                  value={form.accessSource}
+                  onChange={(e) => setForm({ ...form, accessSource: e.target.value })}
+                  placeholder="https://… official park, council or fisheries page"
+                />
+              </div>
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditing(null)}>Cancel</Button>

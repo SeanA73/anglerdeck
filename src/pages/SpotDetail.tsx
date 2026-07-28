@@ -37,6 +37,7 @@ import { useSpotReviews } from "@/hooks/useSpotReviews";
 import { useSavedItems } from "@/hooks/useSavedItems";
 import { useAuth } from "@/contexts/AuthContext";
 import { SpotReviews } from "@/components/spots/SpotReviews";
+import { SpotAccessCard } from "@/components/spots/SpotAccessCard";
 import { useSubscription } from "@/hooks/useSubscription";
 import { UpgradePrompt } from "@/components/UpgradePrompt";
 import { UsageMeter } from "@/components/UsageMeter";
@@ -476,6 +477,15 @@ const SpotDetail = () => {
                   </div>
                 </div>
               )}
+            </motion.div>
+
+            {/* Access details (renders nothing when unverified) */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25 }}
+            >
+              <SpotAccessCard access={spot.access} />
             </motion.div>
 
             {/* Regulations */}

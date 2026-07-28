@@ -31,7 +31,22 @@ export function spotScore(spot) {
   if (arr(spot.regulations).length >= 3) score += 1;
   if (arr(spot.best_times).length >= 3) score += 1;
   if (arr(spot.recommended_gear?.essential).length >= 4) score += 1;
+  // Verified access detail is the strongest signal that a page is genuinely
+  // useful rather than templated, so it is worth two points.
+  if (hasAccessDetail(spot.access)) score += 2;
   return score;
+}
+
+/** True when access has been verified against a source, not just stubbed out. */
+function hasAccessDetail(access) {
+  if (!access || typeof access !== "object") return false;
+  return Boolean(
+    access.ramp ||
+      access.parking ||
+      access.walkIn ||
+      arr(access.facilities).length ||
+      access.notes
+  );
 }
 
 export function isIndexable(spot) {

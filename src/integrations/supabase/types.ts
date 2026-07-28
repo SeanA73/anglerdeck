@@ -470,6 +470,7 @@ export type Database = {
       }
       spots: {
         Row: {
+          access: Json | null
           best_times: Json
           coordinates: Json
           country: string
@@ -494,6 +495,7 @@ export type Database = {
           weather: Json
         }
         Insert: {
+          access?: Json | null
           best_times: Json
           coordinates: Json
           country: string
@@ -518,6 +520,7 @@ export type Database = {
           weather: Json
         }
         Update: {
+          access?: Json | null
           best_times?: Json
           coordinates?: Json
           country?: string

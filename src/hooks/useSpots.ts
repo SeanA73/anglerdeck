@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { FishingSpot, resolveSpotImage } from "@/data/spots";
+import { FishingSpot, SpotAccess, resolveSpotImage } from "@/data/spots";
 
 interface SpotRow {
   id: number;
@@ -21,6 +21,7 @@ interface SpotRow {
   best_times: string[];
   difficulty: FishingSpot["difficulty"];
   regulations: string[];
+  access: SpotAccess | null;
   sponsored: boolean | null;
   sponsored_url: string | null;
 }
@@ -44,6 +45,7 @@ const mapRow = (row: SpotRow): FishingSpot => ({
   bestTimes: row.best_times ?? [],
   difficulty: row.difficulty,
   regulations: row.regulations ?? [],
+  access: row.access ?? undefined,
   sponsored: row.sponsored ?? false,
   sponsoredUrl: row.sponsored_url ?? undefined,
 });

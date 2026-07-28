@@ -111,6 +111,34 @@ const list = (items) =>
     ? `<ul>${items.map((i) => `<li>${esc(i)}</li>`).join("")}</ul>`
     : "";
 
+/** Access details — omitted entirely when nothing has been verified. */
+function accessSection(access) {
+  if (!access || typeof access !== "object") return "";
+
+  const rows = [];
+  const from = [access.shore ? "land-based" : null, access.boat ? "boat" : null]
+    .filter(Boolean)
+    .join(" or ");
+  if (from) rows.push(`<li><strong>Fish from:</strong> ${esc(from)}</li>`);
+  if (access.ramp) rows.push(`<li><strong>Boat ramp:</strong> ${esc(access.ramp)}</li>`);
+  if (access.parking) rows.push(`<li><strong>Parking:</strong> ${esc(access.parking)}</li>`);
+  if (access.walkIn) rows.push(`<li><strong>Walk in:</strong> ${esc(access.walkIn)}</li>`);
+  if (Array.isArray(access.facilities) && access.facilities.length) {
+    rows.push(`<li><strong>Facilities:</strong> ${esc(access.facilities.join(", "))}</li>`);
+  }
+  if (!rows.length && !access.notes) return "";
+
+  return `
+      <h2>Getting there &amp; access</h2>
+      ${rows.length ? `<ul>${rows.join("")}</ul>` : ""}
+      ${access.notes ? `<p>${esc(access.notes)}</p>` : ""}
+      ${
+        access.sourceUrl
+          ? `<p><a href="${esc(access.sourceUrl)}" rel="noopener noreferrer">Access information source</a></p>`
+          : ""
+      }`;
+}
+
 function spotContent(spot, all) {
   const country = COUNTRY_NAMES[spot.country] || spot.country;
   const gear = (spot.recommended_gear && typeof spot.recommended_gear === "object")
@@ -127,6 +155,8 @@ function spotContent(spot, all) {
       <h1>${esc(spot.title)}</h1>
       <p><strong>${esc(spot.location)}, ${esc(country)}</strong> &middot; ${esc(spot.type)} &middot; ${esc(spot.difficulty)}</p>
       <p>${esc(spot.description)}</p>
+
+      ${accessSection(spot.access)}
 
       <h2>Species</h2>
       ${list(spot.species)}
