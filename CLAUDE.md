@@ -136,12 +136,19 @@ Remaining indexed spots, grouped by what is actually in the way:
   road access, fished exclusively through licensed lodges booked well in
   advance". That is a real fact, not padding. Ponoi and Agua Boa share the
   model but are not currently indexed, so they rank lower.
-- **Fetcher-blocked, not source-blocked** — Campbell River, Miramichi, Bay of
-  Islands, Tokyo Bay. The facts exist on official pages that refuse automated
-  fetches: New Brunswick and Fish & Game NZ return 403, MPI returns empty
-  bodies, the Japan Fisheries Agency visitor PDF is unreadable binary, and
-  Campbell River's council site genuinely does not publish ramp detail. These
-  need a human with a browser — everything else about them is ready to write.
+- **Fetcher-blocked, not source-blocked** — Bay of Islands only. Miramichi,
+  Campbell River, Tokyo Bay and Sydney Harbour have since been written using a
+  real browser and are done.
+
+  What the blocks actually turned out to be, since the diagnosis matters more
+  than the symptom: New Brunswick sits behind Cloudflare bot protection *and*
+  had moved the page (the old URL 404s). MPI restructured — Northland rules now
+  live under "Auckland and Kermadec". Campbell River does publish ramp detail,
+  but on individual park pages rather than a boat-launch index. The Japan
+  Fisheries Agency has a perfectly readable English HTML page for foreign
+  nationals; only the PDF is binary. In every case the fix was a real browser
+  plus a fresh URL, not a missing source. Assume the same before concluding a
+  site "doesn't publish" something.
 
 A worked lesson on sourcing: guide sites, forums and local papers universally
 place Islamorada's public boat ramp at Founders Park. The Village's own pages
