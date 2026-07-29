@@ -124,13 +124,18 @@ goes to the SQL Editor. It enforces the content rules mechanically: JSON parses,
 field the quality gate actually counts, and a warning on anything resembling a
 bag or size limit.
 
-Remaining indexed spots, grouped by what is actually in the way:
+**When an access record contradicts the existing regulations, fix both.** The
+access source is usually more specific than whatever was used to write the
+regulations originally, so contradictions are common and look careless on the
+page. Two worked examples: Yarrawonga's regulations said only "Murray cod closed
+season Sep 1 – Nov 30" when the VFA closes that entire stretch to *all* fishing
+across the same months; and Nikkō's implied fish could be kept when Lake Yunoko
+is catch-and-release only. Both are the kind of error a reader could be fined
+for following.
 
-- **Sources not yet attempted** — Po (regional), Strait of Gibraltar
-  (Andalucía), Müritz (Mecklenburg-Vorpommern), Vänern, Stockholm Archipelago
-  and Mörrum (Sweden), Sydney Harbour, Cairns, Darwin and the Murray at
-  Yarrawonga (all have real state fisheries agencies), Paraná, Pantanal,
-  Brittany, Nikkō.
+For the current remaining list, run `access-audit.mjs` — do not trust any
+enumeration written here. Broadly, what is left divides into spots with real
+agencies that simply have not been attempted, and the access-model group below.
 - **Access-model only** — Jurassic Lake, Río Grande, Kamchatka, Kola, Rio
   Negro. Lodge- or outfitter-only; the honest and useful record is "no public
   road access, fished exclusively through licensed lodges booked well in
