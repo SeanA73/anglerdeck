@@ -34,3 +34,11 @@ supabase/.temp/
 
 # Deployment artifact (has hardcoded env values, kept local)
 coming-soon.html
+
+# Claude Code per-machine permission allowlist. Maps local paths, so it stays
+# out of the public repo. Note: the `*.local` rule above does NOT cover this,
+# since the filename ends in .json.
+.claude/settings.local.json
+
+# Scratch directory for drafts and working files
+Temp/
