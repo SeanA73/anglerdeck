@@ -91,25 +91,63 @@ SQL Editor — there is no automated migration runner.
 
 ## Work in progress
 
-### 1. Access details — 39 spots remaining
+### 1. Access details — ongoing
 
 `spots.access` is a jsonb column (see `20260729_add_spot_access.sql` for the
-shape). Seven of the 48 indexed spots are done: Tongariro, Madison, Kenai, Bow
-River, Test, Tweed, Spey.
+shape).
 
-Remaining, roughly in order of how likely official sources are to exist:
+**Never hardcode progress counts in this file — they go stale within a session.**
+Run `node scripts/access-audit.mjs` instead. It reads the live database through
+the same quality gate the build uses, and reports which spots lack access detail
+plus what adding it would do to each score.
 
-- **Good odds** — Lake Taupō and Bay of Islands (NZ DOC), Campbell River and
-  Miramichi (BC/NB provincial), Islamorada and Venice LA (state agencies),
-  Cape Point and Sodwana (SANParks/iSimangaliso), Masurian Lakes and Vistula
-  (PZW), Lake Saimaa and Tornio (Metsähallitus), Lofoten (Norwegian tourism
-  boards), Lake Garda and Po (regional).
-- **Access-model only** — Alta, Jurassic Lake, Río Grande, Kamchatka, Kola,
-  Ponoi, Rio Negro, Agua Boa. These are lodge- or outfitter-only; the honest
-  and useful record is "no public road access, fished exclusively through
-  licensed lodges booked well in advance". That is a real fact, not padding.
-- **Likely thin** — Strait of Gibraltar, Ebro, Rhine, Loire, Brittany, Tokyo
-  Bay, Ascension Bay. Record what's verifiable, leave the rest NULL.
+Do not use `featured = true` as shorthand for "indexed". It selects exactly the
+indexed set today, but only by luck: the best non-featured spot scores 4 against
+a threshold of 5, and a first review and an access record are each worth +2. The
+first non-featured spot to gain either breaks the equivalence — and the work in
+this section is what will break it. The gate is `spotScore() >= INDEX_THRESHOLD`
+in `scripts/spot-quality.mjs`, never a column.
+
+Also worth knowing before bulk-filling access: **every** currently-noindexed
+spot would cross the threshold on access detail alone. Completing all of them
+would index the whole 192-page site at once, which is the opposite of the
+slow-growth behaviour the gate exists to produce, and badly timed against the
+AdSense review in item 4. Promote deliberately, not exhaustively.
+
+Unapplied migration files may already cover a spot — Sean runs them by hand, so
+the DB lags the repo, and `access-audit.mjs` reports the database. Check the
+dated `*_access_*.sql` files before re-researching anything.
+
+Validate a batch with `node scripts/check-access-migration.mjs <file>` before it
+goes to the SQL Editor. It enforces the content rules mechanically: JSON parses,
+`sourceUrl` present and https, slug exists, no duplicate UPDATEs, at least one
+field the quality gate actually counts, and a warning on anything resembling a
+bag or size limit.
+
+Remaining indexed spots, grouped by what is actually in the way:
+
+- **Sources not yet attempted** — Po (regional), Strait of Gibraltar
+  (Andalucía), Müritz (Mecklenburg-Vorpommern), Vänern, Stockholm Archipelago
+  and Mörrum (Sweden), Sydney Harbour, Cairns, Darwin and the Murray at
+  Yarrawonga (all have real state fisheries agencies), Paraná, Pantanal,
+  Brittany, Nikkō.
+- **Access-model only** — Jurassic Lake, Río Grande, Kamchatka, Kola, Rio
+  Negro. Lodge- or outfitter-only; the honest and useful record is "no public
+  road access, fished exclusively through licensed lodges booked well in
+  advance". That is a real fact, not padding. Ponoi and Agua Boa share the
+  model but are not currently indexed, so they rank lower.
+- **Fetcher-blocked, not source-blocked** — Campbell River, Miramichi, Bay of
+  Islands, Tokyo Bay. The facts exist on official pages that refuse automated
+  fetches: New Brunswick and Fish & Game NZ return 403, MPI returns empty
+  bodies, the Japan Fisheries Agency visitor PDF is unreadable binary, and
+  Campbell River's council site genuinely does not publish ramp detail. These
+  need a human with a browser — everything else about them is ready to write.
+
+A worked lesson on sourcing: guide sites, forums and local papers universally
+place Islamorada's public boat ramp at Founders Park. The Village's own pages
+show Founders Park is signed *no fishing*, and the ramp is at Plantation Yacht
+Harbor Marina, on different hours and a different fee. Official page or NULL —
+the consensus of unofficial sources is not a source.
 
 Write results as `UPDATE public.spots SET access = '{...}'::jsonb, updated_at =
 now() WHERE slug = '...';` in a new dated file under `supabase/migrations/`,

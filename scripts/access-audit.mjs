@@ -39,7 +39,7 @@ const rows = spots.map((s) => {
   const hasAccess = score !== spotScore({ ...withCount, access: null });
   return {
     slug: s.slug,
-    name: s.name,
+    title: s.title,
     country: s.country,
     featured: s.featured === true,
     hasAccess,
