@@ -1,7 +1,6 @@
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
-import { componentTagger } from "lovable-tagger";
 import { VitePWA } from 'vite-plugin-pwa';
 import sitemap from 'vite-plugin-sitemap';
 import { spotSlugs as fallbackSlugs } from './src/data/spotSlugs';
@@ -9,6 +8,24 @@ import { spotSlugs as fallbackSlugs } from './src/data/spotSlugs';
 import { isIndexable } from './scripts/spot-quality.mjs';
 
 const siteUrl = process.env.VITE_SITE_URL || 'https://anglerdeck.com';
+
+/**
+ * lovable-tagger is a development-only plugin, but importing it at the top level
+ * meant a broken or mismatched dependency inside it could fail the *production*
+ * build — it once could not resolve `tailwindcss/resolveConfig.js` and took the
+ * whole deploy down. Loading it lazily, only in dev, and tolerating failure
+ * keeps a dev tool from ever blocking a release.
+ */
+async function devTaggerPlugin(mode: string) {
+  if (mode !== 'development') return null;
+  try {
+    const { componentTagger } = await import('lovable-tagger');
+    return componentTagger();
+  } catch (err) {
+    console.warn(`[vite] lovable-tagger unavailable, continuing without it (${err})`);
+    return null;
+  }
+}
 
 /**
  * Spot slugs come from the Supabase `spots` table so the sitemap stays in sync
@@ -69,6 +86,7 @@ async function fetchSpotSlugs(env: Record<string, string>): Promise<string[]> {
 export default defineConfig(async ({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   const slugs = mode === 'production' ? await fetchSpotSlugs(env) : [...fallbackSlugs];
+  const tagger = await devTaggerPlugin(mode);
 
   return {
     server: {
@@ -81,7 +99,7 @@ export default defineConfig(async ({ mode }) => {
     },
     plugins: [
       react(),
-      mode === "development" && componentTagger(),
+      tagger,
       VitePWA({
         registerType: 'autoUpdate',
         includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
