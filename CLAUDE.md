@@ -149,6 +149,16 @@ show Founders Park is signed *no fishing*, and the ramp is at Plantation Yacht
 Harbor Marina, on different hours and a different fee. Official page or NULL —
 the consensus of unofficial sources is not a source.
 
+**Always check for health and contamination advisories**, especially on urban,
+industrial or post-industrial water. These are published by health or fisheries
+departments, are rarely mentioned on guide sites, and are the most genuinely
+useful thing a spot page can carry. Sydney Harbour is the worked example: NSW
+advises eating *no* fish caught west of the Harbour Bridge and limiting catches
+east of it to 150 g a month, following dioxin contamination traced to Homebush
+Bay sediments — commercial fishing there has been banned since 2006. Candidates
+worth checking include the Elbe at Hamburg, the Tiber in Rome, the Vistula, the
+Po, the Rhine, Lagoa dos Patos and the Detroit-adjacent Great Lakes waters.
+
 Write results as `UPDATE public.spots SET access = '{...}'::jsonb, updated_at =
 now() WHERE slug = '...';` in a new dated file under `supabase/migrations/`,
 for Sean to run manually.
