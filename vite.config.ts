@@ -4,6 +4,7 @@ import path from "path";
 import { VitePWA } from 'vite-plugin-pwa';
 import sitemap from 'vite-plugin-sitemap';
 import { spotSlugs as fallbackSlugs } from './src/data/spotSlugs';
+import { COUNTRIES } from './src/lib/countries';
 // @ts-expect-error — plain ESM module shared with scripts/prerender.mjs
 import { isIndexable } from './scripts/spot-quality.mjs';
 
@@ -36,13 +37,15 @@ async function devTaggerPlugin(mode: string) {
  * Falls back to the checked-in list if Supabase is unreachable at build time,
  * so a network blip never breaks a deploy.
  */
-async function fetchSpotSlugs(env: Record<string, string>): Promise<string[]> {
+async function fetchSpotSlugs(
+  env: Record<string, string>
+): Promise<{ slugs: string[]; countryCodes: string[] }> {
   const url = env.VITE_SUPABASE_URL;
   const key = env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
   if (!url || !key) {
     console.warn('[sitemap] Supabase env vars missing — using fallback slug list');
-    return [...fallbackSlugs];
+    return { slugs: [...fallbackSlugs], countryCodes: COUNTRIES.map((c) => c.code) };
   }
 
   try {
@@ -75,17 +78,23 @@ async function fetchSpotSlugs(env: Record<string, string>): Promise<string[]> {
     console.log(
       `[sitemap] ${indexable.length} of ${rows.length} spots pass the quality gate`
     );
-    return indexable.map((r: { slug: string }) => r.slug);
+    // Only list hubs for countries that actually have spots — otherwise the
+    // sitemap advertises a page the prerenderer never wrote.
+    const countryCodes = [...new Set(rows.map((r: { country: string }) => r.country))];
+    return { slugs: indexable.map((r: { slug: string }) => r.slug), countryCodes };
   } catch (err) {
     console.warn(`[sitemap] Supabase fetch failed (${err}) — using fallback slug list`);
-    return [...fallbackSlugs];
+    return { slugs: [...fallbackSlugs], countryCodes: COUNTRIES.map((c) => c.code) };
   }
 }
 
 // https://vitejs.dev/config/
 export default defineConfig(async ({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
-  const slugs = mode === 'production' ? await fetchSpotSlugs(env) : [...fallbackSlugs];
+  const { slugs, countryCodes } =
+    mode === 'production'
+      ? await fetchSpotSlugs(env)
+      : { slugs: [...fallbackSlugs], countryCodes: COUNTRIES.map((c) => c.code) };
   const tagger = await devTaggerPlugin(mode);
 
   return {
@@ -125,7 +134,14 @@ export default defineConfig(async ({ mode }) => {
       mode === 'production' &&
         sitemap({
           hostname: siteUrl,
-          dynamicRoutes: slugs.map((slug) => `/spot/${slug}`),
+          dynamicRoutes: [
+            // Country hubs are always indexed — they aggregate real spot data
+            // and are the pages that can rank for head terms.
+            ...COUNTRIES.filter((c) => countryCodes.includes(c.code)).map(
+              (c) => `/fishing/${c.slug}`
+            ),
+            ...slugs.map((slug) => `/spot/${slug}`),
+          ],
           exclude: ['/auth', '/account', '/catches'],
           changefreq: 'weekly',
           priority: 0.8,

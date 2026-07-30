@@ -1,0 +1,172 @@
+import { useMemo } from "react";
+import { Link, useParams } from "react-router-dom";
+import { motion } from "framer-motion";
+import { MapPin, Fish, ArrowRight } from "lucide-react";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import { SEO, BASE_URL } from "@/components/SEO";
+import { useSpots } from "@/hooks/useSpots";
+import { countryBySlug } from "@/lib/countries";
+import { Button } from "@/components/ui/button";
+
+/**
+ * Country hub page.
+ *
+ * Individual spot pages can only compete on long-tail queries. These hubs give
+ * the site something that can rank for head terms like "fishing spots in
+ * Norway", and act as the parent in the internal link hierarchy — global index
+ * down to country, country down to spot, spot back up.
+ */
+const CountryHub = () => {
+  const { countrySlug } = useParams<{ countrySlug: string }>();
+  const country = countryBySlug(countrySlug || "");
+  const { data: spots = [], isLoading } = useSpots();
+
+  const countrySpots = useMemo(
+    () => spots.filter((s) => s.country === country?.code),
+    [spots, country]
+  );
+
+  const species = useMemo(() => {
+    const set = new Set<string>();
+    countrySpots.forEach((s) => s.species.forEach((sp) => set.add(sp)));
+    return [...set].sort();
+  }, [countrySpots]);
+
+  const waterTypes = useMemo(() => {
+    const counts = new Map<string, number>();
+    countrySpots.forEach((s) => counts.set(s.type, (counts.get(s.type) ?? 0) + 1));
+    return [...counts.entries()];
+  }, [countrySpots]);
+
+  if (!country) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Country not found</h1>
+          <Button asChild>
+            <Link to="/spots">Browse all spots</Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  const title = `Fishing in ${country.name} — Spots, Licences & Access`;
+  const description = `${countrySpots.length} researched fishing spots in ${country.name}, with verified access details, licence requirements and seasons.`;
+
+  return (
+    <div className="min-h-screen bg-background flex flex-col">
+      <SEO
+        title={title}
+        description={description}
+        canonicalPath={`/fishing/${country.slug}`}
+      />
+      <Header />
+
+      <main className="flex-1 container mx-auto px-4 lg:px-8 py-12 pt-28">
+        <nav className="text-sm text-muted-foreground mb-6">
+          <Link to="/spots" className="hover:text-foreground">
+            Fishing spots
+          </Link>
+          <span className="mx-2">/</span>
+          <span className="text-foreground">{country.name}</span>
+        </nav>
+
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+            Fishing in {country.name}
+          </h1>
+          <p className="text-lg text-muted-foreground max-w-3xl">{country.blurb}</p>
+        </motion.div>
+
+        {countrySpots.length > 0 && (
+          <div className="flex flex-wrap gap-6 mt-8 text-sm">
+            <div>
+              <span className="text-2xl font-bold text-foreground">
+                {countrySpots.length}
+              </span>
+              <span className="text-muted-foreground ml-2">spots</span>
+            </div>
+            {waterTypes.map(([type, n]) => (
+              <div key={type}>
+                <span className="text-2xl font-bold text-foreground">{n}</span>
+                <span className="text-muted-foreground ml-2">{type}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {species.length > 0 && (
+          <section className="mt-10">
+            <h2 className="text-xl font-bold text-foreground mb-3 flex items-center gap-2">
+              <Fish className="w-5 h-5 text-accent" />
+              Species you can target
+            </h2>
+            <div className="flex flex-wrap gap-2">
+              {species.map((sp) => (
+                <span
+                  key={sp}
+                  className="px-3 py-1 rounded-full bg-muted text-sm text-foreground"
+                >
+                  {sp}
+                </span>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <section className="mt-12">
+          <h2 className="text-2xl font-bold text-foreground mb-6">
+            Fishing spots in {country.name}
+          </h2>
+
+          {isLoading ? (
+            <p className="text-muted-foreground">Loading spots…</p>
+          ) : (
+            <div className="grid md:grid-cols-2 gap-4">
+              {countrySpots.map((spot) => (
+                <Link
+                  key={spot.id}
+                  to={`/spot/${spot.slug}`}
+                  className="group block p-5 rounded-xl border border-border/50 bg-card hover:border-accent/50 transition-colors"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <h3 className="font-semibold text-foreground group-hover:text-accent transition-colors">
+                        {spot.title}
+                      </h3>
+                      <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
+                        <MapPin className="w-3.5 h-3.5" />
+                        {spot.location}
+                      </p>
+                      <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
+                        {spot.description}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        {spot.type} · {spot.difficulty} ·{" "}
+                        {spot.species.slice(0, 3).join(", ")}
+                      </p>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-muted-foreground shrink-0 mt-1 group-hover:text-accent transition-colors" />
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </section>
+
+        <p className="mt-12 text-sm text-muted-foreground">
+          Licence requirements and closed seasons change regularly. Always confirm
+          with the relevant fisheries authority before you fish — each spot page
+          links to its source.
+        </p>
+      </main>
+
+      <Footer />
+    </div>
+  );
+};
+
+export default CountryHub;
+export { BASE_URL };

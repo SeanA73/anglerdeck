@@ -35,13 +35,24 @@ const esc = (s) =>
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
 
-const COUNTRY_NAMES = {
-  US: "United States", CA: "Canada", AU: "Australia", NZ: "New Zealand",
-  GB: "United Kingdom", DE: "Germany", FR: "France", ES: "Spain", IT: "Italy",
-  NO: "Norway", SE: "Sweden", FI: "Finland", ZA: "South Africa",
-  AR: "Argentina", BR: "Brazil", MX: "Mexico", JP: "Japan", RU: "Russia",
-  PL: "Poland",
-};
+/**
+ * Countries are parsed out of src/lib/countries.ts so the hub slugs, names and
+ * blurbs cannot drift between the app and the prerenderer.
+ */
+const COUNTRIES = (() => {
+  const src = fs.readFileSync(path.join(root, "src/lib/countries.ts"), "utf8");
+  const out = [];
+  const re = /\{\s*code:\s*"([^"]+)",\s*name:\s*"([^"]+)",\s*slug:\s*"([^"]+)",\s*blurb:\s*"((?:[^"\\]|\\.)*)"\s*\}/g;
+  let m;
+  while ((m = re.exec(src))) {
+    out.push({ code: m[1], name: m[2], slug: m[3], blurb: m[4].replace(/\\"/g, '"') });
+  }
+  return out;
+})();
+
+const COUNTRY_NAMES = Object.fromEntries(COUNTRIES.map((c) => [c.code, c.name]));
+const countrySlug = (code) =>
+  COUNTRIES.find((c) => c.code === code)?.slug || String(code).toLowerCase();
 
 const distanceKm = (a, b) => {
   const R = 6371;
@@ -213,7 +224,46 @@ function spotContent(spot, all, reviews = []) {
           .join("")}
       </ul>
 
-      <p><a href="/spots">Browse all fishing spots</a> &middot; <a href="/map">View the fishing map</a></p>
+      <p>
+        <a href="/fishing/${esc(countrySlug(spot.country))}">More fishing spots in ${esc(country)}</a>
+        &middot; <a href="/spots">Browse all fishing spots</a>
+        &middot; <a href="/map">View the fishing map</a>
+      </p>
+    </article>`;
+}
+
+/** Country hub page body — the parent in the link hierarchy. */
+function hubContent(country, spots) {
+  const species = [...new Set(spots.flatMap((s) => s.species || []))].sort();
+  const types = {};
+  spots.forEach((s) => (types[s.type] = (types[s.type] || 0) + 1));
+
+  return `
+    <article>
+      <nav><a href="/spots">Fishing spots</a> / ${esc(country.name)}</nav>
+      <h1>Fishing in ${esc(country.name)}</h1>
+      <p>${esc(country.blurb)}</p>
+      <p>${spots.length} researched spots — ${Object.entries(types)
+        .map(([t, n]) => `${n} ${esc(t)}`)
+        .join(", ")}.</p>
+
+      <h2>Species you can target</h2>
+      ${list(species)}
+
+      <h2>Fishing spots in ${esc(country.name)}</h2>
+      <ul>
+        ${spots
+          .map(
+            (s) =>
+              `<li><a href="/spot/${esc(s.slug)}">${esc(s.title)}</a> — ${esc(s.location)}. ${esc(s.type)}, ${esc(s.difficulty)}. Target species: ${esc((s.species || []).join(", "))}.</li>`
+          )
+          .join("")}
+      </ul>
+
+      <p>Licence requirements and closed seasons change regularly. Always confirm
+      with the relevant fisheries authority before you fish — each spot page links
+      to its source.</p>
+      <p><a href="/map">View the fishing map</a></p>
     </article>`;
 }
 
@@ -369,8 +419,44 @@ async function main() {
     write(`/spot/${spot.slug}`, html);
   }
 
+  // Country hubs — the parent tier in the link hierarchy. Always indexable:
+  // they aggregate real spot data, so they are not thin even when a country has
+  // few spots, and they are what can rank for head terms.
+  let hubs = 0;
+  for (const country of COUNTRIES) {
+    const countrySpots = spots.filter((s) => s.country === country.code);
+    if (countrySpots.length === 0) continue;
+
+    const title = `Fishing in ${country.name} — Spots, Licences & Access | AnglerDeck`;
+    const description = `${countrySpots.length} researched fishing spots in ${country.name}, with verified access details, licence requirements and seasons.`;
+
+    let html = withHead(template, {
+      title,
+      description,
+      canonical: `${SITE_URL}/fishing/${country.slug}`,
+      jsonLd: {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        name: title,
+        description,
+        url: `${SITE_URL}/fishing/${country.slug}`,
+        about: { "@type": "Country", name: country.name },
+        breadcrumb: {
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Fishing spots", item: `${SITE_URL}/spots` },
+            { "@type": "ListItem", position: 2, name: country.name, item: `${SITE_URL}/fishing/${country.slug}` },
+          ],
+        },
+      },
+    });
+    html = withBody(html, hubContent(country, countrySpots));
+    write(`/fishing/${country.slug}`, html);
+    hubs++;
+  }
+
   console.log(
-    `[prerender] wrote ${STATIC_ROUTES.length} static routes and ${spots.length} spot pages`
+    `[prerender] wrote ${STATIC_ROUTES.length} static routes, ${hubs} country hubs and ${spots.length} spot pages`
   );
   if (spots.length) {
     console.log(

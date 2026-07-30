@@ -16,6 +16,7 @@ import { pageview } from "@/lib/analytics";
 const Index = lazy(() => import("./pages/Index"));
 const SpotDetail = lazy(() => import("./pages/SpotDetail"));
 const Spots = lazy(() => import("./pages/Spots"));
+const CountryHub = lazy(() => import("./pages/CountryHub"));
 const MapView = lazy(() => import("./pages/MapView"));
 const CatchLog = lazy(() => import("./pages/CatchLog"));
 const CommunityFeed = lazy(() => import("./pages/CommunityFeed"));
@@ -70,6 +71,7 @@ const App = () => (
                 <Route path="/" element={<Index />} />
                 <Route path="/spots" element={<Spots />} />
                 <Route path="/spot/:slug" element={<SpotDetail />} />
+                <Route path="/fishing/:countrySlug" element={<CountryHub />} />
                 <Route path="/map" element={<MapView />} />
                 <Route path="/catches" element={<ProtectedRoute><CatchLog /></ProtectedRoute>} />
                 <Route path="/community" element={<ProtectedRoute><CommunityFeed /></ProtectedRoute>} />

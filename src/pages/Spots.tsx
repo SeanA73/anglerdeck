@@ -8,6 +8,7 @@ import { AdBanner } from "@/components/ads/AdBanner";
 import { FishingSpot } from "@/data/spots";
 import { useSpots } from "@/hooks/useSpots";
 import CountrySelector, { countries } from "@/components/CountrySelector";
+import { COUNTRIES } from "@/lib/countries";
 import FishSpeciesFilter from "@/components/FishSpeciesFilter";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -271,6 +272,32 @@ const Spots = () => {
           >
             Showing {filteredAndSortedSpots.length} of {spots.length} spots
           </motion.p>
+
+          {/* Country hubs — user navigation and the internal link path that lets
+              crawlers reach the aggregate pages able to rank for head terms. */}
+          <motion.nav
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.35 }}
+            className="mb-10 text-center"
+          >
+            <h2 className="text-sm font-medium text-muted-foreground mb-3">
+              Browse by country
+            </h2>
+            <div className="flex flex-wrap justify-center gap-2">
+              {COUNTRIES.filter((c) => spots.some((s) => s.country === c.code)).map(
+                (c) => (
+                  <Link
+                    key={c.code}
+                    to={`/fishing/${c.slug}`}
+                    className="px-3 py-1.5 rounded-full border border-border/50 text-sm text-foreground hover:border-accent/50 hover:text-accent transition-colors"
+                  >
+                    Fishing in {c.name}
+                  </Link>
+                )
+              )}
+            </div>
+          </motion.nav>
 
           {/* Spots Grid */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
