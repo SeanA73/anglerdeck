@@ -57,7 +57,69 @@ const Privacy = () => {
             <li><strong>Supabase</strong> (data hosting, authentication) — servers located in Sydney, Australia (ap-southeast-2).</li>
             <li><strong>Stripe</strong> (subscription billing and payment processing) — processes card details directly. See Stripe's privacy policy at stripe.com/privacy.</li>
             <li><strong>OpenAI</strong> (AI Fishing Assistant, Pro and Elite tiers only) — messages sent to the AI Assistant are transmitted to OpenAI for processing. Do not share sensitive personal information in AI chats.</li>
+            <li><strong>Google AdSense</strong> (advertising, free tier only) — see the advertising section below.</li>
             <li><strong>Hosting and email providers</strong> — used to deliver the app and transactional emails.</li>
+          </ul>
+
+          <h2 className="text-xl font-semibold text-foreground mt-8 mb-3">4a. Advertising</h2>
+          <p className="text-muted-foreground mb-3">
+            AnglerDeck shows advertising to visitors on the free tier. Ads are served
+            by Google AdSense. <strong>Pro and Elite subscribers see no advertising at
+            all</strong>, and no advertising scripts create ad slots on their pages.
+          </p>
+          <ul className="text-muted-foreground mb-3 list-disc pl-6 space-y-2">
+            <li>
+              Google and its partners may use cookies or similar technologies to serve
+              ads based on your prior visits to this or other websites.
+            </li>
+            <li>
+              Google's use of advertising cookies enables it and its partners to serve
+              ads to you based on your visit to our site and other sites on the internet.
+            </li>
+            <li>
+              You can opt out of personalised advertising by visiting{" "}
+              <a
+                href="https://www.google.com/settings/ads"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-foreground"
+              >
+                Google Ads Settings
+              </a>
+              , or opt out of third-party vendor cookies at{" "}
+              <a
+                href="https://www.aboutads.info/choices/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-foreground"
+              >
+                aboutads.info
+              </a>
+              .
+            </li>
+            <li>
+              We use Google Consent Mode. If you decline marketing cookies in our cookie
+              banner, ads are still shown but are <strong>not personalised</strong>. You
+              can change your choice at any time using the{" "}
+              <strong>Cookie preferences</strong> link at the bottom of any page. Our{" "}
+              <a href="/cookies" className="underline hover:text-foreground">
+                cookie policy
+              </a>{" "}
+              explains each category.
+            </li>
+            <li>
+              For more detail on how Google uses data from sites that use its services,
+              see{" "}
+              <a
+                href="https://policies.google.com/technologies/partner-sites"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-foreground"
+              >
+                Google's partner sites policy
+              </a>
+              .
+            </li>
           </ul>
 
           <h2 className="text-xl font-semibold text-foreground mt-8 mb-3">5. Where your data lives</h2>

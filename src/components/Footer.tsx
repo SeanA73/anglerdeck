@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { MapPin } from "lucide-react";
 import anglerdeckLogo from "@/assets/anglerdeck-logo.png";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
+import { openCookiePreferences } from "@/lib/cookieConsent";
 
 // Social links — uncomment and add real handles before launch
 // const socialLinks = [
@@ -105,9 +106,19 @@ const Footer = () => {
               commission at no extra cost to you.
             </p>
           </div>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <MapPin className="w-4 h-4 text-accent" />
-            Made for anglers, everywhere
+          <div className="flex flex-col sm:flex-row items-center gap-4">
+            {/* The only way back into the consent dialog after a decision is
+                stored — see openCookiePreferences. */}
+            <button
+              onClick={openCookiePreferences}
+              className="text-sm text-muted-foreground hover:text-accent transition-colors"
+            >
+              Cookie preferences
+            </button>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <MapPin className="w-4 h-4 text-accent" />
+              Made for anglers, everywhere
+            </div>
           </div>
         </div>
       </div>

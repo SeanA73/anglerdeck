@@ -8,6 +8,7 @@ import { SEO, BASE_URL } from "@/components/SEO";
 import { useSpots } from "@/hooks/useSpots";
 import { countryBySlug } from "@/lib/countries";
 import { Button } from "@/components/ui/button";
+import { AdBanner } from "@/components/ads/AdBanner";
 
 /**
  * Country hub page.
@@ -115,6 +116,13 @@ const CountryHub = () => {
             </div>
           </section>
         )}
+
+        {/* Hubs are primary organic landing pages, so they carry a placement.
+            Hidden from Pro and Elite subscribers by AdBanner. */}
+        <AdBanner
+          slot={import.meta.env.VITE_ADSENSE_SLOT_HUB ?? ""}
+          format="horizontal"
+        />
 
         <section className="mt-12">
           <h2 className="text-2xl font-bold text-foreground mb-6">

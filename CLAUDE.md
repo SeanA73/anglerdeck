@@ -198,9 +198,17 @@ the loader are live; publisher ID `pub-2356680512865218`. The site should be
 deepened first — a reviewer today sees 192 pages from one template with 144
 noindexed. Low-value content is the most common rejection reason.
 
-A **certified CMP** is still required before serving ads to EEA/UK visitors.
-Consent Mode signals are correct but the in-house banner is not certified;
-Google's own funding-choices tool is the usual free answer.
+A **certified CMP** is still required before serving ads to EEA, UK and Swiss
+visitors. Consent Mode signals are correct but the in-house banner is not
+certified; Google's own funding-choices tool is the usual free answer.
+
+Adopting one is not a drop-in swap. `AdBanner` gates rendering on
+`readConsent() !== null` — the in-house banner's localStorage decision. A
+certified CMP owns that decision instead, so the gate has to be rewritten to
+read `__tcfapi`. Replacing the banner without rewriting the gate leaves
+`readConsent()` returning `null` forever, which stops ads rendering **everywhere,
+silently and with no error** — including outside the EEA, UK and Switzerland.
+Change both in the same commit.
 
 ### 5. Other open items
 

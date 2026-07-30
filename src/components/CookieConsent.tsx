@@ -7,6 +7,7 @@ import CookiePreferencesDialog from "./CookiePreferencesDialog";
 
 import {
   COOKIE_CONSENT_KEY,
+  OPEN_PREFERENCES_EVENT,
   writeConsent,
   type CookiePreferences,
 } from "@/lib/cookieConsent";
@@ -40,6 +41,14 @@ const CookieConsent = () => {
         setShowBanner(true);
       }
     }
+  }, []);
+
+  // Reopened from the footer control. The banner itself never returns once a
+  // decision is stored, so this is the only route back into the dialog.
+  useEffect(() => {
+    const open = () => setShowPreferences(true);
+    window.addEventListener(OPEN_PREFERENCES_EVENT, open);
+    return () => window.removeEventListener(OPEN_PREFERENCES_EVENT, open);
   }, []);
 
   const savePreferences = (prefs: CookiePreferences) => {
@@ -95,7 +104,11 @@ const CookieConsent = () => {
                       Cookie Preferences
                     </h3>
                     <button
-                      onClick={() => setShowBanner(false)}
+                      // Dismissing counts as declining non-essential cookies.
+                      // Closing without recording a decision would leave
+                      // consent unresolved forever, which permanently
+                      // suppresses ads for that visitor (see AdBanner).
+                      onClick={handleRejectNonEssential}
                       className="text-muted-foreground hover:text-foreground transition-colors"
                       aria-label="Close cookie banner"
                     >

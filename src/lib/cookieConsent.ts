@@ -14,6 +14,19 @@ export interface CookiePreferences {
 
 export const COOKIE_CONSENT_KEY = "anglerdeck-cookie-consent";
 export const CONSENT_CHANGED_EVENT = "anglerdeck-consent-changed";
+export const OPEN_PREFERENCES_EVENT = "anglerdeck-open-cookie-preferences";
+
+/**
+ * Reopens the cookie preferences dialog from anywhere in the app.
+ *
+ * The banner only ever shows while no decision is stored, so without this there
+ * is no way back into the dialog once a visitor has chosen. GDPR art. 7(3)
+ * requires withdrawing consent to be as easy as giving it, and the privacy and
+ * cookie policies both promise the choice can be changed at any time.
+ */
+export const openCookiePreferences = () => {
+  window.dispatchEvent(new CustomEvent(OPEN_PREFERENCES_EVENT));
+};
 
 export const DEFAULT_PREFERENCES: CookiePreferences = {
   essential: true,
@@ -46,10 +59,11 @@ export const writeConsent = (prefs: CookiePreferences) => {
  *
  * Defaults are set to denied before any Google tag loads, then updated once the
  * visitor chooses. This is required for serving personalised ads to visitors in
- * the EEA and UK.
+ * the EEA, the UK and Switzerland.
  *
  * NOTE: Consent Mode alone does not satisfy Google's requirement for a
- * *certified* CMP on EEA/UK traffic. See docs in the AdBanner component.
+ * *certified* CMP on EEA, UK and Swiss traffic. See docs in the AdBanner
+ * component.
  */
 type ConsentValue = "granted" | "denied";
 

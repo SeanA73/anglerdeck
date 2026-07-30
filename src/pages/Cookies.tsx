@@ -72,10 +72,10 @@ const Cookies = () => {
 
           <h2 className="text-xl font-semibold text-foreground mt-8 mb-3">4. Managing your preferences</h2>
           <p className="text-muted-foreground mb-6">
-            You can change your cookie preferences at any time through the cookie banner
-            when you visit the site, or by clearing cookies through your browser settings.
-            Note that disabling essential cookies will prevent the Service from working
-            properly.
+            You can change your cookie preferences at any time using the{" "}
+            <strong>Cookie preferences</strong> link at the bottom of any page, or by
+            clearing cookies through your browser settings. Note that disabling essential
+            cookies will prevent the Service from working properly.
           </p>
 
           <h2 className="text-xl font-semibold text-foreground mt-8 mb-3">5. Changes to this policy</h2>

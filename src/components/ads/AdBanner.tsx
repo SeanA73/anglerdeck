@@ -40,10 +40,10 @@ const loadAdSenseScript = () => {
  *     rather than no ads at all.
  *  3. Never render without a configured client ID and slot.
  *
- * EEA/UK COMPLIANCE: Google requires a *certified* Consent Management Platform
- * for traffic from the EEA and UK. The in-house banner sets Consent Mode
- * signals correctly but is not certified, so a certified CMP must be in place
- * before serving ads to European visitors.
+ * EEA/UK/SWITZERLAND COMPLIANCE: Google requires a *certified* Consent
+ * Management Platform for traffic from the EEA, the UK and Switzerland. The
+ * in-house banner sets Consent Mode signals correctly but is not certified, so
+ * a certified CMP must be in place before serving ads to those visitors.
  */
 export const AdBanner = ({ slot, format = 'auto', className = '' }: AdBannerProps) => {
   const { subscription, isLoading } = useSubscription();
