@@ -17,6 +17,10 @@ dist-ssr
 .env.local
 .env.production
 .env.*.local
+# Backups of the above — a stray `git add -A` on the VPS would otherwise
+# stage production Supabase and Stripe keys.
+.env*.backup*
+.env*.bak
 
 # Editor directories and files
 .vscode/*
