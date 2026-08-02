@@ -1,0 +1,21 @@
+-- Verified access details — Hervey Bay Flats & Bay (2026-08-03)
+--
+-- Source: Fraser Coast Regional Council's official boat ramp table, which
+-- lists facility, owner/manager, load limit, water, toilets and low-tide
+-- restriction for every ramp in the region.
+--
+-- HOLD BEFORE RUNNING: this spot currently scores 4 (species x3, regulations
+-- x3, best_times x3, gear x4). Access detail is worth +2, which crosses
+-- INDEX_THRESHOLD=5 and will promote it into the sitemap on the next build.
+-- It is also not on Temp/outreach-targets.md for that same reason — see the
+-- flag recorded there. Do not run this until the AdSense decision is back,
+-- per CLAUDE.md item 1 ("promote deliberately, not exhaustively").
+--
+-- Not added: a Dec 2025 JCU study detected ciguatera-toxin-producing
+-- dinoflagellates (Gambierdiscus holmesii) in Hervey Bay for the first time.
+-- That is a scientific detection, not a Queensland Health consumption
+-- advisory the way NSW DPI's Sydney Harbour dioxin advice is — and the
+-- species this spot targets (golden trevally, longtail tuna, whiting,
+-- flathead) aren't the large reef predators ciguatera risk is usually
+-- attached to. Flagging for awareness, not writing it in as a regulation.
+UPDATE public.spots SET access = '{"boat": true, "ramp": "Urangan Boat Harbour is the main facility for the bay — a Transport and Main Roads state boat harbour on Jetty Road with two ramps, a pontoon and floating walkways. Fraser Coast Regional Council also runs smaller public ramps closer to town at Torquay (Bideford Street), Scarness, and Point Vernon (Gatakers Bay and The Gables)", "facilities": ["Boat ramp (Urangan Boat Harbour)", "Floating walkways", "Pontoon", "Toilets", "Fresh water"], "notes": "Urangan''s two ramps have no low-tide restriction and have water and toilets on site. The smaller Council ramps vary: Torquay has water and toilets but is tide-restricted; Gatakers Bay and Scarness have neither water nor toilets, and The Gables (Point Vernon) is also tide-restricted. Check Fraser Coast Council''s boat ramp cleaning and inspection schedule before relying on any one ramp, since ramps are periodically closed for servicing.", "sourceUrl": "https://www.frasercoast.qld.gov.au/Community/Sports-and-Recreation/Boat-ramps"}'::jsonb, updated_at = now() WHERE slug = 'hervey-bay-golden-trevally';
