@@ -87,6 +87,19 @@ cd /var/www/anglerdeck && git pull origin main && npm run build
 Migrations in `supabase/migrations/` are applied by hand through the Supabase
 SQL Editor — there is no automated migration runner.
 
+**Migration first, then build. Permanently.** The build reads the live
+database, so a build that runs ahead of its migration queries columns that do
+not exist yet. PostgREST answers a filter on a missing column with HTTP 400 —
+it does not ignore the filter — and the build's fallback is an empty result, so
+the failure surfaces as content quietly disappearing rather than as a build
+error. `20260802_add_review_moderation.sql` is the worked example: every review
+read path filters `status=eq.approved`, and against a pre-migration database
+that returns 400, then zero reviews, and any spot that earned +2 from a review
+drops back under `INDEX_THRESHOLD` and out of the index. `prerender.mjs` and
+`vite.config.ts` now warn loudly on that 400 instead of swallowing it, but a
+smoke alarm is not a fix — the build still ships wrong. Apply the SQL, confirm
+it, then `git pull && npm run build`.
+
 ---
 
 ## Work in progress
@@ -175,13 +188,83 @@ Write results as `UPDATE public.spots SET access = '{...}'::jsonb, updated_at =
 now() WHERE slug = '...';` in a new dated file under `supabase/migrations/`,
 for Sean to run manually.
 
-### 2. Review moderation — not yet built
+### 2. Review moderation — shipped and verified
 
-`spot_reviews` has no approval/status column, so reviews publish instantly.
-Before contributor outreach generates volume, add a moderation flag and a
-review queue in `src/pages/admin/AdminModeration.tsx` (which already reads the
-table). Only approved reviews should count toward the quality gate or appear in
-prerendered HTML.
+`spot_reviews.status` is `pending | approved | rejected`, defaulting to
+`pending`. Nothing reaches the public, the prerendered HTML, `AggregateRating`
+or the quality gate until an admin approves it in
+`src/pages/admin/AdminModeration.tsx`.
+
+`20260802_add_review_moderation.sql` was applied to production on 2 Aug 2026.
+Both triggers exist and are enabled, and the insert path was tested against a
+real non-admin account rather than inferred from the DDL — recipe below. The
+migration-before-build ordering that this shipped with is now recorded as a
+standing rule under Deploy, since it is not specific to this change.
+
+Four read paths filter on status, and `spot-quality.mjs` trusts them: it never
+queries, it only consumes `reviewCount`. The filters live in `prerender.mjs`,
+`vite.config.ts` and `access-audit.mjs`, plus RLS for the client. Adding a fifth
+reader means adding a fifth filter — there is no central chokepoint.
+
+RLS returns approved rows to everyone, plus the viewer's own review whatever its
+state, so an author can see their submission is queued rather than assume it
+vanished. `useSpotReviews` therefore computes the average and count from
+approved rows only; the fetched list and the public rating are deliberately not
+the same set.
+
+Moderation is enforced by triggers, not policies. RLS is row-level, so the
+existing "author can insert/update own row" policies would otherwise let a
+contributor submit or edit straight to `approved`.
+`force_review_pending_on_insert` and `enforce_review_moderation` close that, and
+the latter also returns an edited approved review to the queue — otherwise
+"get approved, then rewrite" is an unmoderated path onto an indexed page.
+
+**Admins bypass moderation, so granting admin is a content decision, not just
+a permissions one.** Both trigger functions exempt `public.is_admin()`: a
+review an admin submits keeps whatever status it was submitted with and
+publishes instantly, and an admin's edit to a live review does not return it to
+the queue. That is correct while Sean is the only admin — the sole moderator
+should not have to approve himself, and there is nobody else to review him. It
+stops being correct the moment a second admin exists, because `role = 'admin'`
+in `profiles` then also means "may publish unreviewed content straight onto an
+indexed page that emits `AggregateRating`". Before adding an admin, either
+accept that, or narrow the exemption from the role to a specific user id.
+
+**Verifying the triggers — must run as a non-admin.** There are two ways this
+check passes for the wrong reason and looks like proof. A plain insert in the
+SQL Editor runs with `auth.uid() IS NULL`, which the triggers exempt as
+service-role. Impersonating `(SELECT id FROM auth.users LIMIT 1)` looks like it
+fixes that, but it typically returns the owner's account — an admin, also
+exempt. Both return `approved` from a perfectly working trigger. Pick a known
+non-admin UUID explicitly:
+
+```sql
+BEGIN;
+SELECT set_config('request.jwt.claims',
+                  '{"sub":"<NON-ADMIN-UUID>","role":"authenticated"}',
+                  true);
+SET LOCAL role authenticated;
+
+INSERT INTO public.spot_reviews (spot_id, user_id, author_name, rating, content, status)
+VALUES ((SELECT id FROM public.spots LIMIT 1),
+        '<NON-ADMIN-UUID>',
+        'Trigger check', 5, 'rollback test', 'approved')
+RETURNING status;   -- expect 'pending'
+
+ROLLBACK;
+```
+
+Three details that produce confusing failures rather than clear ones. The
+`set_config` call must come before `SET LOCAL role authenticated`, because the
+`authenticated` role cannot read `auth.users`. The whole block must be sent as
+a single statement, or the `SET LOCAL`s do not survive to the insert. And
+`user_id` is a foreign key to `auth.users`, so an invented UUID fails on the
+constraint before the trigger is ever reached. Keep the `ROLLBACK`: this writes
+a real row, and the moderation queue should never contain test data.
+
+Not built: no notification to the author on approval or rejection, and no
+rejection reason recorded. Both are fine while volume is low and Sean is the
+only moderator.
 
 ### 3. Contributor rewards — manual by design
 

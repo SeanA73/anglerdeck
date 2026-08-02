@@ -3,6 +3,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
+export type ReviewStatus = 'pending' | 'approved' | 'rejected';
+
 export interface SpotReview {
   id: string;
   spot_id: number;
@@ -14,6 +16,7 @@ export interface SpotReview {
   visit_date: string | null;
   created_at: string;
   photo_urls: string[] | null;
+  status: ReviewStatus;
 }
 
 export const useSpotReviews = (spotId: number) => {
@@ -43,8 +46,15 @@ export const useSpotReviews = (spotId: number) => {
     fetchReviews();
   }, [fetchReviews]);
 
-  const averageRating = reviews.length > 0
-    ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+  // RLS returns approved reviews plus the viewer's own, whatever its state, so
+  // an author can see their submission is queued rather than think it vanished.
+  // Everything public-facing — the star average, the count, the AggregateRating
+  // those feed — must still count approved rows only, or an author would see a
+  // rating nobody else does.
+  const approvedReviews = reviews.filter((r) => r.status === 'approved');
+
+  const averageRating = approvedReviews.length > 0
+    ? approvedReviews.reduce((sum, r) => sum + r.rating, 0) / approvedReviews.length
     : 0;
 
   const submitReview = async (data: {
@@ -69,7 +79,10 @@ export const useSpotReviews = (spotId: number) => {
 
       if (error) throw error;
       
-      toast.success('Review submitted successfully!');
+      toast.success('Report submitted — a moderator will review it shortly', {
+        description:
+          'It will appear on the spot page once approved. You can see it below in the meantime.',
+      });
       await fetchReviews();
       return true;
     } catch (error) {
@@ -103,7 +116,7 @@ export const useSpotReviews = (spotId: number) => {
     loading,
     submitting,
     averageRating,
-    reviewCount: reviews.length,
+    reviewCount: approvedReviews.length,
     submitReview,
     deleteReview,
     userReview: reviews.find(r => r.user_id === user?.id),

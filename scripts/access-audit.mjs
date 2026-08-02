@@ -24,7 +24,8 @@ const spots = await (
 ).json();
 
 const reviews = await (
-  await fetch(`${URL_}/rest/v1/spot_reviews?select=spot_id`, { headers })
+  // Approved only, so the audit reports the same score the build will compute.
+  await fetch(`${URL_}/rest/v1/spot_reviews?select=spot_id&status=eq.approved`, { headers })
 ).json();
 
 const reviewCount = new Map();

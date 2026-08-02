@@ -87,7 +87,11 @@ async function fetchReviews() {
   if (!SUPABASE_URL || !SUPABASE_KEY) return new Map();
   try {
     const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/spot_reviews?select=spot_id,author_name,rating,title,content,visit_date,created_at&order=created_at.desc`,
+      // status=eq.approved is belt and braces: RLS already hides unapproved
+      // rows from the anon key. Both are deliberate — an unapproved review must
+      // never reach crawlable HTML or AggregateRating, so neither the filter
+      // nor the policy is the single point of failure.
+      `${SUPABASE_URL}/rest/v1/spot_reviews?select=spot_id,author_name,rating,title,content,visit_date,created_at&status=eq.approved&order=created_at.desc`,
       { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` } }
     );
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -99,7 +103,20 @@ async function fetchReviews() {
     }
     return bySpot;
   } catch (err) {
+    // A 400 here almost always means 20260802_add_review_moderation.sql has not
+    // been run yet, so status=eq.approved filters on a column that does not
+    // exist. Deliberately no unfiltered retry: falling back would put
+    // unmoderated reviews into crawlable HTML and AggregateRating, which is the
+    // exact failure this migration exists to prevent. Better to ship zero
+    // reviews and say so loudly.
     console.warn(`[prerender] could not load reviews (${err})`);
+    if (String(err).includes("400")) {
+      console.warn(
+        "[prerender] 400 usually means the review moderation migration has " +
+          "not been applied. Spot pages will build with zero reviews, which " +
+          "can drop spots below the indexing threshold."
+      );
+    }
     return new Map();
   }
 }

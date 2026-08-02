@@ -46,6 +46,19 @@ export const ReviewCard = ({ review, onDelete, voteData, onToggleVote }: ReviewC
                     {review.author_name}
                   </span>
                   <StarRating rating={review.rating} size="sm" />
+                  {/* Only the author and admins can see a non-approved review at
+                      all (RLS), so this never appears to the public. Without it
+                      the author cannot tell a queued report from a live one. */}
+                  {review.status === 'pending' && (
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 whitespace-nowrap">
+                      Awaiting review
+                    </span>
+                  )}
+                  {review.status === 'rejected' && (
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-destructive/15 text-destructive whitespace-nowrap">
+                      Not published
+                    </span>
+                  )}
                 </div>
                 <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
                   <span>{format(new Date(review.created_at), 'MMM d, yyyy')}</span>

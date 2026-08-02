@@ -36,6 +36,11 @@ export function spotScore(spot) {
   if (hasAccessDetail(spot.access)) score += 2;
   // Angler reviews are first-hand experience — the one thing that cannot be
   // researched or generated — so they count for the most.
+  //
+  // reviewCount must only ever count *approved* reviews. This file does not
+  // query; callers supply the count (prerender.mjs, vite.config.ts,
+  // access-audit.mjs) and each filters status=eq.approved. A caller that
+  // forgets would let an unmoderated review promote a spot into the index.
   if ((spot.reviewCount ?? 0) >= 1) score += 2;
   if ((spot.reviewCount ?? 0) >= 3) score += 1;
   return score;
