@@ -7,6 +7,8 @@ import { spotSlugs as fallbackSlugs } from './src/data/spotSlugs';
 import { COUNTRIES } from './src/lib/countries';
 // @ts-expect-error — plain ESM module shared with scripts/prerender.mjs
 import { isIndexable } from './scripts/spot-quality.mjs';
+// @ts-expect-error — plain ESM module shared with scripts/prerender.mjs
+import { STATIC_ROUTE_PATHS } from './scripts/static-routes.mjs';
 
 const siteUrl = process.env.VITE_SITE_URL || 'https://anglerdeck.com';
 
@@ -139,6 +141,11 @@ export default defineConfig(async ({ mode }) => {
         sitemap({
           hostname: siteUrl,
           dynamicRoutes: [
+            // The plugin only emits '/' plus whatever is listed here — it has no
+            // file-based routing to discover. Without this line the ten static
+            // routes were prerendered as real HTML but never advertised,
+            // including /spots, the parent every hub and spot page links to.
+            ...STATIC_ROUTE_PATHS,
             // Country hubs are always indexed — they aggregate real spot data
             // and are the pages that can rank for head terms.
             ...COUNTRIES.filter((c) => countryCodes.includes(c.code)).map(
@@ -149,6 +156,12 @@ export default defineConfig(async ({ mode }) => {
           exclude: ['/auth', '/account', '/catches'],
           changefreq: 'weekly',
           priority: 0.8,
+          // public/robots.txt is the single source of truth. The plugin's
+          // generator defaults to `[{ userAgent: '*', allow: '/' }]` and wrote
+          // over the copied file, silently dropping the Disallow lines for
+          // /account, /auth and /catches — so production was inviting crawlers
+          // into the gated routes. Keep this false; edit public/robots.txt.
+          generateRobotsTxt: false,
         }),
     ].filter(Boolean),
     resolve: {

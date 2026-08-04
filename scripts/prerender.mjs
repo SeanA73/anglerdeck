@@ -18,6 +18,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadEnv } from "vite";
 import { isIndexable, INDEX_THRESHOLD } from "./spot-quality.mjs";
+import { STATIC_ROUTES } from "./static-routes.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "..");
@@ -365,18 +366,58 @@ function spotJsonLd(spot, reviews = []) {
   };
 }
 
-const STATIC_ROUTES = [
-  { path: "/spots", title: "Fishing Spots — AnglerDeck", description: "Browse curated fishing spots worldwide. Filter by country, species, freshwater or saltwater." },
-  { path: "/map", title: "Interactive Fishing Map — AnglerDeck", description: "Find fishing spots near you on an interactive map. Filter by species, water type and difficulty." },
-  { path: "/pricing", title: "Pricing — AnglerDeck Pro", description: "Free forever, or upgrade to Pro for unlimited spots, catch logging and the AI Fishing Assistant." },
-  { path: "/regulations", title: "Fishing Regulations — AnglerDeck", description: "Links to official fishing authorities and licence information by country." },
-  { path: "/support", title: "Help Centre — AnglerDeck", description: "Answers to common questions about AnglerDeck." },
-  { path: "/contact", title: "Contact — AnglerDeck", description: "Get in touch with the AnglerDeck team." },
-  { path: "/privacy", title: "Privacy Policy — AnglerDeck", description: "How AnglerDeck handles your data." },
-  { path: "/terms", title: "Terms of Service — AnglerDeck", description: "The terms governing use of AnglerDeck." },
-  { path: "/cookies", title: "Cookie Policy — AnglerDeck", description: "How AnglerDeck uses cookies." },
-  { path: "/licenses", title: "Licences — AnglerDeck", description: "Open source licences used by AnglerDeck." },
-];
+/**
+ * Home page body.
+ *
+ * Built from the same Supabase rows as every other page rather than from the
+ * marketing copy in Hero/Features, for two reasons: it cannot drift into
+ * claiming a feature that does not ship, and counts stated as fact stay true
+ * because they are counted at build time. FeaturedSpots reshuffles on every
+ * load, so there is no stable "featured six" to mirror — this links the
+ * indexable spots instead, which is also the more useful set to hand a crawler.
+ */
+function homeContent(spots, countriesWithSpots) {
+  const indexable = spots.filter(isIndexable);
+  const species = [...new Set(spots.flatMap((s) => s.species || []))].sort();
+
+  return `
+    <article>
+      <h1>AnglerDeck — find your next fishing spot</h1>
+      <p>Researched fishing spots with location, target species, access details,
+      seasons and licence pointers. ${spots.length} spots across
+      ${countriesWithSpots.length} countries.</p>
+
+      <h2>Fishing by country</h2>
+      <ul>
+        ${countriesWithSpots
+          .map(
+            (c) =>
+              `<li><a href="/fishing/${esc(c.slug)}">Fishing in ${esc(c.name)}</a> — ${c.count} ${c.count === 1 ? "spot" : "spots"}</li>`
+          )
+          .join("")}
+      </ul>
+
+      <h2>Fishing spots</h2>
+      <ul>
+        ${indexable
+          .map(
+            (s) =>
+              `<li><a href="/spot/${esc(s.slug)}">${esc(s.title)}</a> — ${esc(s.location)}, ${esc(COUNTRY_NAMES[s.country] || s.country)}. ${esc(s.type)}, ${esc(s.difficulty)}.</li>`
+          )
+          .join("")}
+      </ul>
+      <p><a href="/spots">Browse all fishing spots</a> &middot;
+      <a href="/map">View the fishing map</a> &middot;
+      <a href="/regulations">Fishing regulations by country</a></p>
+
+      <h2>Species covered</h2>
+      ${list(species)}
+
+      <p>Licence requirements, closed seasons and health advisories change
+      regularly. Always confirm with the relevant fisheries authority before you
+      fish — each spot page links to its source.</p>
+    </article>`;
+}
 
 function write(routePath, html) {
   const dir = path.join(dist, routePath);
@@ -396,7 +437,26 @@ async function main() {
   try {
     spots = await fetchSpots();
   } catch (err) {
-    console.warn(`[prerender] could not load spots (${err}) — static routes only`);
+    console.warn(`[prerender] could not load spots (${err})`);
+  }
+
+  // Continuing here would write a dist with no spot pages and an empty home
+  // page, while exiting 0 — so the deploy would look like it worked and the
+  // content would just be gone. Exit non-zero instead.
+  //
+  // This does not protect the live site: `vite build` has already replaced
+  // dist/, and nginx serves that directory with no restart, so by the time this
+  // fires the site is already down to a shell. The non-zero exit is what makes
+  // that visible rather than silent — treat it as "the site is currently broken,
+  // fix the cause and rebuild", not as "the build was cancelled".
+  if (spots.length === 0) {
+    console.error(
+      "[prerender] no spots returned — refusing to write a dist with zero spot " +
+        "pages. dist/ is now shell-only and nginx is already serving it. Check " +
+        "VITE_SUPABASE_URL / VITE_SUPABASE_PUBLISHABLE_KEY in .env.production " +
+        "and that the spots table is reachable, then rebuild."
+    );
+    process.exit(1);
   }
 
   const reviewsBySpot = await fetchReviews();
@@ -440,9 +500,11 @@ async function main() {
   // they aggregate real spot data, so they are not thin even when a country has
   // few spots, and they are what can rank for head terms.
   let hubs = 0;
+  const countriesWithSpots = [];
   for (const country of COUNTRIES) {
     const countrySpots = spots.filter((s) => s.country === country.code);
     if (countrySpots.length === 0) continue;
+    countriesWithSpots.push({ ...country, count: countrySpots.length });
 
     const title = `Fishing in ${country.name} — Spots, Licences & Access | AnglerDeck`;
     const description = `${countrySpots.length} researched fishing spots in ${country.name}, with verified access details, licence requirements and seasons.`;
@@ -472,8 +534,28 @@ async function main() {
     hubs++;
   }
 
+  // Home last: it overwrites dist/index.html, which is the template every other
+  // route above was built from. Writing it earlier would feed the home page's
+  // own head tags and body into every subsequent route.
+  let homeHtml = withHead(template, {
+    title: "AnglerDeck - Find Your Perfect Fishing Spots",
+    description:
+      "Discover, save, and share the best fishing spots worldwide. Connect with fellow anglers and access expert tips.",
+    canonical: `${SITE_URL}/`,
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: "AnglerDeck",
+      description:
+        "Researched fishing spots worldwide, with access details, target species, seasons and licence requirements.",
+      url: `${SITE_URL}/`,
+    },
+  });
+  homeHtml = withBody(homeHtml, homeContent(spots, countriesWithSpots));
+  write("/", homeHtml);
+
   console.log(
-    `[prerender] wrote ${STATIC_ROUTES.length} static routes, ${hubs} country hubs and ${spots.length} spot pages`
+    `[prerender] wrote home, ${STATIC_ROUTES.length} static routes, ${hubs} country hubs and ${spots.length} spot pages`
   );
   if (spots.length) {
     console.log(

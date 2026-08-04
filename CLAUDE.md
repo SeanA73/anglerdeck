@@ -43,7 +43,33 @@ fabricated content would cost the AdSense account.
 real static HTML per route into `dist/`, because the SPA alone serves crawlers
 an empty shell. It fetches spots and reviews from Supabase, injects head tags,
 JSON-LD `Place` schema (plus `AggregateRating` when reviews exist), and a
-crawlable body. Falls back gracefully when Supabase is unreachable.
+crawlable body.
+
+It **exits non-zero if Supabase returns zero spots**, rather than writing a dist
+with no spot pages. Reviews and individual missing fields still degrade
+gracefully; only an empty spot list is fatal. Note what the exit does and does
+not buy: `vite build` has already replaced `dist/`, and nginx serves that
+directory with no reload, so when this fires the live site is *already* down to
+a shell. The failure is loud, not prevented — fix the cause and rebuild.
+
+The home page is prerendered last, because `dist/index.html` is the template
+every other route is built from; writing it earlier would leak its head tags and
+body into every subsequent route. Its body is built from Supabase counts and
+links rather than paraphrasing `Hero`/`Features`, so it cannot drift into
+advertising a feature that does not ship (rule 5).
+
+Because nginx resolves both `/` and its SPA fallback to the same
+`dist/index.html`, any non-prerendered route (`/community`, `/admin/*`, and
+genuine 404s) now serves the home page's body and `canonical` to crawlers until
+React hydrates. Splitting the two needs an nginx change, not a build change.
+
+**Route lists live in `scripts/static-routes.mjs`**, shared by `prerender.mjs`
+and `vite.config.ts` for the same reason `spot-quality.mjs` is shared. A route
+prerendered but absent from the sitemap is invisible to sitemap-only crawlers; a
+route in the sitemap that was never prerendered serves a shell. `robots.txt` is
+`public/robots.txt` alone — `vite-plugin-sitemap` has `generateRobotsTxt: false`
+because its default policy overwrote the file and silently dropped the
+`Disallow` lines.
 
 **Indexing quality gate.** `scripts/spot-quality.mjs` scores each spot; only
 those scoring >= 5 are indexed. Everything else is prerendered with
