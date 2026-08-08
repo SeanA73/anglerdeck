@@ -52,7 +52,15 @@ export const MagicWriteButton = ({
       });
 
       if (error) {
-        throw new Error(error.message || 'Failed to generate content');
+        // functions.invoke collapses every non-2xx into a generic "Edge
+        // Function returned a non-2xx status code", which would bury the
+        // function's own messages — the Pro/Elite tier_required 403 and the
+        // rate_limit_exceeded 429 both arrive that way. The real body is on
+        // the Response it attaches, so read that when it is there.
+        const body = await (error as { context?: Response }).context
+          ?.json()
+          .catch(() => null);
+        throw new Error(body?.error || error.message || 'Failed to generate content');
       }
 
       if (data?.content) {

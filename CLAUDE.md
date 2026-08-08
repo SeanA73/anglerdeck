@@ -319,7 +319,28 @@ read `__tcfapi`. Replacing the banner without rewriting the gate leaves
 silently and with no error** — including outside the EEA, UK and Switzerland.
 Change both in the same commit.
 
-### 5. Other open items
+### 5. Edge Function rate limiting — does not work, next up
+
+`ai-chat` and `ai-generate-story` both call `checkRateLimit`, which counts
+requests in a module-level `Map`. That is per-isolate state, and Supabase hands
+out fresh isolates rather than reusing one, so the counter is empty on almost
+every request. Measured 9 Aug 2026: 28 requests to `ai-chat` against its
+10-per-60s limit returned zero 429s; `ai-generate-story` allowed 12. This is a
+design problem, not a bug in the counting — the deployed code was confirmed to
+be the version containing the limiter before concluding anything.
+
+A fix needs shared state: a table keyed by `(user_id, window_start)` and a
+migration, applied by hand before the functions are redeployed. Until then a
+pro/elite subscriber can call `gpt-4o-mini` without limit and the OpenAI
+account budget is the only cap. Shipped anyway on 9 Aug 2026 because the
+alternative was leaving paying Pro subscribers with a dead headline feature.
+
+**To re-test, send invalid bodies.** Rate limiting is gate 3 and body
+validation is gate 4, so a malformed body exercises the counter and returns 400
+without spending anything at OpenAI. Do not test with valid bodies unless you
+want ten real completions per run.
+
+### 6. Other open items
 
 - Main JS bundle is ~735 kB (222 kB gzipped). Code-splitting would help LCP.
 - Sentry was deferred; add before any paid marketing.

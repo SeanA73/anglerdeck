@@ -7,6 +7,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useAIChat, type ChatMessage } from '@/hooks/useAIChat';
 import { useSubscription } from '@/hooks/useSubscription';
 import { cn } from '@/lib/utils';
+import { AI_ASSISTANT_ENABLED } from '@/lib/features';
 import ReactMarkdown from 'react-markdown';
 
 interface FishingAssistantProps {
@@ -112,7 +113,11 @@ export const FishingAssistant = ({ className }: FishingAssistantProps) => {
     sendMessage(question);
   };
 
-  if (!hasAccess) {
+  // Kill switch for the whole AI feature — see lib/features.ts for the current
+  // state and what production needs before it can be on. When the backing
+  // Edge Function is not serving, every message 500s and useAIChat deletes the
+  // user's own message, so hiding the widget beats showing a broken one.
+  if (!AI_ASSISTANT_ENABLED || !hasAccess) {
     return null; // Don't show for free users
   }
 

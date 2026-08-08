@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Mail, MessageSquare, Clock } from "lucide-react";
+import { Mail, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -102,25 +102,10 @@ const Contact = () => {
               </Card>
             </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="p-2 rounded-lg bg-accent/10">
-                      <MessageSquare className="w-5 h-5 text-accent" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-foreground mb-1">Live Chat</h3>
-                      <p className="text-sm text-muted-foreground">Available for Pro & Elite members</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
+            {/* A "Live Chat — available for Pro & Elite members" card used to sit
+                here. There is no live chat: no widget, no vendor, no handler.
+                Removed rather than left advertising a paid perk that does not
+                exist (CLAUDE.md rule 5). */}
 
             <motion.div
               initial={{ opacity: 0, x: 20 }}

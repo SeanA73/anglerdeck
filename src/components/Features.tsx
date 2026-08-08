@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { MapPin, Cloud, Sparkles, Fish, Map, ScrollText } from "lucide-react";
+import { MapPin, Cloud, Sparkles, MessageSquare, Fish, Map, ScrollText } from "lucide-react";
 
 const features = [
   {
@@ -16,6 +16,11 @@ const features = [
     icon: Sparkles,
     title: "AI Fishing Assistant",
     description: "Ask AI for species tips, technique suggestions, and recommendations for any spot. Available on Pro and Elite plans.",
+  },
+  {
+    icon: MessageSquare,
+    title: "Community Feed",
+    description: "Read catches, tips, and trip reports from other anglers. Pro and Elite members can post their own.",
   },
   {
     icon: Fish,

@@ -56,7 +56,7 @@ const Privacy = () => {
           <ul className="text-muted-foreground mb-6 list-disc pl-6 space-y-2">
             <li><strong>Supabase</strong> (data hosting, authentication) — servers located in Sydney, Australia (ap-southeast-2).</li>
             <li><strong>Stripe</strong> (subscription billing and payment processing) — processes card details directly. See Stripe's privacy policy at stripe.com/privacy.</li>
-            <li><strong>OpenAI</strong> (AI Fishing Assistant, Pro and Elite tiers only) — messages sent to the AI Assistant are transmitted to OpenAI for processing. Do not share sensitive personal information in AI chats.</li>
+            <li><strong>OpenAI</strong> (AI Fishing Assistant and community "Magic Write", Pro and Elite tiers only) — messages you send to the AI Assistant, and the post details you supply to Magic Write (such as species, weight, location or topic), are transmitted to OpenAI for processing. Do not share sensitive personal information in AI chats or Magic Write prompts.</li>
             <li><strong>Google AdSense</strong> (advertising, free tier only) — see the advertising section below.</li>
             <li><strong>Hosting and email providers</strong> — used to deliver the app and transactional emails.</li>
           </ul>

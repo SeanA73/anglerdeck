@@ -14,6 +14,13 @@
  * Gated routes (/auth, /account, /catches, /community, /admin/*) are absent on
  * purpose: they render nothing useful without a session, so they are neither
  * prerendered nor listed. robots.txt disallows the first three.
+ *
+ * The `description` strings here are a SECOND copy of the copy in each page's
+ * <SEO> component, and this one is what crawlers read — the React tag only
+ * applies after hydration. So a marketing claim edited in the page alone still
+ * ships here. /pricing is the worked example: "AI Fishing Assistant" was pulled
+ * from Pricing.tsx but survived in this file and went out in the prerendered
+ * <head>. When changing a page's description, change both.
  */
 export const STATIC_ROUTES = [
   { path: "/spots", title: "Fishing Spots — AnglerDeck", description: "Browse curated fishing spots worldwide. Filter by country, species, freshwater or saltwater." },

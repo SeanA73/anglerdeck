@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,25 +15,48 @@ import {
 import FishingAssistant from "@/components/ai/FishingAssistant";
 import { SEO } from "@/components/SEO";
 
+// Accordion item value + DOM id for a FAQ entry, derived from its question so
+// the category-card links below stay valid if the FAQ list is reordered.
+const faqId = (question: string) =>
+  question.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
 const Support = () => {
+  // `answer` points at the text of an existing FAQ question further down the
+  // page. These are not article pages — no individual help articles exist yet,
+  // so a topic with no matching FAQ is listed as plain text rather than as a
+  // link that goes nowhere. Anything referencing a question that is later
+  // renamed also degrades to plain text (see `faqQuestions` below), so this
+  // page cannot regrow the dead `href="#"` links it used to ship.
   const helpTopics = [
     {
       icon: Book,
       title: "Getting Started",
       description: "Learn the basics of using AnglerDeck to find and share fishing spots.",
-      articles: ["How to search for spots", "Creating your first catch log", "Understanding spot ratings"],
+      articles: [
+        { label: "How to search for spots", answer: "How do I find fishing spots near me?" },
+        { label: "Creating your first catch log", answer: "How do I log a catch?" },
+        { label: "Understanding spot ratings", answer: "How do spot ratings work?" },
+      ],
     },
     {
       icon: HelpCircle,
       title: "Account & Billing",
       description: "Manage your account settings, subscriptions, and payment methods.",
-      articles: ["Upgrading to Pro", "Managing your subscription", "Updating payment info"],
+      articles: [
+        { label: "Upgrading to Pro", answer: "How do I upgrade my subscription?" },
+        { label: "Managing your subscription", answer: "Can I cancel my subscription anytime?" },
+        { label: "Updating payment info", answer: null },
+      ],
     },
     {
       icon: MessageCircle,
       title: "Community Guidelines",
       description: "Learn about our community standards and how to interact with other anglers.",
-      articles: ["Posting guidelines", "Reporting inappropriate content", "Earning badges"],
+      articles: [
+        { label: "Posting guidelines", answer: null },
+        { label: "Reporting inappropriate content", answer: null },
+        { label: "Earning badges", answer: null },
+      ],
     },
   ];
 
@@ -76,7 +100,7 @@ const Support = () => {
       questions: [
         {
           q: "What are the different subscription tiers?",
-          a: "We offer Free, Pro ($9.99/month), and Elite ($19.99/month) tiers. Pro gives unlimited spots and catches, while Elite adds exclusive features like AI recommendations and advanced weather data.",
+          a: "We offer Free, Pro ($9.99/month), and Elite ($29.99/month) tiers. Pro gives unlimited spot views, unlimited catch logging, community posting, and an ad-free experience. Elite is still in development — its additional features are listed as planned on the Pricing page and checkout for it is disabled until they ship.",
         },
         {
           q: "How do I upgrade my subscription?",
@@ -107,6 +131,40 @@ const Support = () => {
     },
   ];
 
+  // Every question actually on the page. A topic link only renders as a link
+  // if its target is in here.
+  const faqQuestions = new Set(
+    faqCategories.flatMap((category) => category.questions.map((faq) => faq.q))
+  );
+
+  const [query, setQuery] = useState("");
+  const [openFaq, setOpenFaq] = useState("");
+
+  const search = query.trim().toLowerCase();
+  const visibleCategories = search
+    ? faqCategories
+        .map((category) => ({
+          ...category,
+          questions: category.questions.filter(
+            (faq) =>
+              faq.q.toLowerCase().includes(search) ||
+              faq.a.toLowerCase().includes(search)
+          ),
+        }))
+        .filter((category) => category.questions.length > 0)
+    : faqCategories;
+
+  // Open the target question and bring it into view. Clearing any active
+  // search first, otherwise the target may be filtered out of the DOM.
+  const openAnswer = (question: string) => {
+    const id = faqId(question);
+    setQuery("");
+    setOpenFaq(id);
+    requestAnimationFrame(() => {
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <SEO title="Help & Support" description="Get help with AnglerDeck. FAQs, contact info, and support resources for anglers using our platform." canonicalPath="/support" />
@@ -127,7 +185,10 @@ const Support = () => {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
             <Input
-              placeholder="Search for help articles..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search frequently asked questions..."
+              aria-label="Search frequently asked questions"
               className="pl-10 h-12"
             />
           </div>
@@ -154,10 +215,20 @@ const Support = () => {
                   <p className="text-muted-foreground mb-4">{topic.description}</p>
                   <ul className="space-y-2">
                     {topic.articles.map((article) => (
-                      <li key={article}>
-                        <a href="#" className="text-sm text-accent hover:underline">
-                          {article}
-                        </a>
+                      <li key={article.label}>
+                        {article.answer && faqQuestions.has(article.answer) ? (
+                          <button
+                            type="button"
+                            onClick={() => openAnswer(article.answer)}
+                            className="text-sm text-accent hover:underline text-left"
+                          >
+                            {article.label}
+                          </button>
+                        ) : (
+                          <span className="text-sm text-muted-foreground">
+                            {article.label}
+                          </span>
+                        )}
                       </li>
                     ))}
                   </ul>
@@ -178,15 +249,36 @@ const Support = () => {
             Frequently Asked Questions
           </h2>
           <div className="max-w-3xl mx-auto space-y-6">
-            {faqCategories.map((category) => (
+            {visibleCategories.length === 0 && (
+              <p className="text-center text-muted-foreground">
+                No questions match “{query.trim()}”. Try a different term, or{" "}
+                <a href="/contact" className="text-accent hover:underline">
+                  contact support
+                </a>
+                .
+              </p>
+            )}
+            {visibleCategories.map((category) => (
               <Card key={category.category}>
                 <CardHeader>
                   <CardTitle className="text-lg">{category.category}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <Accordion type="single" collapsible className="w-full">
-                    {category.questions.map((faq, index) => (
-                      <AccordionItem key={index} value={`${category.category}-${index}`}>
+                  <Accordion
+                    type="single"
+                    collapsible
+                    className="w-full"
+                    // One shared open-item across all four accordions, so a
+                    // category link can open an answer in a different card.
+                    value={
+                      category.questions.some((faq) => faqId(faq.q) === openFaq)
+                        ? openFaq
+                        : ""
+                    }
+                    onValueChange={setOpenFaq}
+                  >
+                    {category.questions.map((faq) => (
+                      <AccordionItem key={faq.q} value={faqId(faq.q)} id={faqId(faq.q)}>
                         <AccordionTrigger className="text-left">
                           {faq.q}
                         </AccordionTrigger>

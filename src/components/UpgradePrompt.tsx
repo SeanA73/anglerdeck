@@ -41,6 +41,7 @@ export const UpgradePrompt = ({
     'Unlimited spot views',
     'Unlimited catch logs',
     'AI Fishing Assistant',
+    'Post to the community feed',
     'Ad-free experience',
   ];
 

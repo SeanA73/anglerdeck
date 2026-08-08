@@ -21,6 +21,7 @@ import {
 import { Fish, MessageSquare, Lightbulb, ImagePlus, X, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { MagicWriteButton } from "@/components/ai/MagicWriteButton";
+import { AI_ASSISTANT_ENABLED } from "@/lib/features";
 import { useSubscription } from "@/hooks/useSubscription";
 
 interface CreatePostDialogProps {
@@ -41,10 +42,14 @@ const CreatePostDialog = ({ open, onOpenChange, sessionId }: CreatePostDialogPro
   const queryClient = useQueryClient();
   const { subscription, checkFeatureAccess } = useSubscription();
   
-  // Pro and Elite users get AI features
-  const hasAIAccess = checkFeatureAccess('ai_predictions') || 
-    subscription?.tier === 'pro' || 
-    subscription?.tier === 'elite';
+  // Pro and Elite users get AI features, behind the same kill switch as the
+  // Fishing Assistant — see lib/features.ts. This only hides the button; the
+  // ai-generate-story function enforces the tier itself.
+  const hasAIAccess = AI_ASSISTANT_ENABLED && (
+    checkFeatureAccess('ai_predictions') ||
+    subscription?.tier === 'pro' ||
+    subscription?.tier === 'elite'
+  );
 
   const createPostMutation = useMutation({
     mutationFn: async () => {
