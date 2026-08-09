@@ -4,43 +4,20 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertTriangle, ExternalLink, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
 import { SEO } from "@/components/SEO";
+// The same four entries are rendered into the crawlable body for /regulations
+// by scripts/prerender.mjs, which reads this file directly. One copy, so the
+// prerendered page and the hydrated page cannot drift apart.
+import regions from "@/data/regulation-regions.json";
 
 const Regulations = () => {
-  const regions = [
-    {
-      name: "United States",
-      description: "Fishing regulations vary by state. Check your state's fish and wildlife agency for current rules.",
-      links: [
-        { name: "U.S. Fish & Wildlife Service", url: "https://www.fws.gov" },
-        { name: "State Fishing Licenses", url: "https://www.takemefishing.org/get-a-fishing-license/" },
-      ],
-    },
-    {
-      name: "Canada",
-      description: "Provincial and territorial regulations apply. A license is required in most areas.",
-      links: [
-        { name: "Fisheries and Oceans Canada", url: "https://www.dfo-mpo.gc.ca" },
-      ],
-    },
-    {
-      name: "United Kingdom",
-      description: "A rod licence is required for freshwater fishing. Different rules apply in Scotland.",
-      links: [
-        { name: "Environment Agency", url: "https://www.gov.uk/fishing-licences" },
-      ],
-    },
-    {
-      name: "Australia",
-      description: "Each state and territory has its own fishing regulations and licensing requirements.",
-      links: [
-        { name: "Fisheries Management", url: "https://www.agriculture.gov.au/fisheries" },
-      ],
-    },
-  ];
-
   return (
     <div className="min-h-screen bg-background">
-      <SEO title="Fishing Regulations" description="State-by-state fishing regulations for Australia. Bag limits, size limits, seasons, and licensing requirements." canonicalPath="/regulations" />
+      {/* Keep in step with the /regulations entry in scripts/static-routes.mjs
+          — that copy is what crawlers read, this one only applies after
+          hydration. The previous description described a page that does not
+          exist: state-by-state Australian rules with bag and size limits, on a
+          page covering four countries and carrying no numbers at all. */}
+      <SEO title="Fishing Regulations" description="Official fishing licence links for the US, Canada, the UK and Australia, plus licence guidance for every country AnglerDeck covers." canonicalPath="/regulations" />
       <Header />
       <main className="container mx-auto px-4 py-16">
         <motion.div

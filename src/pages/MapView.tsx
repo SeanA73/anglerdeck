@@ -49,7 +49,11 @@ const MapView = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <SEO title="Interactive Fishing Map" description="Find fishing spots near you. Filter by species, water type, difficulty, and more on our interactive map of Australia's best angling locations." canonicalPath="/map" />
+      {/* Keep in step with the /map entry in scripts/static-routes.mjs — that
+          copy is what crawlers read. The previous one described an Australian
+          map with species and difficulty filters; this map is worldwide and
+          filters by water type and country. */}
+      <SEO title="Interactive Fishing Map" description="Every AnglerDeck fishing spot on one interactive map. Filter by water type and country, and open any marker for location, conditions and details." canonicalPath="/map" />
       <Header />
 
       <main className="flex-1 flex flex-col pt-16 lg:pt-20">

@@ -136,9 +136,12 @@ const Spots = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Keep in step with the /spots entry in scripts/static-routes.mjs — that
+          copy is what crawlers read. The previous one named three countries on
+          a page covering nineteen. */}
       <SEO
         title="Explore Fishing Spots Worldwide"
-        description="Browse curated fishing spots across Australia, the US and Canada. Filter by country, species, freshwater or saltwater. Find your next perfect catch with AnglerDeck."
+        description="Browse researched fishing spots worldwide. Filter by country, species and water type, or sort by the spots nearest you."
         canonicalPath="/spots"
       />
       <Header />

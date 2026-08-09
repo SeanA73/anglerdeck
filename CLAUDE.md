@@ -126,6 +126,52 @@ drops back under `INDEX_THRESHOLD` and out of the index. `prerender.mjs` and
 smoke alarm is not a fix — the build still ships wrong. Apply the SQL, confirm
 it, then `git pull && npm run build`.
 
+**Never verify a deploy by fetching the live URL. Three layers cache.** This
+has produced two confidently wrong diagnoses in a single session, one of them
+recorded in an audit as "confirmed twice independently". Both were reading
+stale copies of pages that were, in fact, correct.
+
+The three layers, and what defeats each:
+
+| Layer | Symptom | Defeated by |
+|---|---|---|
+| Cloudflare edge | Stale HTML. A `?v=` param does **not** reliably bust it | `grep` the file in `dist/` on the VPS |
+| PWA service worker | Stale JS bundle in any browser that has visited before. `registerType: 'autoUpdate'` refreshes, but typically one page-load late | An incognito window |
+| Browser cache | Usual staleness | Hard reload, or incognito |
+
+So:
+
+- **Prerender, sitemap, robots, JSON-LD** — verify on the VPS with `grep`
+  against `dist/`, e.g. `grep -c "find your next fishing spot"
+  /var/www/anglerdeck/dist/index.html` or
+  `grep -rl "Live Chat" /var/www/anglerdeck/dist/assets/*.js`. That reads what
+  was actually built, with nothing in between.
+- **Rendered UI** — verify in an incognito window, never a browser that has
+  visited the site before.
+- `curl` with a cache-buster is the *weakest* check available here. Treat a
+  negative result from it as "unknown", never as "broken".
+
+**"Already up to date" from `git pull` is ambiguous** and cost a long detour
+this session. It means the pull found nothing *new*, which is equally true
+when the remote lacks the commit **and** when the VPS already has it. It is
+not evidence that a push failed. Check `git log -1 --format="%h %s"` on the
+VPS and compare hashes; that is unambiguous.
+
+**Auto-gc is disabled (`gc.auto 0`) because the repo lives in OneDrive.**
+OneDrive holds file locks that make git's garbage collector fail partway
+through, prompting `Deletion of directory '.git/objects/XX' failed. Should I
+try again? (y/n)` once per object directory — up to 256 prompts. The same
+lock contention produces stray `.git/index.lock` files that block all git
+operations until removed. Moving the repo out of OneDrive would remove this
+whole class of failure; until then, leave gc off.
+
+**`node_modules` on the VPS corrupts regularly** — three times in one
+session, surfacing as either `Cannot find package '.../vite/index.js'` or
+`Bus error (core dumped)`. Both are the same underlying problem and both are
+fixed by `rm -rf node_modules && npm ci`. It is not memory (the box has ~7 GB
+free); interrupted builds appear to leave the tree half-written. The VPS has
+**no swap**, which is worth adding as cheap insurance.
+
 ---
 
 ## Work in progress

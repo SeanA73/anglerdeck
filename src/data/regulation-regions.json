@@ -1,0 +1,31 @@
+[
+  {
+    "name": "United States",
+    "description": "Fishing regulations vary by state. Check your state's fish and wildlife agency for current rules.",
+    "links": [
+      { "name": "U.S. Fish & Wildlife Service", "url": "https://www.fws.gov" },
+      { "name": "State Fishing Licenses", "url": "https://www.takemefishing.org/get-a-fishing-license/" }
+    ]
+  },
+  {
+    "name": "Canada",
+    "description": "Provincial and territorial regulations apply. A license is required in most areas.",
+    "links": [
+      { "name": "Fisheries and Oceans Canada", "url": "https://www.dfo-mpo.gc.ca" }
+    ]
+  },
+  {
+    "name": "United Kingdom",
+    "description": "A rod licence is required for freshwater fishing. Different rules apply in Scotland.",
+    "links": [
+      { "name": "Environment Agency", "url": "https://www.gov.uk/fishing-licences" }
+    ]
+  },
+  {
+    "name": "Australia",
+    "description": "Each state and territory has its own fishing regulations and licensing requirements.",
+    "links": [
+      { "name": "Fisheries Management", "url": "https://www.agriculture.gov.au/fisheries" }
+    ]
+  }
+]

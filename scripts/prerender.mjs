@@ -51,6 +51,20 @@ const COUNTRIES = (() => {
   return out;
 })();
 
+/**
+ * The four regions the regulations page actually has data for, read from the
+ * same JSON src/pages/Regulations.tsx imports so the prerendered body and the
+ * hydrated page cannot drift.
+ *
+ * Four of nineteen countries — the page has never covered the rest. The
+ * prerendered body links the other fifteen through their country hubs rather
+ * than inventing an authority or a licence rule for them (content rules 1
+ * and 3). A shorter honest page beats a padded one.
+ */
+const REGULATION_REGIONS = JSON.parse(
+  fs.readFileSync(path.join(root, "src/data/regulation-regions.json"), "utf8")
+);
+
 const COUNTRY_NAMES = Object.fromEntries(COUNTRIES.map((c) => [c.code, c.name]));
 const countrySlug = (code) =>
   COUNTRIES.find((c) => c.code === code)?.slug || String(code).toLowerCase();
@@ -161,11 +175,39 @@ function withBody(html, contentHtml) {
   );
 }
 
+/**
+ * Trim a description to something Google will not cut off itself.
+ *
+ * A plain slice(0, 155) lands mid-word on almost every spot — "…Considered the
+ * premier fly fishing destination" — so back up to the last space and mark the
+ * elision. Trailing punctuation is dropped first so the result never reads
+ * ",…" or ".…".
+ */
+function metaDescription(text, limit = 155) {
+  const s = String(text ?? "").replace(/\s+/g, " ").trim();
+  if (s.length <= limit) return s;
+
+  const cut = s.slice(0, limit);
+  const lastSpace = cut.lastIndexOf(" ");
+  const trimmed = lastSpace > 0 ? cut.slice(0, lastSpace) : cut;
+  return `${trimmed.replace(/[\s.,;:!?—–-]+$/, "")}…`;
+}
+
 /** Renders a <ul>, tolerating null/undefined or a non-array value. */
 const list = (items) =>
   Array.isArray(items) && items.length
     ? `<ul>${items.map((i) => `<li>${esc(i)}</li>`).join("")}</ul>`
     : "";
+
+/**
+ * One spot as a list item, shared by the country hubs and /spots so the two
+ * cannot describe the same spot differently. The country name is only worth
+ * printing where the surrounding page is not already about one country.
+ */
+const spotListItem = (s, countryName) =>
+  `<li><a href="/spot/${esc(s.slug)}">${esc(s.title)}</a> — ${esc(s.location)}${
+    countryName ? `, ${esc(countryName)}` : ""
+  }. ${esc(s.type)}, ${esc(s.difficulty)}. Target species: ${esc((s.species || []).join(", "))}.</li>`;
 
 /** Access details — omitted entirely when nothing has been verified. */
 function accessSection(access) {
@@ -270,18 +312,175 @@ function hubContent(country, spots) {
 
       <h2>Fishing spots in ${esc(country.name)}</h2>
       <ul>
-        ${spots
-          .map(
-            (s) =>
-              `<li><a href="/spot/${esc(s.slug)}">${esc(s.title)}</a> — ${esc(s.location)}. ${esc(s.type)}, ${esc(s.difficulty)}. Target species: ${esc((s.species || []).join(", "))}.</li>`
-          )
-          .join("")}
+        ${spots.map((s) => spotListItem(s)).join("")}
       </ul>
 
       <p>Licence requirements and closed seasons change regularly. Always confirm
       with the relevant fisheries authority before you fish — each spot page links
       to its source.</p>
       <p><a href="/map">View the fishing map</a></p>
+    </article>`;
+}
+
+/**
+ * /spots body.
+ *
+ * This route had head tags but no body, so the single highest-impression page
+ * on the site after the home page served crawlers an empty #root. It mirrors
+ * the Spots page: the same h1 and intro, the "Browse by country" hub links it
+ * renders above the grid, and the cards in the grid itself. Grouping by country
+ * is that page's own country filter expressed as static markup.
+ *
+ * Every spot is listed, not only the indexable ones. Noindexed spot pages are
+ * `noindex,follow` so they still pass link equity, and the country hubs already
+ * list all of them — this follows that, it is not a new decision.
+ */
+function spotsContent(spots, countriesWithSpots) {
+  return `
+    <article>
+      <h1>Explore Fishing Spots</h1>
+      <p>Discover the best fishing locations worldwide. Filter by country,
+      species and water type. ${spots.length} researched spots across
+      ${countriesWithSpots.length} countries.</p>
+
+      <h2>Browse by country</h2>
+      <ul>
+        ${countriesWithSpots
+          .map(
+            (c) =>
+              `<li><a href="/fishing/${esc(c.slug)}">Fishing in ${esc(c.name)}</a> — ${c.spots.length} ${c.spots.length === 1 ? "spot" : "spots"}</li>`
+          )
+          .join("")}
+      </ul>
+      ${countriesWithSpots
+        .map(
+          (c) => `
+      <h2>Fishing spots in ${esc(c.name)}</h2>
+      <ul>
+        ${c.spots.map((s) => spotListItem(s, c.name)).join("")}
+      </ul>`
+        )
+        .join("")}
+
+      <p><a href="/map">View the fishing map</a> &middot;
+      <a href="/regulations">Fishing regulations and licences</a></p>
+
+      <p>Licence requirements and closed seasons change regularly. Always
+      confirm with the relevant fisheries authority before you fish — each spot
+      page links to its source.</p>
+    </article>`;
+}
+
+/**
+ * /map body.
+ *
+ * A map is not textually representable and this does not pretend otherwise: it
+ * describes what the map view actually does — a marker per spot coloured by
+ * water type, filters for water type and country, a popup per marker — and then
+ * reproduces the spot list the page itself renders in its mobile sheet.
+ *
+ * That sheet shows name, location and water type, and the marker popup adds
+ * nothing else static (its extra fields are a photo and live weather), so this
+ * list carries the same three fields. Difficulty and species are deliberately
+ * left out: they appear nowhere on the map view, and adding them here to catch
+ * more queries would be padding the prerendered copy past what the page shows.
+ */
+function mapContent(spots, countriesWithSpots) {
+  return `
+    <article>
+      <h1>Interactive Fishing Map</h1>
+      <p>${spots.length} spots worldwide.</p>
+      <p>The map plots every researched spot as a marker, coloured by water type
+      — green for freshwater, blue for saltwater, amber for fly fishing — and
+      filters by water type and by country. Selecting a marker opens the spot's
+      name, location, water type and current conditions, with a link through to
+      its full page.</p>
+      <p>The map needs JavaScript. The same spots are listed below, grouped by
+      country, with the location and water type the map shows.</p>
+      ${countriesWithSpots
+        .map(
+          (c) => `
+      <h2>Fishing spots in ${esc(c.name)}</h2>
+      <ul>
+        ${c.spots
+          .map(
+            (s) =>
+              `<li><a href="/spot/${esc(s.slug)}">${esc(s.title)}</a> — ${esc(s.location)}, ${esc(c.name)}. ${esc(s.type)}.</li>`
+          )
+          .join("")}
+      </ul>`
+        )
+        .join("")}
+
+      <p><a href="/spots">Browse all fishing spots</a> &middot;
+      <a href="/regulations">Fishing regulations and licences</a></p>
+    </article>`;
+}
+
+/**
+ * /regulations body.
+ *
+ * The page carries real data for four countries only, so this renders those
+ * four with their official links and nothing more. The remaining fifteen are
+ * reached through their country hubs, which each carry a researched licensing
+ * blurb — a link to something true beats an invented authority for a country
+ * the page has never covered.
+ *
+ * No bag or size numbers here or anywhere: they change constantly, go stale
+ * silently, and a reader can be fined for following them (content rule 3).
+ */
+function regulationsContent(countriesWithSpots) {
+  return `
+    <article>
+      <h1>Fishing Regulations</h1>
+      <p>Stay informed about fishing regulations in your area. Always fish
+      responsibly and legally.</p>
+
+      <h2>Important disclaimer</h2>
+      <p>Fishing regulations change frequently. The information on this page is
+      for general guidance only. Always verify current regulations with official
+      local authorities before fishing. AnglerDeck is not responsible for any
+      violations resulting from outdated information.</p>
+
+      ${REGULATION_REGIONS.map(
+        (region) => `
+      <h2>${esc(region.name)}</h2>
+      <p>${esc(region.description)}</p>
+      <ul>
+        ${(region.links || [])
+          .map(
+            (l) =>
+              `<li><a href="${esc(l.url)}" rel="noopener noreferrer">${esc(l.name)}</a></li>`
+          )
+          .join("")}
+      </ul>`
+      ).join("")}
+
+      <h2>Licensing by country</h2>
+      <p>AnglerDeck covers ${countriesWithSpots.length} countries. Each country
+      page sets out how licences work there and links on to the spots
+      themselves.</p>
+      <ul>
+        ${countriesWithSpots
+          .map(
+            (c) =>
+              `<li><a href="/fishing/${esc(c.slug)}">Fishing in ${esc(c.name)}</a></li>`
+          )
+          .join("")}
+      </ul>
+
+      <h2>General best practices</h2>
+      <ul>
+        <li>Always carry a valid fishing license for the area you're fishing in</li>
+        <li>Respect catch limits and size restrictions for each species</li>
+        <li>Be aware of seasonal closures and protected areas</li>
+        <li>Practice catch and release when appropriate</li>
+        <li>Leave no trace - pack out all garbage and fishing line</li>
+        <li>Report any illegal fishing activity to local authorities</li>
+      </ul>
+
+      <p><a href="/spots">Browse all fishing spots</a> &middot;
+      <a href="/map">View the fishing map</a></p>
     </article>`;
 }
 
@@ -392,7 +591,7 @@ function homeContent(spots, countriesWithSpots) {
         ${countriesWithSpots
           .map(
             (c) =>
-              `<li><a href="/fishing/${esc(c.slug)}">Fishing in ${esc(c.name)}</a> — ${c.count} ${c.count === 1 ? "spot" : "spots"}</li>`
+              `<li><a href="/fishing/${esc(c.slug)}">Fishing in ${esc(c.name)}</a> — ${c.spots.length} ${c.spots.length === 1 ? "spot" : "spots"}</li>`
           )
           .join("")}
       </ul>
@@ -465,20 +664,43 @@ async function main() {
     spot.reviewCount = (reviewsBySpot.get(spot.id) || []).length;
   }
 
+  // Countries that actually have spots, in COUNTRIES order. Built once because
+  // the /spots, /map and /regulations bodies, the country hubs and the home
+  // page all need the same grouping.
+  const countriesWithSpots = COUNTRIES.map((c) => ({
+    ...c,
+    spots: spots.filter((s) => s.country === c.code),
+  })).filter((c) => c.spots.length > 0);
+
+  // Static routes with a data-driven body. The rest are hand-written pages with
+  // no Supabase content behind them, so head tags are all they can honestly
+  // get from here — their copy lives in the React components.
+  const staticBodies = {
+    "/spots": () => spotsContent(spots, countriesWithSpots),
+    "/map": () => mapContent(spots, countriesWithSpots),
+    "/regulations": () => regulationsContent(countriesWithSpots),
+  };
+
   for (const route of STATIC_ROUTES) {
-    const html = withHead(template, {
+    let html = withHead(template, {
       title: route.title,
       description: route.description,
       canonical: `${SITE_URL}${route.path}`,
     });
+    const body = staticBodies[route.path];
+    if (body) html = withBody(html, body());
     write(route.path, html);
   }
 
   let indexed = 0;
   for (const spot of spots) {
     const country = COUNTRY_NAMES[spot.country] || spot.country;
-    const title = `${spot.title} — Fishing in ${spot.location}, ${country} | AnglerDeck`;
-    const description = String(spot.description || "").slice(0, 155);
+    // No "| AnglerDeck" suffix here. It cost ~13 characters on every spot
+    // title, which pushed most of them past the ~60 characters Google renders,
+    // and Google appends the site name itself anyway. Country hub titles keep
+    // theirs — they are short enough to fit.
+    const title = `${spot.title} — Fishing in ${spot.location}, ${country}`;
+    const description = metaDescription(spot.description);
     const indexable = isIndexable(spot);
     if (indexable) indexed++;
 
@@ -500,11 +722,8 @@ async function main() {
   // they aggregate real spot data, so they are not thin even when a country has
   // few spots, and they are what can rank for head terms.
   let hubs = 0;
-  const countriesWithSpots = [];
-  for (const country of COUNTRIES) {
-    const countrySpots = spots.filter((s) => s.country === country.code);
-    if (countrySpots.length === 0) continue;
-    countriesWithSpots.push({ ...country, count: countrySpots.length });
+  for (const country of countriesWithSpots) {
+    const countrySpots = country.spots;
 
     const title = `Fishing in ${country.name} — Spots, Licences & Access | AnglerDeck`;
     const description = `${countrySpots.length} researched fishing spots in ${country.name}, with verified access details, licence requirements and seasons.`;
