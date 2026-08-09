@@ -637,7 +637,7 @@ const SpotDetail = () => {
             </motion.div>
 
             {/* Affiliate gear (admin-curated, renders nothing when catalog is empty) */}
-            <AffiliateGear spotType={spot.type} species={spot.species} />
+            <AffiliateGear waterTypes={[spot.type]} species={spot.species} />
 
             {/* AdSense (hidden for Pro/Elite) */}
             <AdBanner slot={import.meta.env.VITE_ADSENSE_SLOT_SPOT_DETAIL ?? ""} />

@@ -9,6 +9,7 @@ import { useSpots } from "@/hooks/useSpots";
 import { countryBySlug } from "@/lib/countries";
 import { Button } from "@/components/ui/button";
 import { AdBanner } from "@/components/ads/AdBanner";
+import { AffiliateGear } from "@/components/ads/AffiliateGear";
 
 /**
  * Country hub page.
@@ -123,6 +124,19 @@ const CountryHub = () => {
           slot={import.meta.env.VITE_ADSENSE_SLOT_HUB ?? ""}
           format="horizontal"
         />
+
+        {/* Matched on the water types this country actually has, not its
+            species — a country-wide species list is too broad to rank
+            usefully. Spot pages do the species-level matching. */}
+        {countrySpots.length > 0 && (
+          <div className="mt-8 max-w-xl">
+            <AffiliateGear
+              waterTypes={waterTypes.map(([type]) => type)}
+              heading={`Gear for fishing in ${country.name}`}
+              blurb="Hand-picked gear for the water here. We may earn a commission on purchases."
+            />
+          </div>
+        )}
 
         <section className="mt-12">
           <h2 className="text-2xl font-bold text-foreground mb-6">

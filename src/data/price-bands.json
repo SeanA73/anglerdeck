@@ -1,0 +1,5 @@
+[
+  { "label": "Budget", "maxUsd": 25 },
+  { "label": "Mid-range", "maxUsd": 75 },
+  { "label": "Premium", "maxUsd": null }
+]

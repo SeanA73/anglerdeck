@@ -93,6 +93,45 @@ users. Consent Mode v2 defaults are set in `src/main.tsx` before any Google tag.
 **Tides** are deliberately `N/A` and the tide card is hidden. There is no tide
 feed. Don't invent one.
 
+**Affiliate gear: no prices, no Amazon images.** Both rules come from the
+Associates Operating Agreement and both were being broken until 10 Aug 2026.
+
+*Prices are banded, never printed.* Amazon only permits a displayed price that
+came from their API and was refreshed within about an hour. There is no API
+available to us — PA-API retired 15 May 2026 and the replacement Creators API
+needs qualifying sales Sean does not have yet — so `affiliate_products.price`
+is a hand-entered figure that was seeded on 27 July and is now simply wrong.
+The site renders an editorial band (`Budget` / `Mid-range` / `Premium`) from
+`priceBand()` instead. The column stays: it is useful internally and it is what
+a Creators API swap would replace. Thresholds live in
+`src/data/price-bands.json`, read by both `src/lib/gear.ts` and
+`prerender.mjs`. **Do not "restore" the number** — if a live feed ever lands,
+render the API value, not the column.
+
+*Images are local artwork.* Amazon product images may only be shown through
+short-lived API URLs, never stored, and the seeded `m.media-amazon.com` links
+also rot without notice. Every card now uses a category illustration from
+`src/assets/gear/*.svg`, mapped in `src/lib/gear.ts`.
+`20260810_affiliate_amazon_image_compliance.sql` nulls `image_url` on Amazon
+rows, and `gearImage()` refuses to render an Amazon-hosted URL even if one is
+entered again. `image_url` stays in the schema for merchants where hosting
+rights are clear.
+
+*Matching is token-aware, and was silently dead before.* Product tags are
+generic (`trout`, `bass`) while spot species are specific (`rainbow trout`,
+`largemouth bass`), and the old scorer compared them with `===`. Species
+matching therefore never fired at all, so every freshwater product tied on
+water type and ordering was arbitrary. `gearScore()` in `src/lib/gear.ts` now
+matches whole tokens in both directions and weights species above water type;
+`src/test/gear.test.ts` pins the behaviour. The admin tag field is a
+multi-select over the live `spots` vocabulary for the same reason — free text
+is what allowed the mismatch to go unnoticed.
+
+Gear appears on spot pages, country hubs and `/gear`, and nowhere else. That is
+a deliberate ceiling: this is a fishing guide with affiliate links, not a
+storefront, and an ad-heavy layout is a common AdSense rejection reason while
+item 4 below is still pending.
+
 ---
 
 ## Deploy
@@ -171,6 +210,29 @@ session, surfacing as either `Cannot find package '.../vite/index.js'` or
 fixed by `rm -rf node_modules && npm ci`. It is not memory (the box has ~7 GB
 free); interrupted builds appear to leave the tree half-written. The VPS has
 **no swap**, which is worth adding as cheap insurance.
+
+**A failed build is not just local downtime — outsiders see a broken site,
+and some of them remember.** `vite build` replaces `dist/` before it
+finishes, and nginx serves that directory live with no reload, so any build
+that dies partway leaves the public site serving 404s and shells until the
+next successful build. That window has external consequences, not just
+cosmetic ones.
+
+Worked example, 9 Aug 2026: `ads.txt` was **Authorised** in the AdSense
+console that morning. After a `Bus error` build and a
+`Cannot find package vite/index.js` build, the console flipped it to **Not
+found** — Google's checker had crawled during a window when the file
+genuinely 404'd. The file itself was never wrong: it verified correct on
+both `anglerdeck.com/ads.txt` and `www.anglerdeck.com/ads.txt` immediately
+after. Nothing to fix; Google rechecks on its own schedule and the status
+reverts. But the same window is equally visible to the indexing crawler,
+which is a worse outcome and harder to notice.
+
+**The structural fix is an atomic swap** — build into `dist-next/`, and only
+`mv` it into place once the build and prerender both exit zero. Until that
+exists, treat every failed build as a live incident: rebuild immediately
+rather than leaving it until later, and do not run speculative builds on the
+VPS while diagnosing something else.
 
 ---
 

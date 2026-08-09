@@ -28,6 +28,9 @@ export const STATIC_ROUTES = [
   // difficulty, which the previous copy claimed — and it has no geolocation, so
   // it does not promise "spots near you". /spots is the page with "Near me".
   { path: "/map", title: "Interactive Fishing Map — AnglerDeck", description: "Every AnglerDeck fishing spot on one interactive map. Filter by water type and country, and open any marker for location, conditions and details." },
+  // No price claims in this description, ever — Amazon's terms only allow a
+  // displayed price that came from their API. See PRICE_BANDS in src/lib/gear.ts.
+  { path: "/gear", title: "Fishing Gear — AnglerDeck", description: "The rods, reels, lures, line and clothing we point anglers at, grouped by category. Affiliate links — we may earn a commission." },
   { path: "/pricing", title: "Pricing — AnglerDeck Pro", description: "Free forever, or upgrade to Pro for unlimited spots, catch logging and the AI Fishing Assistant." },
   // Four countries have their own entry on the page; the rest are reached
   // through their country hubs. No bag or size numbers — see content rule 3.

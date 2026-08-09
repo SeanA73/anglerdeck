@@ -65,6 +65,51 @@ const REGULATION_REGIONS = JSON.parse(
   fs.readFileSync(path.join(root, "src/data/regulation-regions.json"), "utf8")
 );
 
+/**
+ * Price bands for /gear, from the same JSON src/lib/gear.ts reads.
+ *
+ * The prerendered gear page must never carry a number either: Amazon's terms
+ * only permit a displayed price sourced live from their API, and we have none.
+ * The long-form reasoning is in the PRICE_BANDS comment in src/lib/gear.ts.
+ */
+const PRICE_BANDS = JSON.parse(
+  fs.readFileSync(path.join(root, "src/data/price-bands.json"), "utf8")
+);
+
+const priceBand = (price) => {
+  const n = Number(price);
+  if (price == null || !Number.isFinite(n)) return null;
+  return PRICE_BANDS.find((b) => b.maxUsd == null || n <= b.maxUsd)?.label ?? null;
+};
+
+/** Mirrors CATEGORY_LABELS in src/pages/Gear.tsx — keep the two in step. */
+const GEAR_CATEGORY_LABELS = {
+  rods: "Rods",
+  combos: "Rod & reel combos",
+  reels: "Reels",
+  lures: "Lures",
+  flies: "Flies",
+  line: "Line & leader",
+  apparel: "Clothing & eyewear",
+  electronics: "Electronics",
+  tackle: "Tackle",
+  tools: "Tools",
+  storage: "Storage & packs",
+};
+
+const gearCategoryLabel = (category) => {
+  const key = String(category ?? "").toLowerCase().trim();
+  if (GEAR_CATEGORY_LABELS[key]) return GEAR_CATEGORY_LABELS[key];
+  return key ? key.charAt(0).toUpperCase() + key.slice(1) : "Other gear";
+};
+
+const gearCtaLabel = (merchant) => {
+  const m = String(merchant ?? "").toLowerCase();
+  if (m === "amazon") return "Check price on Amazon";
+  const label = String(merchant ?? "").replace(/_/g, " ").trim();
+  return label ? `View on ${label}` : "View product";
+};
+
 const COUNTRY_NAMES = Object.fromEntries(COUNTRIES.map((c) => [c.code, c.name]));
 const countrySlug = (code) =>
   COUNTRIES.find((c) => c.code === code)?.slug || String(code).toLowerCase();
@@ -133,6 +178,29 @@ async function fetchReviews() {
       );
     }
     return new Map();
+  }
+}
+
+/**
+ * Active affiliate products for the /gear body.
+ *
+ * Unlike spots, an empty result here is not fatal — /gear degrades to head tags
+ * only, exactly as it did before it had a body, and every other route is
+ * unaffected. Losing the whole build over an affiliate catalog would be a worse
+ * outcome than shipping one thin page.
+ */
+async function fetchGearProducts() {
+  if (!SUPABASE_URL || !SUPABASE_KEY) return [];
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/affiliate_products?select=id,title,description,price,affiliate_url,merchant,category&is_active=eq.true&order=category.asc,title.asc`,
+      { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` } }
+    );
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } catch (err) {
+    console.warn(`[prerender] could not load affiliate products (${err}) — /gear will be head-only`);
+    return [];
   }
 }
 
@@ -418,6 +486,69 @@ function mapContent(spots, countriesWithSpots) {
 }
 
 /**
+ * /gear body.
+ *
+ * Mirrors src/pages/Gear.tsx: the same intro, the same disclosure, the same
+ * category grouping and the same per-product line — title, description, price
+ * band, click-target copy.
+ *
+ * No numeric price and no Amazon-hosted image reaches this markup, for the same
+ * Operating Agreement reasons the React page obeys. The images are decorative
+ * category artwork, so the prerendered version simply omits them rather than
+ * describing pictures a crawler cannot use.
+ */
+function gearContent(products) {
+  const byCategory = new Map();
+  for (const p of products) {
+    const key = String(p.category ?? "").toLowerCase().trim();
+    if (!byCategory.has(key)) byCategory.set(key, []);
+    byCategory.get(key).push(p);
+  }
+  const groups = [...byCategory.entries()].sort((a, b) =>
+    gearCategoryLabel(a[0]).localeCompare(gearCategoryLabel(b[0]))
+  );
+
+  return `
+    <article>
+      <h1>Fishing Gear</h1>
+      <p>Gear we point anglers at, grouped by what it is. Every spot page
+      surfaces the items that suit its water and species — this is the whole
+      list. ${products.length} ${products.length === 1 ? "item" : "items"} across
+      ${groups.length} ${groups.length === 1 ? "category" : "categories"}.</p>
+
+      <p>These are affiliate links: as an Amazon Associate, AnglerDeck earns from
+      qualifying purchases, at no extra cost to you. We show a price band rather
+      than a figure, because we have no live price feed and a stale number would
+      be worse than none — check the current price on the merchant's own page.</p>
+      ${groups
+        .map(
+          ([category, items]) => `
+      <h2>${esc(gearCategoryLabel(category))}</h2>
+      <ul>
+        ${items
+          .map((p) => {
+            const band = priceBand(p.price);
+            return `<li><a href="${esc(p.affiliate_url)}" rel="noopener noreferrer sponsored">${esc(p.title)}</a>${
+              band ? ` — ${esc(band)}` : ""
+            }. ${esc(gearCtaLabel(p.merchant))}.${
+              p.description ? ` ${esc(p.description)}` : ""
+            }</li>`;
+          })
+          .join("")}
+      </ul>`
+        )
+        .join("")}
+
+      <p>Nothing here is a lab test or a ranked review — it is gear we are
+      comfortable pointing at. Check the merchant's page for the current price,
+      specification and availability before you buy.</p>
+
+      <p><a href="/spots">Browse all fishing spots</a> &middot;
+      <a href="/map">View the fishing map</a></p>
+    </article>`;
+}
+
+/**
  * /regulations body.
  *
  * The page carries real data for four countries only, so this renders those
@@ -659,6 +790,7 @@ async function main() {
   }
 
   const reviewsBySpot = await fetchReviews();
+  const gearProducts = await fetchGearProducts();
   // Review counts feed the indexing quality gate.
   for (const spot of spots) {
     spot.reviewCount = (reviewsBySpot.get(spot.id) || []).length;
@@ -679,6 +811,9 @@ async function main() {
     "/spots": () => spotsContent(spots, countriesWithSpots),
     "/map": () => mapContent(spots, countriesWithSpots),
     "/regulations": () => regulationsContent(countriesWithSpots),
+    // Head-only when the catalog is empty or unreachable, same as before /gear
+    // had a body — an empty <ul> would be worse than no body at all.
+    ...(gearProducts.length ? { "/gear": () => gearContent(gearProducts) } : {}),
   };
 
   for (const route of STATIC_ROUTES) {
