@@ -1,6 +1,13 @@
 /**
  * One-off audit: which spots still lack verified access detail, and what would
- * happen to their indexing status if access were added.
+ * happen to their publication status if access were added.
+ *
+ * Read the "potential" column as what it now is. Access detail is worth +2, so
+ * for most unpublished spots it is the difference between having no page at all
+ * and having a published, indexed one — not the old promotion from `noindex` to
+ * indexed. Every spot listed under "access alone would publish them" is a page
+ * that appears on the site the moment its migration is applied and the site is
+ * rebuilt, so work through that list deliberately rather than in bulk.
  *
  * Read-only, uses the publishable key like scripts/prerender.mjs does.
  *   node scripts/access-audit.mjs
@@ -8,7 +15,7 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadEnv } from "vite";
-import { spotScore, INDEX_THRESHOLD } from "./spot-quality.mjs";
+import { spotScore, PUBLISH_THRESHOLD } from "./spot-quality.mjs";
 
 // Same env resolution as scripts/prerender.mjs, so this audit sees exactly the
 // database the build reads from.
@@ -49,31 +56,32 @@ const rows = spots.map((s) => {
   };
 });
 
-const indexed = rows.filter((r) => r.score >= INDEX_THRESHOLD);
+const published = rows.filter((r) => r.score >= PUBLISH_THRESHOLD);
 const missing = rows.filter((r) => !r.hasAccess);
 const withAccess = rows.filter((r) => r.hasAccess);
 
 console.log(`total spots:            ${rows.length}`);
-console.log(`currently indexed:      ${indexed.length}`);
+console.log(`currently published:    ${published.length}`);
+console.log(`unpublished (no page):  ${rows.length - published.length}`);
 console.log(`have access detail:     ${withAccess.length}`);
 console.log(`missing access detail:  ${missing.length}\n`);
 
-console.log("=== INDEXED but missing access (deepen these first) ===");
-for (const r of missing.filter((r) => r.score >= INDEX_THRESHOLD)) {
+console.log("=== PUBLISHED but missing access (deepen these first) ===");
+for (const r of missing.filter((r) => r.score >= PUBLISH_THRESHOLD)) {
   console.log(`  ${r.score} -> ${r.potential}  ${r.slug}  (${r.country})`);
 }
 
 console.log(
-  "\n=== NOT indexed, but access alone would promote them (score+2 >= 5) ==="
+  `\n=== NOT published, but access alone would publish them (score+2 >= ${PUBLISH_THRESHOLD}) ===`
 );
 for (const r of missing.filter(
-  (r) => r.score < INDEX_THRESHOLD && r.potential >= INDEX_THRESHOLD
+  (r) => r.score < PUBLISH_THRESHOLD && r.potential >= PUBLISH_THRESHOLD
 )) {
   console.log(`  ${r.score} -> ${r.potential}  ${r.slug}  (${r.country})`);
 }
 
-console.log("\n=== NOT indexed, access alone is not enough ===");
-for (const r of missing.filter((r) => r.potential < INDEX_THRESHOLD)) {
+console.log("\n=== NOT published, access alone is not enough ===");
+for (const r of missing.filter((r) => r.potential < PUBLISH_THRESHOLD)) {
   console.log(`  ${r.score} -> ${r.potential}  ${r.slug}  (${r.country})`);
 }
 

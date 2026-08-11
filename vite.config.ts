@@ -3,10 +3,8 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { VitePWA } from 'vite-plugin-pwa';
 import sitemap from 'vite-plugin-sitemap';
-import { spotSlugs as fallbackSlugs } from './src/data/spotSlugs';
 import { COUNTRIES } from './src/lib/countries';
-// @ts-expect-error — plain ESM module shared with scripts/prerender.mjs
-import { isIndexable } from './scripts/spot-quality.mjs';
+import { isPublished } from './scripts/spot-quality.mjs';
 // @ts-expect-error — plain ESM module shared with scripts/prerender.mjs
 import { STATIC_ROUTE_PATHS } from './scripts/static-routes.mjs';
 
@@ -32,12 +30,22 @@ async function devTaggerPlugin(mode: string) {
 
 /**
  * Spot slugs come from the Supabase `spots` table so the sitemap stays in sync
- * when spots are added via SQL. Only spots that pass the indexing quality gate
- * are listed — the rest are prerendered with `noindex,follow` and deliberately
- * kept out of the sitemap so the two signals agree.
+ * when spots are added via SQL. Only spots that pass the publication quality gate
+ * are listed, because only those get a page written for them at all — a slug in
+ * the sitemap that prerender.mjs skipped is a URL that resolves to the SPA
+ * fallback, which is a soft 404 reported straight back to Search Console.
  *
- * Falls back to the checked-in list if Supabase is unreachable at build time,
- * so a network blip never breaks a deploy.
+ * Country hubs come from the countries that have *published* spots, for the same
+ * reason: prerender.mjs only writes those hubs.
+ *
+ * When Supabase is unreachable the fallback lists **no** spot slugs. It used to
+ * fall back to the checked-in list in src/data/spotSlugs.ts, but that list cannot
+ * be scored — publishing every slug in it would advertise the ~140 URLs the gate
+ * withholds. Missing sitemap entries only slow discovery of pages that internal
+ * links still reach; wrong ones are soft 404s. And this is not the quiet failure
+ * it looks like: prerender.mjs reads the same database moments later and exits
+ * non-zero if it gets nothing, so a build that loses Supabase here does not ship
+ * silently anyway.
  */
 async function fetchSpotSlugs(
   env: Record<string, string>
@@ -46,8 +54,11 @@ async function fetchSpotSlugs(
   const key = env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
   if (!url || !key) {
-    console.warn('[sitemap] Supabase env vars missing — using fallback slug list');
-    return { slugs: [...fallbackSlugs], countryCodes: COUNTRIES.map((c) => c.code) };
+    console.warn(
+      '[sitemap] Supabase env vars missing — no spot URLs in the sitemap. The ' +
+        'publication gate cannot be scored without the database.'
+    );
+    return { slugs: [], countryCodes: COUNTRIES.map((c) => c.code) };
   }
 
   try {
@@ -59,11 +70,11 @@ async function fetchSpotSlugs(
     const rows = await res.json();
     if (!Array.isArray(rows) || rows.length === 0) throw new Error('no rows returned');
 
-    // Review counts feed the quality gate, so the sitemap and the prerendered
-    // robots tags reach the same verdict.
+    // Review counts feed the quality gate, so the sitemap and the pages
+    // prerender.mjs writes reach the same verdict.
     try {
-      // Approved only — an unapproved review must not promote a spot past
-      // INDEX_THRESHOLD and into the sitemap.
+      // Approved only — an unapproved review must not push a spot past
+      // PUBLISH_THRESHOLD and into the sitemap.
       const rres = await fetch(`${url}/rest/v1/spot_reviews?select=spot_id&status=eq.approved`, {
         headers: { apikey: key, Authorization: `Bearer ${key}` },
       });
@@ -80,27 +91,34 @@ async function fetchSpotSlugs(
       console.warn(`[sitemap] review counts unavailable (${err}) — treating as zero`);
     }
 
-    const indexable = rows.filter(isIndexable);
+    const published = rows.filter(isPublished);
     console.log(
-      `[sitemap] ${indexable.length} of ${rows.length} spots pass the quality gate`
+      `[sitemap] ${published.length} of ${rows.length} spots pass the publication gate`
     );
-    // Only list hubs for countries that actually have spots — otherwise the
+    // Only list hubs for countries that have a published spot — otherwise the
     // sitemap advertises a page the prerenderer never wrote.
-    const countryCodes = [...new Set(rows.map((r: { country: string }) => r.country))];
-    return { slugs: indexable.map((r: { slug: string }) => r.slug), countryCodes };
+    const countryCodes = [
+      ...new Set(published.map((r: { country: string }) => r.country)),
+    ];
+    return { slugs: published.map((r: { slug: string }) => r.slug), countryCodes };
   } catch (err) {
-    console.warn(`[sitemap] Supabase fetch failed (${err}) — using fallback slug list`);
-    return { slugs: [...fallbackSlugs], countryCodes: COUNTRIES.map((c) => c.code) };
+    console.warn(
+      `[sitemap] Supabase fetch failed (${err}) — no spot URLs in the sitemap. ` +
+        'The publication gate cannot be scored without the database.'
+    );
+    return { slugs: [], countryCodes: COUNTRIES.map((c) => c.code) };
   }
 }
 
 // https://vitejs.dev/config/
 export default defineConfig(async ({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
+  // Only production emits a sitemap, so dev needs neither list and must not pay
+  // for the two Supabase round trips on every server start.
   const { slugs, countryCodes } =
     mode === 'production'
       ? await fetchSpotSlugs(env)
-      : { slugs: [...fallbackSlugs], countryCodes: COUNTRIES.map((c) => c.code) };
+      : { slugs: [] as string[], countryCodes: [] as string[] };
   const tagger = await devTaggerPlugin(mode);
 
   return {

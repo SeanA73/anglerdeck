@@ -17,7 +17,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadEnv } from "vite";
-import { isIndexable, INDEX_THRESHOLD } from "./spot-quality.mjs";
+import { isPublished, PUBLISH_THRESHOLD } from "./spot-quality.mjs";
 import { STATIC_ROUTES } from "./static-routes.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -204,8 +204,14 @@ async function fetchGearProducts() {
   }
 }
 
-/** Replace the head tags Vite ships with route-specific ones. */
-function withHead(template, { title, description, canonical, jsonLd, noIndex }) {
+/**
+ * Replace the head tags Vite ships with route-specific ones.
+ *
+ * No `noindex` branch: every route this script writes is meant to be indexed.
+ * Spots that are not good enough to index are not good enough to publish, so
+ * they get no file at all — see the gate in spot-quality.mjs.
+ */
+function withHead(template, { title, description, canonical, jsonLd }) {
   let html = template;
 
   html = html.replace(/<title>.*?<\/title>/s, `<title>${esc(title)}</title>`);
@@ -216,7 +222,6 @@ function withHead(template, { title, description, canonical, jsonLd, noIndex }) 
 
   const extra = [
     `<link rel="canonical" href="${esc(canonical)}" />`,
-    noIndex ? `<meta name="robots" content="noindex,follow" />` : "",
     `<meta property="og:title" content="${esc(title)}" />`,
     `<meta property="og:description" content="${esc(description)}" />`,
     `<meta property="og:url" content="${esc(canonical)}" />`,
@@ -399,9 +404,11 @@ function hubContent(country, spots) {
  * renders above the grid, and the cards in the grid itself. Grouping by country
  * is that page's own country filter expressed as static markup.
  *
- * Every spot is listed, not only the indexable ones. Noindexed spot pages are
- * `noindex,follow` so they still pass link equity, and the country hubs already
- * list all of them — this follows that, it is not a new decision.
+ * Only published spots are listed, because only they have a page to link to.
+ * Unpublished spots are not written at all, so listing one would be a link to a
+ * URL that resolves to the SPA fallback. The counts here are counts of published
+ * spots for the same reason — this page must not advertise a catalogue larger
+ * than the one it can show.
  */
 function spotsContent(spots, countriesWithSpots) {
   return `
@@ -458,7 +465,7 @@ function mapContent(spots, countriesWithSpots) {
     <article>
       <h1>Interactive Fishing Map</h1>
       <p>${spots.length} spots worldwide.</p>
-      <p>The map plots every researched spot as a marker, coloured by water type
+      <p>The map plots every published spot as a marker, coloured by water type
       — green for freshwater, blue for saltwater, amber for fly fishing — and
       filters by water type and by country. Selecting a marker opens the spot's
       name, location, water type and current conditions, with a link through to
@@ -703,11 +710,13 @@ function spotJsonLd(spot, reviews = []) {
  * marketing copy in Hero/Features, for two reasons: it cannot drift into
  * claiming a feature that does not ship, and counts stated as fact stay true
  * because they are counted at build time. FeaturedSpots reshuffles on every
- * load, so there is no stable "featured six" to mirror — this links the
- * indexable spots instead, which is also the more useful set to hand a crawler.
+ * load, so there is no stable "featured six" to mirror — this links every
+ * published spot instead, which is also the more useful set to hand a crawler.
+ *
+ * `spots` is already the published set, so the count, the species list and the
+ * links are all drawn from pages that exist.
  */
 function homeContent(spots, countriesWithSpots) {
-  const indexable = spots.filter(isIndexable);
   const species = [...new Set(spots.flatMap((s) => s.species || []))].sort();
 
   return `
@@ -729,7 +738,7 @@ function homeContent(spots, countriesWithSpots) {
 
       <h2>Fishing spots</h2>
       <ul>
-        ${indexable
+        ${spots
           .map(
             (s) =>
               `<li><a href="/spot/${esc(s.slug)}">${esc(s.title)}</a> — ${esc(s.location)}, ${esc(COUNTRY_NAMES[s.country] || s.country)}. ${esc(s.type)}, ${esc(s.difficulty)}.</li>`
@@ -791,25 +800,50 @@ async function main() {
 
   const reviewsBySpot = await fetchReviews();
   const gearProducts = await fetchGearProducts();
-  // Review counts feed the indexing quality gate.
+  // Review counts feed the publication quality gate.
   for (const spot of spots) {
     spot.reviewCount = (reviewsBySpot.get(spot.id) || []).length;
   }
 
-  // Countries that actually have spots, in COUNTRIES order. Built once because
-  // the /spots, /map and /regulations bodies, the country hubs and the home
-  // page all need the same grouping.
+  // The publication decision, made once. Everything below this line works from
+  // `published` and never from `spots`: a spot below the threshold gets no file,
+  // no listing, no sitemap entry and no internal link. Its row is untouched, and
+  // it publishes itself on the next build once its data is good enough.
+  const published = spots.filter(isPublished);
+  const withheld = spots.length - published.length;
+
+  // Same reasoning as the zero-spots exit above: writing a dist whose every spot
+  // page is missing, while exiting 0, would look like a successful deploy. This
+  // is a different cause though — the database answered fine and every row
+  // failed the gate, which in practice means a review-count fetch returned zero
+  // for everything (an unapplied migration) rather than a genuine content
+  // collapse. Check that before touching the threshold.
+  if (published.length === 0) {
+    console.error(
+      `[prerender] all ${spots.length} spots scored below the publication ` +
+        `threshold (${PUBLISH_THRESHOLD}) — refusing to write a dist with zero ` +
+        "spot pages. dist/ is now shell-only and nginx is already serving it. " +
+        "Check the review-count warnings above, then rebuild."
+    );
+    process.exit(1);
+  }
+
+  // Countries that actually have published spots, in COUNTRIES order. Built once
+  // because the /spots, /map and /regulations bodies, the country hubs and the
+  // home page all need the same grouping. A country whose spots are all
+  // unpublished gets no hub — an aggregate page over an empty set is the thin
+  // content this gate exists to prevent.
   const countriesWithSpots = COUNTRIES.map((c) => ({
     ...c,
-    spots: spots.filter((s) => s.country === c.code),
+    spots: published.filter((s) => s.country === c.code),
   })).filter((c) => c.spots.length > 0);
 
   // Static routes with a data-driven body. The rest are hand-written pages with
   // no Supabase content behind them, so head tags are all they can honestly
   // get from here — their copy lives in the React components.
   const staticBodies = {
-    "/spots": () => spotsContent(spots, countriesWithSpots),
-    "/map": () => mapContent(spots, countriesWithSpots),
+    "/spots": () => spotsContent(published, countriesWithSpots),
+    "/map": () => mapContent(published, countriesWithSpots),
     "/regulations": () => regulationsContent(countriesWithSpots),
     // Head-only when the catalog is empty or unreachable, same as before /gear
     // had a body — an empty <ul> would be worse than no body at all.
@@ -827,8 +861,7 @@ async function main() {
     write(route.path, html);
   }
 
-  let indexed = 0;
-  for (const spot of spots) {
+  for (const spot of published) {
     const country = COUNTRY_NAMES[spot.country] || spot.country;
     // No "| AnglerDeck" suffix here. It cost ~13 characters on every spot
     // title, which pushed most of them past the ~60 characters Google renders,
@@ -836,9 +869,6 @@ async function main() {
     // theirs — they are short enough to fit.
     const title = `${spot.title} — Fishing in ${spot.location}, ${country}`;
     const description = metaDescription(spot.description);
-    const indexable = isIndexable(spot);
-    if (indexable) indexed++;
-
     const reviews = reviewsBySpot.get(spot.id) || [];
 
     let html = withHead(template, {
@@ -846,10 +876,10 @@ async function main() {
       description,
       canonical: `${SITE_URL}/spot/${spot.slug}`,
       jsonLd: spotJsonLd(spot, reviews),
-      // Thin pages stay crawlable and keep passing link equity, but out of the index.
-      noIndex: !indexable,
     });
-    html = withBody(html, spotContent(spot, spots, reviews));
+    // `published`, not `spots`, so the "nearby spots" links only ever point at
+    // pages this build actually wrote.
+    html = withBody(html, spotContent(spot, published, reviews));
     write(`/spot/${spot.slug}`, html);
   }
 
@@ -905,17 +935,18 @@ async function main() {
       url: `${SITE_URL}/`,
     },
   });
-  homeHtml = withBody(homeHtml, homeContent(spots, countriesWithSpots));
+  homeHtml = withBody(homeHtml, homeContent(published, countriesWithSpots));
   write("/", homeHtml);
 
   console.log(
-    `[prerender] wrote home, ${STATIC_ROUTES.length} static routes, ${hubs} country hubs and ${spots.length} spot pages`
+    `[prerender] wrote home, ${STATIC_ROUTES.length} static routes, ${hubs} country hubs and ${published.length} spot pages`
   );
-  if (spots.length) {
-    console.log(
-      `[prerender] ${indexed} indexable, ${spots.length - indexed} noindex (quality score < ${INDEX_THRESHOLD})`
-    );
-  }
+  console.log(
+    `[prerender] ${published.length} of ${spots.length} spots published; ` +
+      `${withheld} withheld (quality score < ${PUBLISH_THRESHOLD}) — no page, no ` +
+      "sitemap entry, no internal link. Rows are untouched; they publish " +
+      "themselves once their data improves."
+  );
 }
 
 main().catch((err) => {

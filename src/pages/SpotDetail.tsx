@@ -125,17 +125,40 @@ const SpotDetail = () => {
     );
   }
 
+  // Covers a slug that never existed and a spot the publication gate withholds —
+  // useSpotBySlug only resolves published spots. Both are "there is no page
+  // here", so both get the same answer, and it is noindexed: nginx serves the SPA
+  // fallback for these URLs, so without this a crawler would be told the home
+  // page's canonical for a spot URL.
   if (!spot) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
+        <SEO
+          title="Spot not found"
+          description="This fishing spot page is not available."
+          noIndex
+        />
+        <div className="text-center max-w-md px-4">
           <h1 className="text-2xl font-bold text-foreground mb-4">Spot not found</h1>
-          <button
-            onClick={() => navigate("/")}
-            className="px-6 py-3 bg-accent text-accent-foreground rounded-xl font-medium"
-          >
-            Back to Home
-          </button>
+          <p className="text-muted-foreground mb-6">
+            We couldn't find that fishing spot. It may not be published yet — we
+            only publish a spot once its access details and local rules have been
+            checked against an official source.
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <Link
+              to="/spots"
+              className="px-6 py-3 bg-accent text-accent-foreground rounded-xl font-medium"
+            >
+              Browse all spots
+            </Link>
+            <Link
+              to="/map"
+              className="px-6 py-3 border border-border rounded-xl font-medium text-foreground hover:bg-muted transition-colors"
+            >
+              View the map
+            </Link>
+          </div>
         </div>
       </div>
     );

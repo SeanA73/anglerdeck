@@ -3,22 +3,40 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useSavedItems } from "@/hooks/useSavedItems";
-import { useSpots } from "@/hooks/useSpots";
+import { useAllSpots, useSpots } from "@/hooks/useSpots";
 
 const SavedSpotsList = () => {
   const { getSavedByType, toggleSave, isLoading } = useSavedItems();
-  const { data: spots = [] } = useSpots();
+  // A spot the user saved may since have fallen out of publication — a review
+  // was rejected, or it was published from data that has since been corrected.
+  // Resolving against every spot keeps their list intact: dropping the row would
+  // read as "we lost your data", and dropping it silently is worse. The card
+  // still says the spot is unavailable and stops linking to a page that no
+  // longer exists, so nothing unpublished is presented as browsable content.
+  const { data: allSpots = [] } = useAllSpots();
+  const { data: publishedSpots = [] } = useSpots();
+  const publishedIds = new Set(publishedSpots.map((s) => s.id));
 
   const savedSpots = getSavedByType("spot");
 
   // Saved items store the spot slug (older rows may store the numeric id)
   const spotDetails = savedSpots
     .map((saved) => {
-      const spot = spots.find(
+      const spot = allSpots.find(
         (s) => s.slug === saved.item_id || String(s.id) === saved.item_id
       );
       if (!spot) return null;
-      return { ...spot, savedAt: saved.created_at };
+      return {
+        ...spot,
+        savedAt: saved.created_at,
+        isPublished: publishedIds.has(spot.id),
+        // The exact value the row is keyed by. toggleSave matches item_id
+        // literally, so passing spot.id here inserted a second row keyed by the
+        // numeric id instead of removing the slug-keyed one — Remove appeared to
+        // do nothing. It matters more now that Remove is the only action an
+        // unpublished saved spot offers.
+        savedItemId: saved.item_id,
+      };
     })
     .filter(Boolean);
 
@@ -79,34 +97,49 @@ const SavedSpotsList = () => {
                 <div className="flex-1 py-3 pr-4">
                   <div className="flex items-start justify-between">
                     <div>
-                      <Link
-                        to={`/spot/${spot.slug}`}
-                        className="font-semibold text-foreground hover:text-accent transition-colors"
-                      >
-                        {spot.title}
-                      </Link>
+                      {spot.isPublished ? (
+                        <Link
+                          to={`/spot/${spot.slug}`}
+                          className="font-semibold text-foreground hover:text-accent transition-colors"
+                        >
+                          {spot.title}
+                        </Link>
+                      ) : (
+                        <span className="font-semibold text-foreground">
+                          {spot.title}
+                        </span>
+                      )}
                       <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
                         <MapPin className="w-3.5 h-3.5" />
                         {spot.location}
                       </div>
+                      {!spot.isPublished && (
+                        <p className="text-sm text-muted-foreground mt-2">
+                          This spot's page is offline while we verify its access
+                          details and local rules. It stays in your saved list,
+                          and comes back as soon as the page does.
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div className="flex items-center gap-2 mt-3">
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => toggleSave("spot", String(spot.id))}
+                      onClick={() => toggleSave("spot", spot.savedItemId)}
                       className="text-destructive hover:text-destructive/80 hover:bg-destructive/10"
                     >
                       <Heart className="w-4 h-4 mr-1 fill-current" />
                       Remove
                     </Button>
-                    <Button asChild variant="outline" size="sm">
-                      <Link to={`/spot/${spot.slug}`}>
-                        <ExternalLink className="w-4 h-4 mr-1" />
-                        View
-                      </Link>
-                    </Button>
+                    {spot.isPublished && (
+                      <Button asChild variant="outline" size="sm">
+                        <Link to={`/spot/${spot.slug}`}>
+                          <ExternalLink className="w-4 h-4 mr-1" />
+                          View
+                        </Link>
+                      </Button>
+                    )}
                   </div>
                 </div>
               </div>

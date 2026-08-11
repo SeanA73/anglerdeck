@@ -37,13 +37,19 @@ fabricated content would cost the AdSense account.
 
 **Spots live in Supabase**, not in code. `src/data/spots.ts` holds only the
 `FishingSpot` type and the image-key mapping. Read spots via `@/hooks/useSpots`.
-192 spots across 19 countries.
+192 rows across 19 countries, of which only those passing the publication gate
+below are published as pages — run `node scripts/access-audit.mjs` for the current
+split rather than trusting a number written here.
 
 **Prerendering.** `scripts/prerender.mjs` runs after `vite build` and writes
 real static HTML per route into `dist/`, because the SPA alone serves crawlers
 an empty shell. It fetches spots and reviews from Supabase, injects head tags,
 JSON-LD `Place` schema (plus `AggregateRating` when reviews exist), and a
 crawlable body.
+
+It writes a page only for spots that pass the publication gate below. Nothing it
+writes carries `noindex` — a spot not worth indexing is not published at all —
+so `grep -rl noindex dist/` returning nothing is the expected state, not a bug.
 
 It **exits non-zero if Supabase returns zero spots**, rather than writing a dist
 with no spot pages. Reviews and individual missing fields still degrade
@@ -59,9 +65,20 @@ links rather than paraphrasing `Hero`/`Features`, so it cannot drift into
 advertising a feature that does not ship (rule 5).
 
 Because nginx resolves both `/` and its SPA fallback to the same
-`dist/index.html`, any non-prerendered route (`/community`, `/admin/*`, and
-genuine 404s) now serves the home page's body and `canonical` to crawlers until
-React hydrates. Splitting the two needs an nginx change, not a build change.
+`dist/index.html`, any non-prerendered route (`/community`, `/admin/*`,
+**unpublished `/spot/<slug>` URLs** and genuine 404s) serves the home page's body
+and `canonical` to crawlers until React hydrates. Splitting the two needs an
+nginx change, not a build change.
+
+Unpublished spot URLs joined that set on 11 Aug 2026 and are the reason it is now
+worth fixing: they are absent from the sitemap and unlinked from anywhere on the
+site, so a crawler should not reach one, but Google may still hold URLs from when
+those pages existed. Once hydrated, `SpotDetail` renders a `noindex` not-found
+page for them (`useSpotBySlug` only resolves published spots), so the served
+HTML and the hydrated page disagree for a moment. **An nginx `location ^~ /spot/`
+that returns a real 404 when the directory is missing is the clean fix**, and is
+the same change that would stop `/community` and `/admin/*` serving home-page
+copy.
 
 **Route lists live in `scripts/static-routes.mjs`**, shared by `prerender.mjs`
 and `vite.config.ts` for the same reason `spot-quality.mjs` is shared. A route
@@ -71,12 +88,57 @@ route in the sitemap that was never prerendered serves a shell. `robots.txt` is
 because its default policy overwrote the file and silently dropped the
 `Disallow` lines.
 
-**Indexing quality gate.** `scripts/spot-quality.mjs` scores each spot; only
-those scoring >= 5 are indexed. Everything else is prerendered with
-`noindex,follow` and excluded from the sitemap, so the two signals agree. Used
-by both `prerender.mjs` and `vite.config.ts` — never let them diverge. Verified
-access detail is worth +2, angler reviews +2 (and +1 more at three reviews).
-Spots promote themselves as their data improves; no code change needed.
+**Publication quality gate.** `scripts/spot-quality.mjs` scores each spot; only
+those scoring >= `PUBLISH_THRESHOLD` (5) are **published at all**. A spot below
+the threshold gets no prerendered page, no sitemap entry, no place in `/spots`,
+`/map`, country hubs, featured spots or search, and its URL does not resolve. The
+row stays in Supabase untouched — this is a publication decision, not a data one.
+Verified access detail is worth +2, angler reviews +2 (and +1 more at three).
+
+`isPublished()` is the gate; `isIndexable` is kept as an alias so an older caller
+resolves to the same verdict instead of growing a second gate. `INDEX_THRESHOLD`
+aliases `PUBLISH_THRESHOLD` for the same reason. Publication and indexing are one
+decision now: everything published is indexed.
+
+*Why it changed.* Until 11 Aug 2026 the gate controlled indexing only — failing
+spots were still published, marked `noindex,follow`, on the theory that they kept
+passing link equity while their content was deepened. **AdSense rejected the site
+for low-value content on 10 Aug 2026.** `noindex` keeps a page out of search
+results and does nothing about a reviewer browsing it, and the failing spots were
+three quarters of the site. Measured across the 192 built pages that day:
+
+| | Pages | Median words | Have access detail |
+|---|---|---|---|
+| Indexed | 49 | 306 | 49 / 49 |
+| Noindexed | 143 | 178 | 0 / 143 |
+
+**The gate is self-healing, and that now means more than it did.** Spots publish
+themselves as their data improves — better rows plus a rebuild, no code change.
+But adding access detail no longer promotes a page from `noindex` to indexed, it
+brings a page into existence. See item 1 below before filling access in bulk.
+
+Four callers consult it and none may reimplement it: `prerender.mjs` (which pages
+to write), `vite.config.ts` (the sitemap), `src/hooks/useSpots.ts` (what the
+client renders and links to) and `access-audit.mjs`. `scripts/spot-quality.d.mts`
+types the plain-ESM module for the two TypeScript callers.
+
+**The client gate needs approved review counts, so `useSpots` fetches them.**
+`spotScore()` counts approved reviews, so a client that could not see them would
+withhold spots the build published and 404 pages that exist in `dist/` and in the
+sitemap. `useSpots` therefore runs a second query for approved review counts —
+making it the **fifth** `status=eq.approved` read path (see item 2). If that
+query fails it **fails open**: every spot is shown rather than filtered on a
+count of zero. Over-showing during an outage is recoverable and self-corrects;
+contradicting the built site is the one inconsistency worth avoiding. The
+warning goes to the console, and `src/test/useSpots.test.tsx` pins it.
+
+`useSpots()` returns published spots and is what every public surface must use.
+`useAllSpots()` is the deliberate escape hatch for auth-gated, noindexed screens
+that resolve a spot the user themselves referenced — `SavedSpotsList` (which
+shows a saved-but-unpublished spot as unavailable, unlinked, still removable,
+rather than dropping it) and `CatchLog` (a private journal: a logged catch must
+keep its place name, and nothing there links to a spot page). Never use it on a
+browse surface.
 
 **Units and locale.** Use `getVisitorCountryStrict()` (timezone only) for
 anything where a wrong guess is worse than none — measurement units especially.
@@ -160,9 +222,12 @@ the failure surfaces as content quietly disappearing rather than as a build
 error. `20260802_add_review_moderation.sql` is the worked example: every review
 read path filters `status=eq.approved`, and against a pre-migration database
 that returns 400, then zero reviews, and any spot that earned +2 from a review
-drops back under `INDEX_THRESHOLD` and out of the index. `prerender.mjs` and
-`vite.config.ts` now warn loudly on that 400 instead of swallowing it, but a
-smoke alarm is not a fix — the build still ships wrong. Apply the SQL, confirm
+drops back under `PUBLISH_THRESHOLD`. Since 11 Aug 2026 that no longer means
+losing an index entry, it means **the page is not written at all** — a missing
+migration now deletes pages from the site rather than quietly deindexing them.
+`prerender.mjs` and `vite.config.ts` warn loudly on that 400 instead of swallowing
+it, and `prerender.mjs` exits non-zero if the gate withholds *every* spot, but a
+smoke alarm is not a fix — a partial collapse still ships. Apply the SQL, confirm
 it, then `git pull && npm run build`.
 
 **Never verify a deploy by fetching the live URL. Three layers cache.** This
@@ -248,18 +313,25 @@ Run `node scripts/access-audit.mjs` instead. It reads the live database through
 the same quality gate the build uses, and reports which spots lack access detail
 plus what adding it would do to each score.
 
-Do not use `featured = true` as shorthand for "indexed". It selects exactly the
-indexed set today, but only by luck: the best non-featured spot scores 4 against
+Do not use `featured = true` as shorthand for "published". It selects exactly the
+published set today, but only by luck: the best non-featured spot scores 4 against
 a threshold of 5, and a first review and an access record are each worth +2. The
 first non-featured spot to gain either breaks the equivalence — and the work in
-this section is what will break it. The gate is `spotScore() >= INDEX_THRESHOLD`
+this section is what will break it. The gate is `spotScore() >= PUBLISH_THRESHOLD`
 in `scripts/spot-quality.mjs`, never a column.
 
-Also worth knowing before bulk-filling access: **every** currently-noindexed
-spot would cross the threshold on access detail alone. Completing all of them
-would index the whole 192-page site at once, which is the opposite of the
-slow-growth behaviour the gate exists to produce, and badly timed against the
-AdSense review in item 4. Promote deliberately, not exhaustively.
+**Before bulk-filling access, note what it now does.** Access detail alone would
+carry **every** unpublished spot over the threshold. That used to mean flipping
+them from `noindex` to indexed; since 11 Aug 2026 it means **publishing pages that
+currently do not exist**, and the whole 192-page site would appear at once. That
+is a bigger step in both directions: a bigger jump in what a reviewer or crawler
+sees, and the exact site-wide thin-content shape that got the site rejected in
+item 4. Promoting deliberately matters more than it did, not less — a few spots
+per batch, each with real verified detail.
+
+Nothing here licenses inventing detail to clear the threshold (content rule 1). A
+spot with no traceable source stays unpublished, and that is now the honest
+outcome rather than a penalty.
 
 Unapplied migration files may already cover a spot — Sean runs them by hand, so
 the DB lags the repo, and `access-audit.mjs` reports the database. Check the
@@ -335,10 +407,16 @@ real non-admin account rather than inferred from the DDL — recipe below. The
 migration-before-build ordering that this shipped with is now recorded as a
 standing rule under Deploy, since it is not specific to this change.
 
-Four read paths filter on status, and `spot-quality.mjs` trusts them: it never
+Five read paths filter on status, and `spot-quality.mjs` trusts them: it never
 queries, it only consumes `reviewCount`. The filters live in `prerender.mjs`,
-`vite.config.ts` and `access-audit.mjs`, plus RLS for the client. Adding a fifth
-reader means adding a fifth filter — there is no central chokepoint.
+`vite.config.ts`, `access-audit.mjs` and — since 11 Aug 2026 — `useSpots.ts`,
+which needs approved counts to run the publication gate client-side, plus RLS for
+the client. Adding a sixth reader means adding a sixth filter — there is no
+central chokepoint.
+
+`useSpots.ts` is the one that cannot rely on RLS alone: RLS returns approved rows
+*plus the viewer's own* whatever its state, so an unfiltered count there would let
+an author's own pending review publish a spot for them and nobody else.
 
 RLS returns approved rows to everyone, plus the viewer's own review whatever its
 state, so an author can see their submission is queued rather than assume it
@@ -408,12 +486,24 @@ until there's enough real contribution to justify automating it. If automating
 later, don't overwrite Stripe state — add a separate `comped_pro_until` column
 and resolve the effective tier at read time.
 
-### 4. AdSense — do not request review yet
+### 4. AdSense — rejected 10 Aug 2026, do not resubmit yet
 
-Site status is "Requires review" and Sean has *not* submitted. `ads.txt` and
-the loader are live; publisher ID `pub-2356680512865218`. The site should be
-deepened first — a reviewer today sees 192 pages from one template with 144
-noindexed. Low-value content is the most common rejection reason.
+**Rejected for low-value content on 10 Aug 2026.** `ads.txt` and the loader are
+live; publisher ID `pub-2356680512865218`. The measurement behind the verdict, and
+the reasoning, are in the publication-gate section above: a reviewer was shown 192
+pages from one template, 143 of them at a median 178 words with no verified access
+detail, and `noindex` did nothing about that because reviewers browse.
+
+The gate was promoted from indexing to publication on 11 Aug 2026 in response, so
+the site is now 49 pages that all carry verified access detail rather than 192 of
+which three quarters are thin. That removes the specific thing measured; it does
+not by itself make the site substantial.
+
+**Do not resubmit on the strength of the removal alone.** Fewer, better pages is
+the floor, not the case. Deepen the published set first — access detail is the
+lever, and item 1 explains why to do it a few spots at a time rather than
+publishing everything at once. A resubmission that fails a second time is worse
+than a delayed one.
 
 A **certified CMP** is still required before serving ads to EEA, UK and Swiss
 visitors. Consent Mode signals are correct but the in-house banner is not
@@ -452,8 +542,13 @@ want ten real completions per run.
 
 - Main JS bundle is ~735 kB (222 kB gzipped). Code-splitting would help LCP.
 - Sentry was deferred; add before any paid marketing.
-- `src/data/spotSlugs.ts` is only a build-time fallback for the sitemap now —
-  the live list comes from Supabase.
+- `src/data/spotSlugs.ts` now has **no callers** and can be deleted. It was the
+  sitemap's fallback when Supabase was unreachable at build time; that fallback
+  was dropped on 11 Aug 2026 because an unscored slug list would advertise the
+  ~140 URLs the publication gate withholds. The fallback now emits no spot URLs at
+  all, which is safe: missing entries only slow discovery of pages internal links
+  still reach, wrong ones are soft 404s, and `prerender.mjs` exits non-zero on the
+  same failure moments later anyway.
 - A quarterly data refresh runs as a scheduled task (1 Jan/Apr/Jul/Oct):
   seasonal water temperatures for all spots, plus a rotating regional
   regulations audit.

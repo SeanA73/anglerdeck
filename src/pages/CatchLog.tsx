@@ -38,7 +38,7 @@ import {
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { useSpots } from "@/hooks/useSpots";
+import { useAllSpots } from "@/hooks/useSpots";
 import { useSubscription } from "@/hooks/useSubscription";
 import { UpgradePrompt } from "@/components/UpgradePrompt";
 import { UsageMeter } from "@/components/UsageMeter";
@@ -77,7 +77,13 @@ const speciesOptions = [
 ];
 
 const CatchLog = () => {
-  const { data: spots = [] } = useSpots();
+  // Every spot, published or not. This page is auth-gated, noindexed and private
+  // to one angler: it is a journal, not a browse surface. A catch logged against
+  // a spot that is no longer published must still show where it was caught, and
+  // the location picker must still offer the place — the catalogue here is a list
+  // of place names for the user's own records, and nothing on this page links
+  // through to a spot page. Public surfaces use useSpots instead.
+  const { data: spots = [] } = useAllSpots();
   const getSpotById = (id: number) => spots.find((s) => s.id === id);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingCatch, setEditingCatch] = useState<CatchLog | null>(null);
