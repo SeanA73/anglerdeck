@@ -160,6 +160,7 @@ export const PhotoLightbox = ({
                   <img
                     src={photo}
                     alt={`Thumbnail ${index + 1}`}
+                    loading="lazy"
                     className="w-full h-full object-cover"
                   />
                 </button>

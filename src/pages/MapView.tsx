@@ -56,7 +56,7 @@ const MapView = () => {
       <SEO title="Interactive Fishing Map" description="Every AnglerDeck fishing spot on one interactive map. Filter by water type and country, and open any marker for location, conditions and details." canonicalPath="/map" />
       <Header />
 
-      <main className="flex-1 flex flex-col pt-16 lg:pt-20">
+      <main id="main-content" className="flex-1 flex flex-col pt-16 lg:pt-20">
         {/* Header */}
         <div className="bg-card border-b px-4 py-4">
           <div className="container mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -167,6 +167,7 @@ const MapView = () => {
                       <img
                         src={spot.image}
                         alt={spot.title}
+                        loading="lazy"
                         className="w-20 h-20 object-cover rounded-lg"
                       />
                       <div className="flex-1">

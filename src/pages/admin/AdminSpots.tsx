@@ -267,11 +267,21 @@ const AdminSpots = () => {
                 </TableCell>
                 <TableCell>
                   <div className="flex gap-1">
-                    <Button variant="ghost" size="icon" onClick={() => openEdit(spot)}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => openEdit(spot)}
+                      aria-label={`Edit ${spot.title}`}
+                    >
                       <Pencil className="w-4 h-4" />
                     </Button>
                     <Button variant="ghost" size="icon" asChild>
-                      <a href={`/spot/${spot.slug}`} target="_blank" rel="noreferrer">
+                      <a
+                        href={`/spot/${spot.slug}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label={`Open ${spot.title} in a new tab`}
+                      >
                         <ExternalLink className="w-4 h-4" />
                       </a>
                     </Button>

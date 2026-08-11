@@ -51,7 +51,16 @@ const Footer = () => {
               viewport={{ once: true }}
               className="flex items-center gap-3 mb-6"
             >
-              <img src={anglerdeckLogo} alt="AnglerDeck" className="w-10 h-10 rounded-xl shadow-lg" />
+              {/* Always below the fold, so lazy. Same 80×80 source as the header
+                  — see the note there about the 1024×1024 original. */}
+              <img
+                src={anglerdeckLogo}
+                alt="AnglerDeck"
+                width={40}
+                height={40}
+                loading="lazy"
+                className="w-10 h-10 rounded-xl shadow-lg"
+              />
               <span className="text-xl font-bold text-foreground">AnglerDeck</span>
             </motion.div>
             <p className="text-muted-foreground mb-4 max-w-xs">

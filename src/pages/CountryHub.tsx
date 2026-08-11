@@ -1,12 +1,13 @@
 import { useMemo } from "react";
 import { Link, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { MapPin, Fish, ArrowRight } from "lucide-react";
+import { MapPin, Fish, ArrowRight, ExternalLink } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { SEO, BASE_URL } from "@/components/SEO";
 import { useSpots } from "@/hooks/useSpots";
 import { countryBySlug } from "@/lib/countries";
+import { countryGuide } from "@/lib/country-guides";
 import { Button } from "@/components/ui/button";
 import { AdBanner } from "@/components/ads/AdBanner";
 import { AffiliateGear } from "@/components/ads/AffiliateGear";
@@ -23,6 +24,9 @@ const CountryHub = () => {
   const { countrySlug } = useParams<{ countrySlug: string }>();
   const country = countryBySlug(countrySlug || "");
   const { data: spots = [], isLoading } = useSpots();
+  // Same guide the prerenderer writes into the crawlable body, so the hydrated
+  // page and the static HTML say the same thing about licensing.
+  const guide = country ? countryGuide(country.code) : undefined;
 
   const countrySpots = useMemo(
     () => spots.filter((s) => s.country === country?.code),
@@ -66,7 +70,7 @@ const CountryHub = () => {
       />
       <Header />
 
-      <main className="flex-1 container mx-auto px-4 lg:px-8 py-12 pt-28">
+      <main id="main-content" className="flex-1 container mx-auto px-4 lg:px-8 py-12 pt-28">
         <nav className="text-sm text-muted-foreground mb-6">
           <Link to="/spots" className="hover:text-foreground">
             Fishing spots
@@ -97,6 +101,52 @@ const CountryHub = () => {
               </div>
             ))}
           </div>
+        )}
+
+        {/* The researched guide: how licensing works, the shape of the season and
+            what the water is like. Every claim traces to the official source
+            linked at the end of the section — see src/data/country-guides.json,
+            which is also what the prerenderer reads. */}
+        {guide && (
+          <section className="mt-10 max-w-3xl space-y-8">
+            <div>
+              <h2 className="text-xl font-bold text-foreground mb-3">
+                Licences and permits in {country.name}
+              </h2>
+              <p className="text-muted-foreground leading-relaxed">{guide.licensing}</p>
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-foreground mb-3">
+                When to fish in {country.name}
+              </h2>
+              <p className="text-muted-foreground leading-relaxed">{guide.seasons}</p>
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-foreground mb-3">
+                What the fishing is like
+              </h2>
+              <p className="text-muted-foreground leading-relaxed">{guide.water}</p>
+            </div>
+            <div>
+              <h3 className="text-sm font-medium text-foreground mb-2">
+                Official sources
+              </h3>
+              <div className="space-y-2">
+                {[guide.authority, ...guide.links].map((link) => (
+                  <a
+                    key={link.url}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-sm text-accent hover:underline"
+                  >
+                    <ExternalLink className="w-4 h-4 shrink-0" />
+                    {link.name}
+                  </a>
+                ))}
+              </div>
+            </div>
+          </section>
         )}
 
         {species.length > 0 && (

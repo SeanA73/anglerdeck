@@ -80,6 +80,35 @@ that returns a real 404 when the directory is missing is the clean fix**, and is
 the same change that would stop `/community` and `/admin/*` serving home-page
 copy.
 
+**Country content lives in `src/data/country-guides.json`**, keyed by the ISO
+code in `src/lib/countries.ts`. It holds, per country, the official licensing
+authority plus further official links, a short summary for `/regulations`, and
+the three researched hub sections — licensing, seasons, water. Read by
+`src/pages/CountryHub.tsx` and `src/pages/Regulations.tsx` (through
+`src/lib/country-guides.ts`) and by `prerender.mjs`, which parses the JSON
+directly. Added 12 Aug 2026, ~6,900 words across 19 countries.
+
+It **replaced `src/data/regulation-regions.json`**, which covered four countries
+and held a second copy of licensing facts that also appear on the hubs. That was
+the `static-routes.mjs` description problem again — two copies of a claim, one of
+which gets corrected. A stale licence claim is worse than a stale marketing
+claim, because a reader can be fined for following it.
+
+Each entry carries `sourcing` (`full` or `partial`) and `sourceNotes`, which are
+**never rendered**: they record which claims were verified against an official
+page and, more usefully, which were deliberately left out for lack of one. Read
+`sourceNotes` before adding to a country — it tells you what was already tried.
+Twelve countries are `full`, seven `partial`.
+
+**Do not add fields to the object literals in `src/lib/countries.ts`.**
+`prerender.mjs` does not import that file, it regex-parses it, and the pattern
+expects exactly `code`, `name`, `slug`, `blurb` in that order with nothing else
+in the literal. An extra field silently drops the country from the prerenderer's
+list — no hub page, no sitemap entry, no error. Per-country content goes in
+`country-guides.json` for this reason as well as the drift one. (There is no
+`scripts/countries.mjs`; the regex is the sharing mechanism, which is worth
+replacing with a real shared module at some point.)
+
 **Route lists live in `scripts/static-routes.mjs`**, shared by `prerender.mjs`
 and `vite.config.ts` for the same reason `spot-quality.mjs` is shared. A route
 prerendered but absent from the sitemap is invisible to sitemap-only crawlers; a
@@ -505,6 +534,14 @@ lever, and item 1 explains why to do it a few spots at a time rather than
 publishing everything at once. A resubmission that fails a second time is worse
 than a delayed one.
 
+*Done since, 12 Aug 2026.* Withholding the thin spots made the country hubs the
+weakest surface left — several aggregate only two published spots, and a
+two-spot list under a one-line blurb is thin by the same standard. So the 19 hubs
+gained researched licensing, seasonal and water sections (~525 words of
+prerendered body each, up from roughly 165), and `/regulations` went from 4
+countries to 19. Accessibility and the logo were fixed in the same pass; see
+item 6. The remaining gap is depth *per spot*, not breadth.
+
 A **certified CMP** is still required before serving ads to EEA, UK and Swiss
 visitors. Consent Mode signals are correct but the in-house banner is not
 certified; Google's own funding-choices tool is the usual free answer.
@@ -540,7 +577,35 @@ want ten real completions per run.
 
 ### 6. Other open items
 
+- **Two bag/size numbers are published in `spots.regulations` and violate rule
+  3.** Found while writing the country guides, not fixed — they are database
+  rows, so fixing them needs a dated migration. Lake Taupō states a minimum size
+  in centimetres, Rio Negro a federal weight quota, Cabo San Lucas a billfish
+  daily limit, and Lofoten a tourist export allowance in kilos. All four are the
+  kind of number rule 3 exists to keep off the site. The country guides carry
+  none, and none of these were copied into them.
+- **Poland's visitor exemption is unverified.** `countries.ts` and both Polish
+  spot rows state that foreign visitors are exempt from the `karta wędkarska`.
+  Three official routes were tried (the ISAP statute PDF is behind a CAPTCHA, the
+  `eli.gov.pl` copy returned unreadable binary, and the powiat information page
+  keeps its exemptions in an unfetched PDF). It is plausibly Article 7 of the
+  Ustawa o rybactwie śródlądowym. Until someone reads it on an official page,
+  the claim should not be repeated — the hub prose deliberately omits it.
+- Accessibility, fixed 12 Aug 2026: 14 icon-only buttons had no accessible name
+  and now carry `aria-label`; the header gained a skip link, which is why every
+  page wraps its content in `<main id="main-content">` — keep that id when adding
+  a page or the link silently lands nowhere. `Index`, `SpotDetail` and `Pricing`
+  gained the landmark they were missing.
+- `src/assets/anglerdeck-logo.png` was 1024×1024 and 469 kB, rendered at 40 px in
+  both the header and the footer, i.e. on every page — about 61% of all image
+  weight and larger than the hero. Now 80×80 and 8 kB. The original is kept at
+  `src/assets/originals/anglerdeck-logo-1024.png`; regenerate from that, never
+  from the 80 px file.
 - Main JS bundle is ~735 kB (222 kB gzipped). Code-splitting would help LCP.
+- `Hero` and the `SpotDetail` hero image are the LCP elements and are
+  deliberately not lazy. Adding `fetchPriority="high"` to both is an easy next
+  win; it was left out only because React 18.3's typing for the prop was not
+  worth verifying in the same pass.
 - Sentry was deferred; add before any paid marketing.
 - `src/data/spotSlugs.ts` now has **no callers** and can be deleted. It was the
   sitemap's fallback when Supabase was unreachable at build time; that fallback
@@ -551,4 +616,6 @@ want ten real completions per run.
   same failure moments later anyway.
 - A quarterly data refresh runs as a scheduled task (1 Jan/Apr/Jul/Oct):
   seasonal water temperatures for all spots, plus a rotating regional
-  regulations audit.
+  regulations audit. That audit now has `country-guides.json` to check as well —
+  the seven `partial` entries are the place to start, and closing one means
+  finding an official page, not rewording the prose.

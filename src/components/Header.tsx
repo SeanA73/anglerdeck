@@ -53,6 +53,16 @@ const Header = () => {
       transition={{ duration: 0.6, ease: "easeOut" }}
       className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-background/80 border-b border-border/50"
     >
+      {/* Skip link. The header is fixed and carries up to nine tab stops, which a
+          keyboard user otherwise traverses on every page. Visually hidden until
+          focused, so it costs sighted users nothing. Every page wraps its content
+          in <main id="main-content"> for this to land on. */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-accent-foreground focus:shadow-lg"
+      >
+        Skip to main content
+      </a>
       <div className="container mx-auto px-4 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
@@ -61,7 +71,16 @@ const Header = () => {
               whileHover={{ scale: 1.02 }}
               className="flex items-center gap-3"
             >
-              <img src={anglerdeckLogo} alt="AnglerDeck" className="w-10 h-10 rounded-xl shadow-lg" />
+              {/* 80×80 source for a 40 px slot — retina without the 469 KB the
+                  1024×1024 original cost on every page. Intrinsic size given so
+                  the slot does not reflow. Not lazy: it is above the fold. */}
+              <img
+                src={anglerdeckLogo}
+                alt="AnglerDeck"
+                width={40}
+                height={40}
+                className="w-10 h-10 rounded-xl shadow-lg"
+              />
               <span className="text-xl font-bold text-foreground">AnglerDeck</span>
             </motion.div>
           </Link>
@@ -87,7 +106,11 @@ const Header = () => {
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                  <Button
+                    variant="ghost"
+                    className="relative h-10 w-10 rounded-full"
+                    aria-label="Account menu"
+                  >
                     <Avatar className="h-10 w-10 border-2 border-accent/50">
                       <AvatarImage src={profile?.avatar_url || undefined} />
                       <AvatarFallback className="bg-primary text-primary-foreground">
@@ -140,6 +163,8 @@ const Header = () => {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={isMenuOpen}
             className="lg:hidden p-2 rounded-lg text-foreground hover:bg-muted/50 transition-colors"
           >
             {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}

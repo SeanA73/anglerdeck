@@ -305,7 +305,7 @@ const CatchLog = () => {
         limit={catchesLimit === Infinity ? 999 : catchesLimit}
       />
 
-      <main className="flex-1 container mx-auto px-4 pb-8 pt-24">
+      <main id="main-content" className="flex-1 container mx-auto px-4 pb-8 pt-24">
         {/* ... (Header section kept same) ... */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -666,6 +666,7 @@ const CatchLog = () => {
                         <img
                           src={catch_.photo_url}
                           alt={catch_.species}
+                          loading="lazy"
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                         <Badge className="absolute top-3 left-3">

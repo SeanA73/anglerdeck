@@ -254,6 +254,9 @@ const SpotDetail = () => {
         </div>
       )}
       
+      {/* Hero image and everything below it is the page's main content — the
+          landmark the header's skip link targets, as on every other page. */}
+      <main id="main-content">
       {/* Hero Image */}
       <div className="relative h-[50vh] min-h-[400px]">
         <img
@@ -702,6 +705,7 @@ const SpotDetail = () => {
           </div>
         </div>
       </div>
+      </main>
 
       <Footer />
       <FishingAssistant />

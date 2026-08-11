@@ -58,7 +58,7 @@ const Account = () => {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <main className="container mx-auto px-4 py-16">
+        <main id="main-content" className="container mx-auto px-4 py-16">
           <div className="max-w-4xl mx-auto animate-pulse space-y-8">
             <div className="h-10 bg-muted rounded w-1/3"></div>
             <div className="h-64 bg-muted rounded"></div>
@@ -96,7 +96,7 @@ const Account = () => {
     <div className="min-h-screen bg-background">
       <SEO title="My Account" description="Manage your AnglerDeck account" canonicalPath="/account" noIndex />
       <Header />
-      <main className="container mx-auto px-4 py-16">
+      <main id="main-content" className="container mx-auto px-4 py-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

@@ -142,6 +142,7 @@ const PostCard = ({ post, onLike, sessionId }: PostCardProps) => {
             <img
               src={post.image_url}
               alt={`Post photo by ${post.author_name}`}
+              loading="lazy"
               className="w-full max-h-96 object-cover"
             />
           </div>
@@ -220,6 +221,7 @@ const PostCard = ({ post, onLike, sessionId }: PostCardProps) => {
                 size="icon"
                 onClick={handleSubmitComment}
                 disabled={!newComment.trim() || commentMutation.isPending}
+                aria-label="Post comment"
               >
                 <Send className="w-4 h-4" />
               </Button>

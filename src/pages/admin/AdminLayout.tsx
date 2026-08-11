@@ -49,7 +49,7 @@ const AdminLayout = () => (
         </Link>
       </div>
     </header>
-    <main className="container mx-auto px-4 py-6">
+    <main id="main-content" className="container mx-auto px-4 py-6">
       <Outlet />
     </main>
   </div>

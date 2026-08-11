@@ -504,7 +504,12 @@ const AdminAffiliate = () => {
                   />
                 </TableCell>
                 <TableCell>
-                  <Button variant="ghost" size="icon" onClick={() => openEdit(p)}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => openEdit(p)}
+                    aria-label={`Edit ${p.title}`}
+                  >
                     <Pencil className="w-4 h-4" />
                   </Button>
                 </TableCell>

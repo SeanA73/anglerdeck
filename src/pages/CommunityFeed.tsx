@@ -152,7 +152,7 @@ const CommunityFeed = () => {
       <SEO title="Community Feed" description="Share catches, ask questions, and connect with anglers across Australia. Join the AnglerDeck community." canonicalPath="/community" noIndex />
       <Header />
 
-      <main className="flex-1 container mx-auto px-4 pb-8 pt-24">
+      <main id="main-content" className="flex-1 container mx-auto px-4 pb-8 pt-24">
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-foreground">Community Feed</h1>

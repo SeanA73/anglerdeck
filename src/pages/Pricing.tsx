@@ -51,7 +51,7 @@ const Pricing = () => {
             <Header />
 
             {/* Content */}
-            <div className="container mx-auto px-4 py-16 pt-32">
+            <main id="main-content" className="container mx-auto px-4 py-16 pt-32">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -285,7 +285,7 @@ const Pricing = () => {
                         </Card>
                     </div>
                 </motion.div>
-            </div>
+            </main>
 
             <Footer />
         </div>

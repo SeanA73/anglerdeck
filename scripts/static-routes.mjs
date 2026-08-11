@@ -32,9 +32,11 @@ export const STATIC_ROUTES = [
   // displayed price that came from their API. See PRICE_BANDS in src/lib/gear.ts.
   { path: "/gear", title: "Fishing Gear — AnglerDeck", description: "The rods, reels, lures, line and clothing we point anglers at, grouped by category. Affiliate links — we may earn a commission." },
   { path: "/pricing", title: "Pricing — AnglerDeck Pro", description: "Free forever, or upgrade to Pro for unlimited spots, catch logging and the AI Fishing Assistant." },
-  // Four countries have their own entry on the page; the rest are reached
-  // through their country hubs. No bag or size numbers — see content rule 3.
-  { path: "/regulations", title: "Fishing Regulations — AnglerDeck", description: "Official fishing licence links for the US, Canada, the UK and Australia, plus licence guidance for every country AnglerDeck covers." },
+  // All nineteen countries now have their own entry on the page, each with its
+  // official authority. Keep this in step with the <SEO> tag in
+  // src/pages/Regulations.tsx — this copy is the one crawlers read. No bag or
+  // size numbers — see content rule 3.
+  { path: "/regulations", title: "Fishing Regulations — AnglerDeck", description: "Licence requirements and official fisheries links for all 19 countries AnglerDeck covers, from the rod licence in England to Japan's local yugyo permits." },
   { path: "/support", title: "Help Centre — AnglerDeck", description: "Answers to common questions about AnglerDeck." },
   { path: "/contact", title: "Contact — AnglerDeck", description: "Get in touch with the AnglerDeck team." },
   { path: "/privacy", title: "Privacy Policy — AnglerDeck", description: "How AnglerDeck handles your data." },

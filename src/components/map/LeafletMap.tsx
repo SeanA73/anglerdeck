@@ -63,6 +63,7 @@ const SpotPopupContent = ({ spot }: { spot: FishingSpot }) => {
       <img
         src={spot.image}
         alt={spot.title}
+        loading="lazy"
         className="w-full h-24 object-cover rounded-lg mb-2"
       />
       <h3 className="font-bold text-foreground">{spot.title}</h3>

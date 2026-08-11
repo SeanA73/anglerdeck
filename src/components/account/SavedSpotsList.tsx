@@ -91,6 +91,7 @@ const SavedSpotsList = () => {
                   <img
                     src={spot.image}
                     alt={spot.title}
+                    loading="lazy"
                     className="w-full h-full object-cover"
                   />
                 </div>

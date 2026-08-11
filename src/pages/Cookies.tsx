@@ -11,7 +11,7 @@ const Cookies = () => {
         canonicalPath="/cookies"
       />
       <Header />
-      <main className="container mx-auto px-4 py-16 max-w-3xl">
+      <main id="main-content" className="container mx-auto px-4 py-16 max-w-3xl">
         <article className="prose prose-invert max-w-none">
           <h1 className="text-3xl font-bold text-foreground mb-2">Cookie Policy</h1>
           <p className="text-sm text-muted-foreground mb-8">Last updated: 6 July 2026</p>

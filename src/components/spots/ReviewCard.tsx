@@ -78,6 +78,7 @@ export const ReviewCard = ({ review, onDelete, voteData, onToggleVote }: ReviewC
                 size="icon"
                 className="h-8 w-8 text-muted-foreground hover:text-destructive"
                 onClick={() => onDelete(review.id)}
+                aria-label="Delete your review"
               >
                 <Trash2 className="w-4 h-4" />
               </Button>
@@ -103,7 +104,8 @@ export const ReviewCard = ({ review, onDelete, voteData, onToggleVote }: ReviewC
                 >
                   <img 
                     src={url} 
-                    alt={`Review photo ${index + 1}`} 
+                    alt={`Review photo ${index + 1}`}
+                    loading="lazy"
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 flex items-center justify-center">

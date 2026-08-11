@@ -214,6 +214,7 @@ const CreatePostDialog = ({ open, onOpenChange, sessionId }: CreatePostDialogPro
                   size="icon"
                   className="absolute top-2 right-2"
                   onClick={removeImage}
+                  aria-label="Remove photo"
                 >
                   <X className="w-4 h-4" />
                 </Button>

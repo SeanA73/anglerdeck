@@ -110,7 +110,7 @@ const Gear = () => {
       />
       <Header />
 
-      <main className="flex-1 container mx-auto px-4 lg:px-8 py-12 pt-28">
+      <main id="main-content" className="flex-1 container mx-auto px-4 lg:px-8 py-12 pt-28">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4 flex items-center gap-3">
             <ShoppingBag className="w-8 h-8 text-accent" />

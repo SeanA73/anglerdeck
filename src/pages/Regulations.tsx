@@ -1,13 +1,33 @@
+import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertTriangle, ExternalLink, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
 import { SEO } from "@/components/SEO";
-// The same four entries are rendered into the crawlable body for /regulations
-// by scripts/prerender.mjs, which reads this file directly. One copy, so the
-// prerendered page and the hydrated page cannot drift apart.
-import regions from "@/data/regulation-regions.json";
+import { COUNTRIES } from "@/lib/countries";
+import { countryGuide } from "@/lib/country-guides";
+
+/**
+ * One card per country AnglerDeck covers, built from COUNTRIES and
+ * src/data/country-guides.json. scripts/prerender.mjs reads the same JSON for
+ * the crawlable body, so the prerendered page and the hydrated page cannot
+ * drift apart.
+ *
+ * This page used to cover four countries from regulation-regions.json, which
+ * held a second copy of licensing facts that also appear on the country hubs.
+ * One file now serves both, because a licence rule stated twice will eventually
+ * be corrected once.
+ */
+const regions = COUNTRIES.map((country) => {
+  const guide = countryGuide(country.code);
+  return {
+    name: country.name,
+    slug: country.slug,
+    description: guide?.regulations ?? "",
+    links: guide ? [guide.authority, ...guide.links] : [],
+  };
+}).filter((region) => region.description);
 
 const Regulations = () => {
   return (
@@ -16,10 +36,11 @@ const Regulations = () => {
           — that copy is what crawlers read, this one only applies after
           hydration. The previous description described a page that does not
           exist: state-by-state Australian rules with bag and size limits, on a
-          page covering four countries and carrying no numbers at all. */}
-      <SEO title="Fishing Regulations" description="Official fishing licence links for the US, Canada, the UK and Australia, plus licence guidance for every country AnglerDeck covers." canonicalPath="/regulations" />
+          page covering four countries and carrying no numbers at all. It now
+          covers all nineteen, so both copies were updated together. */}
+      <SEO title="Fishing Regulations" description="Licence requirements and official fisheries links for all 19 countries AnglerDeck covers, from the rod licence in England to Japan's local yugyo permits." canonicalPath="/regulations" />
       <Header />
-      <main className="container mx-auto px-4 py-16">
+      <main id="main-content" className="container mx-auto px-4 py-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -27,7 +48,9 @@ const Regulations = () => {
         >
           <h1 className="text-4xl font-bold text-foreground mb-4">Fishing Regulations</h1>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Stay informed about fishing regulations in your area. Always fish responsibly and legally.
+            What a visiting angler actually needs in each of the {regions.length}{" "}
+            countries AnglerDeck covers, with a link to the official authority in
+            every case. Always fish responsibly and legally.
           </p>
         </motion.div>
 
@@ -53,7 +76,9 @@ const Regulations = () => {
               key={region.name}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
+              // Capped: nineteen cards at 0.1s each would stagger for almost
+              // two seconds, so later cards would appear to be missing.
+              transition={{ delay: Math.min(index * 0.05, 0.4) }}
             >
               <Card className="h-full">
                 <CardHeader>
@@ -79,6 +104,13 @@ const Regulations = () => {
                         {link.name}
                       </a>
                     ))}
+                    <Link
+                      to={`/fishing/${region.slug}`}
+                      className="flex items-center gap-2 text-sm text-foreground hover:text-accent transition-colors"
+                    >
+                      <MapPin className="w-4 h-4" />
+                      Fishing in {region.name}
+                    </Link>
                   </div>
                 </CardContent>
               </Card>

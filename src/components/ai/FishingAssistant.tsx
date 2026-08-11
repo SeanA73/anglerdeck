@@ -144,6 +144,7 @@ export const FishingAssistant = ({ className }: FishingAssistantProps) => {
                     size="icon"
                     className="h-8 w-8 text-primary-foreground hover:bg-primary-foreground/20"
                     onClick={clearMessages}
+                    aria-label="Clear conversation"
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>
@@ -153,6 +154,7 @@ export const FishingAssistant = ({ className }: FishingAssistantProps) => {
                   size="icon"
                   className="h-8 w-8 text-primary-foreground hover:bg-primary-foreground/20"
                   onClick={() => setIsOpen(false)}
+                  aria-label="Close Fishing Assistant"
                 >
                   <X className="w-4 h-4" />
                 </Button>
@@ -203,10 +205,11 @@ export const FishingAssistant = ({ className }: FishingAssistantProps) => {
                   disabled={isLoading}
                   className="flex-1"
                 />
-                <Button 
-                  type="submit" 
-                  size="icon" 
+                <Button
+                  type="submit"
+                  size="icon"
                   disabled={!input.trim() || isLoading}
+                  aria-label="Send message"
                 >
                   <Send className="w-4 h-4" />
                 </Button>
@@ -221,6 +224,8 @@ export const FishingAssistant = ({ className }: FishingAssistantProps) => {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
+        aria-label={isOpen ? 'Close Fishing Assistant' : 'Open Fishing Assistant'}
+        aria-expanded={isOpen}
         className={cn(
           'w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-colors',
           isOpen 

@@ -169,7 +169,7 @@ const Support = () => {
     <div className="min-h-screen bg-background">
       <SEO title="Help & Support" description="Get help with AnglerDeck. FAQs, contact info, and support resources for anglers using our platform." canonicalPath="/support" />
       <Header />
-      <main className="container mx-auto px-4 py-16">
+      <main id="main-content" className="container mx-auto px-4 py-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

@@ -247,6 +247,7 @@ const AdminModeration = () => {
                                 <img
                                   src={url}
                                   alt=""
+                                  loading="lazy"
                                   className="w-14 h-14 object-cover rounded border border-border"
                                 />
                               </a>
@@ -271,7 +272,7 @@ const AdminModeration = () => {
                         <div className="flex items-center gap-1">
                           {r.status !== "approved" && (
                             <Button
-                              variant="ghost" size="icon" title="Approve"
+                              variant="ghost" size="icon" title="Approve" aria-label="Approve review"
                               disabled={moderateMutation.isPending}
                               onClick={() =>
                                 moderateMutation.mutate({ id: r.id, status: "approved" })
@@ -282,7 +283,7 @@ const AdminModeration = () => {
                           )}
                           {r.status !== "rejected" && (
                             <Button
-                              variant="ghost" size="icon" title="Reject"
+                              variant="ghost" size="icon" title="Reject" aria-label="Reject review"
                               disabled={moderateMutation.isPending}
                               onClick={() =>
                                 moderateMutation.mutate({ id: r.id, status: "rejected" })
@@ -292,7 +293,7 @@ const AdminModeration = () => {
                             </Button>
                           )}
                           <Button
-                            variant="ghost" size="icon" title="Delete permanently"
+                            variant="ghost" size="icon" title="Delete permanently" aria-label="Delete review permanently"
                             onClick={() =>
                               setTarget({ table: "spot_reviews", id: r.id, label: "review" })
                             }
@@ -340,7 +341,7 @@ const AdminModeration = () => {
                     </TableCell>
                     <TableCell>
                       <Button
-                        variant="ghost" size="icon"
+                        variant="ghost" size="icon" title="Delete post" aria-label="Delete post"
                         onClick={() => setTarget({ table: "posts", id: p.id, label: "post" })}
                       >
                         <Trash2 className="w-4 h-4 text-destructive" />
@@ -377,7 +378,7 @@ const AdminModeration = () => {
                     </TableCell>
                     <TableCell>
                       <Button
-                        variant="ghost" size="icon"
+                        variant="ghost" size="icon" title="Delete comment" aria-label="Delete comment"
                         onClick={() => setTarget({ table: "post_comments", id: c.id, label: "comment" })}
                       >
                         <Trash2 className="w-4 h-4 text-destructive" />

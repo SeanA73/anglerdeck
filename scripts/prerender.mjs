@@ -52,18 +52,29 @@ const COUNTRIES = (() => {
 })();
 
 /**
- * The four regions the regulations page actually has data for, read from the
- * same JSON src/pages/Regulations.tsx imports so the prerendered body and the
- * hydrated page cannot drift.
+ * Per-country licensing and seasonal guidance, from the same JSON
+ * src/lib/country-guides.ts hands to the React pages, so the prerendered body
+ * and the hydrated page cannot drift.
  *
- * Four of nineteen countries — the page has never covered the rest. The
- * prerendered body links the other fifteen through their country hubs rather
- * than inventing an authority or a licence rule for them (content rules 1
- * and 3). A shorter honest page beats a padded one.
+ * This is the single source of truth for both /regulations and the licensing,
+ * seasons and water sections of every country hub. It replaced
+ * regulation-regions.json, which covered four of nineteen countries and held a
+ * second copy of licensing facts that also appear on the hubs.
+ *
+ * Everything in it is sourced to a government fisheries agency, a statutory
+ * licensing body or a park authority, and it carries no bag or size limits
+ * (content rules 1 and 3). `sourcing` and `sourceNotes` in that file are
+ * provenance metadata and are deliberately never rendered.
  */
-const REGULATION_REGIONS = JSON.parse(
-  fs.readFileSync(path.join(root, "src/data/regulation-regions.json"), "utf8")
+const COUNTRY_GUIDES = JSON.parse(
+  fs.readFileSync(path.join(root, "src/data/country-guides.json"), "utf8")
 );
+
+const countryGuide = (code) => (code === "_README" ? undefined : COUNTRY_GUIDES[code]);
+
+/** Official source links for a country: the authority first, then any others. */
+const guideSources = (guide) =>
+  guide ? [guide.authority, ...(guide.links || [])] : [];
 
 /**
  * Price bands for /gear, from the same JSON src/lib/gear.ts reads.
@@ -365,11 +376,21 @@ function spotContent(spot, all, reviews = []) {
     </article>`;
 }
 
-/** Country hub page body — the parent in the link hierarchy. */
+/**
+ * Country hub page body — the parent in the link hierarchy.
+ *
+ * The three guide sections are the substance of this page. Before they existed a
+ * hub was a one-line blurb over a spot list, which for the countries holding two
+ * published spots was itself thin content — the same problem the publication gate
+ * was built to solve one level down. The prose is sourced; see the note on
+ * COUNTRY_GUIDES above.
+ */
 function hubContent(country, spots) {
   const species = [...new Set(spots.flatMap((s) => s.species || []))].sort();
   const types = {};
   spots.forEach((s) => (types[s.type] = (types[s.type] || 0) + 1));
+  const guide = countryGuide(country.code);
+  const sources = guideSources(guide);
 
   return `
     <article>
@@ -379,6 +400,19 @@ function hubContent(country, spots) {
       <p>${spots.length} researched spots — ${Object.entries(types)
         .map(([t, n]) => `${n} ${esc(t)}`)
         .join(", ")}.</p>
+      ${
+        guide
+          ? `
+      <h2>Licences and permits in ${esc(country.name)}</h2>
+      <p>${esc(guide.licensing)}</p>
+
+      <h2>When to fish in ${esc(country.name)}</h2>
+      <p>${esc(guide.seasons)}</p>
+
+      <h2>What the fishing is like</h2>
+      <p>${esc(guide.water)}</p>`
+          : ""
+      }
 
       <h2>Species you can target</h2>
       ${list(species)}
@@ -387,11 +421,26 @@ function hubContent(country, spots) {
       <ul>
         ${spots.map((s) => spotListItem(s)).join("")}
       </ul>
+      ${
+        sources.length
+          ? `
+      <h2>Official sources</h2>
+      <ul>
+        ${sources
+          .map(
+            (l) =>
+              `<li><a href="${esc(l.url)}" rel="noopener noreferrer">${esc(l.name)}</a></li>`
+          )
+          .join("")}
+      </ul>`
+          : ""
+      }
 
       <p>Licence requirements and closed seasons change regularly. Always confirm
       with the relevant fisheries authority before you fish — each spot page links
       to its source.</p>
-      <p><a href="/map">View the fishing map</a></p>
+      <p><a href="/regulations">Fishing regulations and licences by country</a>
+      &middot; <a href="/map">View the fishing map</a></p>
     </article>`;
 }
 
@@ -558,21 +607,30 @@ function gearContent(products) {
 /**
  * /regulations body.
  *
- * The page carries real data for four countries only, so this renders those
- * four with their official links and nothing more. The remaining fifteen are
- * reached through their country hubs, which each carry a researched licensing
- * blurb — a link to something true beats an invented authority for a country
- * the page has never covered.
+ * One section per country, built from COUNTRY_GUIDES — the same JSON the React
+ * page reads. It covered four of nineteen countries until 12 Aug 2026, on the
+ * reasoning that a link to something true beats an invented authority; the
+ * remaining fifteen have since been researched against their official agencies,
+ * so all nineteen are now here.
+ *
+ * Countries are listed in COUNTRIES order, filtered to those with a guide, and
+ * each section links its own hub — this page is a significant internal link
+ * source for the hubs.
  *
  * No bag or size numbers here or anywhere: they change constantly, go stale
  * silently, and a reader can be fined for following them (content rule 3).
  */
 function regulationsContent(countriesWithSpots) {
+  const guided = COUNTRIES.map((c) => ({ ...c, guide: countryGuide(c.code) })).filter(
+    (c) => c.guide
+  );
+
   return `
     <article>
       <h1>Fishing Regulations</h1>
-      <p>Stay informed about fishing regulations in your area. Always fish
-      responsibly and legally.</p>
+      <p>What a visiting angler actually needs in each of the ${guided.length}
+      countries AnglerDeck covers, with a link to the official authority in every
+      case. Always fish responsibly and legally.</p>
 
       <h2>Important disclaimer</h2>
       <p>Fishing regulations change frequently. The information on this page is
@@ -580,24 +638,27 @@ function regulationsContent(countriesWithSpots) {
       local authorities before fishing. AnglerDeck is not responsible for any
       violations resulting from outdated information.</p>
 
-      ${REGULATION_REGIONS.map(
-        (region) => `
-      <h2>${esc(region.name)}</h2>
-      <p>${esc(region.description)}</p>
+      ${guided
+        .map(
+          (c) => `
+      <h2>${esc(c.name)}</h2>
+      <p>${esc(c.guide.regulations)}</p>
       <ul>
-        ${(region.links || [])
+        ${guideSources(c.guide)
           .map(
             (l) =>
               `<li><a href="${esc(l.url)}" rel="noopener noreferrer">${esc(l.name)}</a></li>`
           )
           .join("")}
+        <li><a href="/fishing/${esc(c.slug)}">Fishing in ${esc(c.name)}</a> — spots, seasons and access</li>
       </ul>`
-      ).join("")}
+        )
+        .join("")}
 
       <h2>Licensing by country</h2>
-      <p>AnglerDeck covers ${countriesWithSpots.length} countries. Each country
-      page sets out how licences work there and links on to the spots
-      themselves.</p>
+      <p>AnglerDeck publishes spots in ${countriesWithSpots.length} countries.
+      Each country page sets out how licences work there, when to fish, and links
+      on to the spots themselves.</p>
       <ul>
         ${countriesWithSpots
           .map(

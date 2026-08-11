@@ -77,6 +77,7 @@ const CatchHistoryList = () => {
                   <img
                     src={catchItem.photo_url}
                     alt={catchItem.species}
+                    loading="lazy"
                     className="w-full h-full object-cover"
                   />
                 </div>

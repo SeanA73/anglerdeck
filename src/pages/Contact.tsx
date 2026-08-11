@@ -30,7 +30,7 @@ const Contact = () => {
     <div className="min-h-screen bg-background">
       <SEO title="Contact Us" description="Get in touch with the AnglerDeck team. Support, feedback, partnerships, and general enquiries." canonicalPath="/contact" />
       <Header />
-      <main className="container mx-auto px-4 py-16">
+      <main id="main-content" className="container mx-auto px-4 py-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
