@@ -38,6 +38,7 @@ import { useSavedItems } from "@/hooks/useSavedItems";
 import { useAuth } from "@/contexts/AuthContext";
 import { SpotReviews } from "@/components/spots/SpotReviews";
 import { SpotAccessCard } from "@/components/spots/SpotAccessCard";
+import { SpotGuideSections } from "@/components/spots/SpotGuideSections";
 import { useSubscription } from "@/hooks/useSubscription";
 import { UpgradePrompt } from "@/components/UpgradePrompt";
 import { UsageMeter } from "@/components/UsageMeter";
@@ -381,6 +382,15 @@ const SpotDetail = () => {
                   ))}
                 </div>
               </div>
+            </motion.div>
+
+            {/* Researched prose. Renders nothing for spots without a guide. */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+            >
+              <SpotGuideSections slug={spot.slug} />
             </motion.div>
 
             {/* Weather & Conditions */}
