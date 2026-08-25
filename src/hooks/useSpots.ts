@@ -136,6 +136,12 @@ const useSpotCatalog = <T,>(select: (catalog: SpotCatalog) => T) =>
 /**
  * Published spots — the default, and what every public surface must use:
  * /spots, /map, country hubs, featured spots, search.
+ *
+ * **Important**: This hook is the SINGLE source of truth for public browsing
+ * surfaces. It filters to ONLY published spots using the exact same
+ * isPublished() gate used by the build process (scripts/prerender.mjs). This
+ * ensures the frontend and server-side have zero disagreement about which
+ * spots are actually published and can be publicly displayed.
  */
 export const useSpots = () => useSpotCatalog(selectPublished);
 
@@ -147,6 +153,11 @@ export const useSpots = () => useSpotCatalog(selectPublished);
  * own data look corrupted or lost. Those screens are auth-gated and noindexed,
  * they must not link through to an unpublished spot page (there isn't one), and
  * they should say why it is unavailable rather than silently omit it.
+ *
+ * **Important**: This hook is ONLY for auth-gated, private surfaces where the
+ * user has explicitly saved or referenced a spot. It must NOT be used for any
+ * public browse surfaces (CountryHub, Spots, MapView, FeaturedSpots, etc.).
+ * Those surfaces must use `useSpots` exclusively.
  */
 export const useAllSpots = () => useSpotCatalog(selectAll);
 
