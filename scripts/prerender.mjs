@@ -144,6 +144,42 @@ const COUNTRY_NAMES = Object.fromEntries(COUNTRIES.map((c) => [c.code, c.name]))
 const countrySlug = (code) =>
   COUNTRIES.find((c) => c.code === code)?.slug || String(code).toLowerCase();
 
+/**
+ * AdSense configuration — read from environment so slots can differ between
+ * staging and production without a code change.
+ */
+const ADSENSE_CLIENT = env.VITE_ADSENSE_CLIENT_ID || "";
+const ADSENSE_SLOT_SPOT_DETAIL = env.VITE_ADSENSE_SLOT_SPOT_DETAIL || "";
+const ADSENSE_SLOT_HUB = env.VITE_ADSENSE_SLOT_HUB || "";
+const ADSENSE_SLOT_SPOTS = env.VITE_ADSENSE_SLOT_SPOTS || "";
+
+/**
+ * Generate an AdSense ad unit for the prerendered HTML.
+ *
+ * This is critical for AdSense approval: Google's crawler must see actual ad
+ * units in the static HTML, not just after JavaScript hydration. The client-side
+ * AdBanner component gates ads on cookie consent, which crawlers never give,
+ * so without these static units the site appears to have no ads at all during
+ * review.
+ *
+ * The ad unit is hidden from view until the AdSense script loads and fills it.
+ * Paid subscribers and users who haven't consented still get no ads at runtime
+ * (the client-side AdBanner handles that), but the crawler sees the unit and
+ * can evaluate the site for approval.
+ */
+function adUnit(slot, format = "auto") {
+  if (!ADSENSE_CLIENT || !slot) return "";
+  return `
+    <div class="ad-unit" style="margin: 1.5rem 0; text-align: center;">
+      <ins class="adsbygoogle"
+           style="display: block;"
+           data-ad-client="${esc(ADSENSE_CLIENT)}"
+           data-ad-slot="${esc(slot)}"
+           data-ad-format="${esc(format)}"
+           data-full-width-responsive="true"></ins>
+    </div>`;
+}
+
 const distanceKm = (a, b) => {
   const R = 6371;
   const rad = (d) => (d * Math.PI) / 180;
@@ -250,13 +286,29 @@ function withHead(template, { title, description, canonical, jsonLd }) {
     `<meta name="description" content="${esc(description)}" />`
   );
 
+  // Remove the generic og/twitter tags from the template so we don't end up
+  // with duplicates — the template has placeholder values that would otherwise
+  // appear alongside the route-specific ones we add below.
+  html = html.replace(/\s*<meta\s+property="og:title"[^>]*>\s*/g, "\n    ");
+  html = html.replace(/\s*<meta\s+property="og:description"[^>]*>\s*/g, "\n    ");
+  html = html.replace(/\s*<meta\s+property="og:image"[^>]*>\s*/g, "\n    ");
+  html = html.replace(/\s*<meta\s+property="og:type"[^>]*>\s*/g, "\n    ");
+  html = html.replace(/\s*<meta\s+name="twitter:card"[^>]*>\s*/g, "\n    ");
+  html = html.replace(/\s*<meta\s+name="twitter:title"[^>]*>\s*/g, "\n    ");
+  html = html.replace(/\s*<meta\s+name="twitter:description"[^>]*>\s*/g, "\n    ");
+  html = html.replace(/\s*<meta\s+name="twitter:image"[^>]*>\s*/g, "\n    ");
+
   const extra = [
     `<link rel="canonical" href="${esc(canonical)}" />`,
     `<meta property="og:title" content="${esc(title)}" />`,
     `<meta property="og:description" content="${esc(description)}" />`,
+    `<meta property="og:image" content="${esc(`${SITE_URL}/pwa-512x512.png`)}" />`,
+    `<meta property="og:type" content="website" />`,
     `<meta property="og:url" content="${esc(canonical)}" />`,
+    `<meta name="twitter:card" content="summary_large_image" />`,
     `<meta name="twitter:title" content="${esc(title)}" />`,
     `<meta name="twitter:description" content="${esc(description)}" />`,
+    `<meta name="twitter:image" content="${esc(`${SITE_URL}/pwa-512x512.png`)}" />`,
     jsonLd
       ? `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>`
       : "",
@@ -385,6 +437,7 @@ function spotContent(spot, all, reviews = []) {
       <h1>${esc(spot.title)}</h1>
       <p><strong>${esc(spot.location)}, ${esc(country)}</strong> &middot; ${esc(spot.type)} &middot; ${esc(spot.difficulty)}</p>
       <p>${esc(spot.description)}</p>
+      ${adUnit(ADSENSE_SLOT_SPOT_DETAIL)}
       ${spotGuideSection(spot.slug)}
 
       ${accessSection(spot.access)}
@@ -446,6 +499,7 @@ function hubContent(country, spots) {
       <nav><a href="/spots">Fishing spots</a> / ${esc(country.name)}</nav>
       <h1>Fishing in ${esc(country.name)}</h1>
       <p>${esc(country.blurb)}</p>
+      ${adUnit(ADSENSE_SLOT_HUB)}
       <p>${spots.length} researched spots — ${Object.entries(types)
         .map(([t, n]) => `${n} ${esc(t)}`)
         .join(", ")}.</p>
@@ -515,6 +569,7 @@ function spotsContent(spots, countriesWithSpots) {
       <p>Discover the best fishing locations worldwide. Filter by country,
       species and water type. ${spots.length} researched spots across
       ${countriesWithSpots.length} countries.</p>
+      ${adUnit(ADSENSE_SLOT_SPOTS)}
 
       <h2>Browse by country</h2>
       <ul>
@@ -835,6 +890,7 @@ function homeContent(spots, countriesWithSpots) {
       <p>Researched fishing spots with location, target species, access details,
       seasons and licence pointers. ${spots.length} spots across
       ${countriesWithSpots.length} countries.</p>
+      ${adUnit(ADSENSE_SLOT_SPOTS)}
 
       <h2>Fishing by country</h2>
       <ul>
