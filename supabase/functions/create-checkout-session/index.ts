@@ -129,19 +129,25 @@ serve(async (req) => {
     }
 
     // ========================================================================
-    // GATE 3 — Check if user already has an active subscription to this tier
+    // GATE 3 — Check if user already has an active subscription
     // ========================================================================
+    // Block ALL active subscriptions, not just same-tier. A Pro user who wants
+    // Elite (or vice versa) must go through the Stripe Billing Portal, which
+    // handles the subscription update correctly — cancelling the old plan and
+    // starting the new one without overlap. Creating a second checkout session
+    // would produce two parallel subscriptions charging the same customer.
     const { data: existingSub } = await supabaseClient
       .from("subscriptions")
       .select("tier, status, stripe_subscription_id")
       .eq("user_id", user.id)
       .maybeSingle();
 
-    if (existingSub?.status === "active" && existingSub.tier === tier) {
+    if (existingSub?.status === "active" && existingSub.tier !== "free") {
       return new Response(
         JSON.stringify({
-          error: `You already have an active ${tier} subscription`,
+          error: `You already have an active ${existingSub.tier} subscription. Use Manage Subscription in your account to change your plan.`,
           code: "already_subscribed",
+          use_portal: true,
         }),
         { status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );

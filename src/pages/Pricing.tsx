@@ -10,7 +10,8 @@ import { cn } from '@/lib/utils';
 import { SUBSCRIPTION_TIERS, formatPrice, getAnnualPrice } from '@/lib/stripe';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
-import { createCheckoutSession } from '@/lib/checkout';
+import { createCheckoutSession, PortalRedirectError } from '@/lib/checkout';
+import { useSubscription } from '@/hooks/useSubscription';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { SEO } from '@/components/SEO';
@@ -18,6 +19,7 @@ import { SEO } from '@/components/SEO';
 const Pricing = () => {
     const [isAnnual, setIsAnnual] = useState(false);
     const { user } = useAuth();
+    const { cancelSubscription } = useSubscription();
     const navigate = useNavigate();
 
     const handleSubscribe = async (tier: 'free' | 'pro' | 'elite') => {
@@ -40,6 +42,17 @@ const Pricing = () => {
             });
             window.location.href = url;
         } catch (err) {
+            if (err instanceof PortalRedirectError) {
+                // User already has an active subscription — send them to the
+                // billing portal where they can change plan safely.
+                toast.info('Opening your subscription settings...');
+                try {
+                    await cancelSubscription();
+                } catch {
+                    toast.error('Could not open billing portal. Try from your account page.');
+                }
+                return;
+            }
             const message = err instanceof Error ? err.message : 'Checkout failed';
             toast.error(message);
         }

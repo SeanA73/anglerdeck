@@ -6,6 +6,19 @@ export interface CreateCheckoutParams {
   billingPeriod: 'monthly' | 'yearly';
 }
 
+/**
+ * Thrown when the user already has an active paid subscription. The edge
+ * function returns `use_portal: true` in this case — the caller should direct
+ * the user to the billing portal (via `openBillingPortal` in useSubscription)
+ * rather than showing a generic error.
+ */
+export class PortalRedirectError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'PortalRedirectError';
+  }
+}
+
 export const createCheckoutSession = async ({
   tier,
   billingPeriod,
@@ -15,6 +28,13 @@ export const createCheckoutSession = async ({
   });
 
   if (error) {
+    // The edge function returns a structured error with `use_portal: true`
+    // when the user already has an active subscription. Surface this as a
+    // distinct error type so the UI can redirect to the billing portal.
+    const errBody = (error as any)?.context;
+    if (errBody?.use_portal) {
+      throw new PortalRedirectError(errBody.error || error.message);
+    }
     throw new Error(error.message || 'Failed to create checkout session');
   }
 

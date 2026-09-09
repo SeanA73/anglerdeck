@@ -74,6 +74,25 @@ const COUNTRY_GUIDES = JSON.parse(
 
 const countryGuide = (code) => (code === "_README" ? undefined : COUNTRY_GUIDES[code]);
 
+/**
+ * Per-spot researched prose, from the same JSON src/lib/spot-guides.ts hands to
+ * SpotGuideSections, so the prerendered body and the hydrated page cannot drift.
+ *
+ * This is the depth layer the Supabase row cannot carry. A spot page built from
+ * the row alone is a description plus six bulleted field lists — roughly 209
+ * words of unique content, which is what AdSense rejected as low-value twice.
+ * The publication gate cannot help: it scores whether fields are populated, and
+ * every published spot already maxes it out.
+ *
+ * Most spots have no entry. That is deliberate — these are researched a few at a
+ * time — and a spot without one renders exactly as it did before.
+ */
+const SPOT_GUIDES = JSON.parse(
+  fs.readFileSync(path.join(root, "src/data/spot-guides.json"), "utf8")
+);
+
+const spotGuide = (slug) => (slug === "_README" ? undefined : SPOT_GUIDES[slug]);
+
 /** Official source links for a country: the authority first, then any others. */
 const guideSources = (guide) =>
   guide ? [guide.authority, ...(guide.links || [])] : [];
@@ -233,13 +252,29 @@ function withHead(template, { title, description, canonical, jsonLd }) {
     `<meta name="description" content="${esc(description)}" />`
   );
 
+  // Remove the generic og/twitter tags from the template so we don't end up
+  // with duplicates — the template has placeholder values that would otherwise
+  // appear alongside the route-specific ones we add below.
+  html = html.replace(/\s*<meta\s+property="og:title"[^>]*>\s*/g, "\n    ");
+  html = html.replace(/\s*<meta\s+property="og:description"[^>]*>\s*/g, "\n    ");
+  html = html.replace(/\s*<meta\s+property="og:image"[^>]*>\s*/g, "\n    ");
+  html = html.replace(/\s*<meta\s+property="og:type"[^>]*>\s*/g, "\n    ");
+  html = html.replace(/\s*<meta\s+name="twitter:card"[^>]*>\s*/g, "\n    ");
+  html = html.replace(/\s*<meta\s+name="twitter:title"[^>]*>\s*/g, "\n    ");
+  html = html.replace(/\s*<meta\s+name="twitter:description"[^>]*>\s*/g, "\n    ");
+  html = html.replace(/\s*<meta\s+name="twitter:image"[^>]*>\s*/g, "\n    ");
+
   const extra = [
     `<link rel="canonical" href="${esc(canonical)}" />`,
     `<meta property="og:title" content="${esc(title)}" />`,
     `<meta property="og:description" content="${esc(description)}" />`,
+    `<meta property="og:image" content="${esc(`${SITE_URL}/pwa-512x512.png`)}" />`,
+    `<meta property="og:type" content="website" />`,
     `<meta property="og:url" content="${esc(canonical)}" />`,
+    `<meta name="twitter:card" content="summary_large_image" />`,
     `<meta name="twitter:title" content="${esc(title)}" />`,
     `<meta name="twitter:description" content="${esc(description)}" />`,
+    `<meta name="twitter:image" content="${esc(`${SITE_URL}/pwa-512x512.png`)}" />`,
     jsonLd
       ? `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>`
       : "",
@@ -323,6 +358,35 @@ function accessSection(access) {
       }`;
 }
 
+/**
+ * Researched prose for one spot, with its citations. Omitted entirely when the
+ * spot has no guide, so an undeepened page keeps its previous shape rather than
+ * gaining empty headings.
+ *
+ * Kept structurally identical to SpotGuideSections.tsx — same order, same
+ * headings, sources in the same place — because a crawler reading this body and
+ * a reader seeing the hydrated page should not be shown two different articles.
+ */
+function spotGuideSection(slug) {
+  const guide = spotGuide(slug);
+  if (!guide || !Array.isArray(guide.sections) || !guide.sections.length) return "";
+
+  const sections = guide.sections
+    .map((s) => `<h2>${esc(s.heading)}</h2><p>${esc(s.body)}</p>`)
+    .join("");
+
+  const sources = Array.isArray(guide.sources) && guide.sources.length
+    ? `<h3>Sources</h3><ul>${guide.sources
+        .map(
+          (s) =>
+            `<li><a href="${esc(s.url)}" rel="noopener noreferrer">${esc(s.name)}</a></li>`
+        )
+        .join("")}</ul>`
+    : "";
+
+  return `\n      ${sections}\n      ${sources}`;
+}
+
 function spotContent(spot, all, reviews = []) {
   const country = COUNTRY_NAMES[spot.country] || spot.country;
   const gear = (spot.recommended_gear && typeof spot.recommended_gear === "object")
@@ -339,6 +403,7 @@ function spotContent(spot, all, reviews = []) {
       <h1>${esc(spot.title)}</h1>
       <p><strong>${esc(spot.location)}, ${esc(country)}</strong> &middot; ${esc(spot.type)} &middot; ${esc(spot.difficulty)}</p>
       <p>${esc(spot.description)}</p>
+      ${spotGuideSection(spot.slug)}
 
       ${accessSection(spot.access)}
 
