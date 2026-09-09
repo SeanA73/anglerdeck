@@ -18,6 +18,7 @@ const Footer = () => {
     Explore: [
       { name: "Fishing Spots", href: "/spots" },
       { name: "Map View", href: "/map" },
+      { name: "Guides", href: "/guides" },
       { name: "Fishing Gear", href: "/gear" },
       { name: "My Catches", href: "/catches" },
     ],

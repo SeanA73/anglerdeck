@@ -26,6 +26,8 @@ const Account = lazy(() => import("./pages/Account"));
 const Support = lazy(() => import("./pages/Support"));
 const Contact = lazy(() => import("./pages/Contact"));
 const Regulations = lazy(() => import("./pages/Regulations"));
+const Guides = lazy(() => import("./pages/Guides"));
+const GuideArticle = lazy(() => import("./pages/GuideArticle"));
 const Gear = lazy(() => import("./pages/Gear"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Terms = lazy(() => import("./pages/Terms"));
@@ -82,6 +84,8 @@ const App = () => (
                 <Route path="/support" element={<Support />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/regulations" element={<Regulations />} />
+                <Route path="/guides" element={<Guides />} />
+                <Route path="/guides/:slug" element={<GuideArticle />} />
                 <Route path="/gear" element={<Gear />} />
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/terms" element={<Terms />} />

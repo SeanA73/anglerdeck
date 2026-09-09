@@ -1,0 +1,222 @@
+{
+  "_README": {
+    "purpose": "Long-form comparison articles, served at /guides and /guides/<slug>. ONE source of truth. Read by src/lib/guides.ts (which src/pages/Guides.tsx and src/pages/GuideArticle.tsx use), by scripts/guides.mjs (which scripts/prerender.mjs uses for the crawlable body and scripts/static-routes.mjs uses for the routes and the sitemap), and by src/pages/CountryHub.tsx for the hub-to-article links. Nothing here is duplicated into a component, for the reason recorded in country-guides.json: a claim stated twice gets corrected once.",
+    "whyItExists": "Two AdSense rejections for low-value content, and Search Console showing impressions at an average position around 59. Volume was not the constraint; authority was. Nobody links to a directory entry, but people do cite a good comparison — so this section hosts the content type that can earn links.",
+    "rules": "CLAUDE.md content rules apply in full. Every factual claim traces to a government fisheries agency or a statutory licensing body. Articles cite countries by ISO code and the official links are resolved from country-guides.json at render time, so an article can never contradict the hub it sits beside. No bag limits, no size limits, no fees. No ratings and no review markup anywhere in this section: there are no reviews of an article, and fabricated ratings are a structured-data policy violation.",
+    "shape": "articles[] is ordered — the /guides index lists them in this order, newest first by convention. Per article: slug, title (the <title>, carries the site name), headline (the h1), description (meta, keep under about 155 characters), summary (the index-page teaser), datePublished and dateModified (ISO dates, used in Article JSON-LD), countries (ISO codes the article covers; this is what makes each country hub link to it), intro (blocks before the first heading) and sections[].",
+    "sections": "Each section is { heading, countries?, blocks }. `countries` is optional and renders that section's official sources — resolved live from country-guides.json — plus a link to each country hub. That is the promise the intro makes, and the internal linking is half the point of the section.",
+    "blocks": "Three block types, and adding a fourth means editing two renderers (scripts/prerender.mjs and src/pages/GuideArticle.tsx), so prefer composing what exists. { type: 'p', text } is a paragraph. { type: 'list', items } is a bulleted list. { type: 'table', columns, rows } is a comparison table. Inline markup inside any text is deliberately minimal — bold with double asterisks and italic with single — and is tokenised by the single shared parser in scripts/guide-inline.mjs so the prerendered HTML and the hydrated React cannot disagree about it. There is no markdown parser in the prerenderer and this file exists so that stays true.",
+    "addingAnArticle": "Data only. Append to articles[] and the route, the sitemap entry, the prerendered body, the Article JSON-LD, the /guides index card and the hub cross-links all follow. If you find yourself writing code to add an article, something above has been bypassed."
+  },
+  "articles": [
+    {
+      "slug": "where-you-can-fish-without-a-licence",
+      "title": "Where You Can Fish Without a Licence — AnglerDeck",
+      "headline": "Where you can fish without a licence",
+      "description": "Which countries let you fish without a licence, and which only look like they do. Norway, Sweden, New Zealand, the UK and more, with official sources.",
+      "summary": "A country-by-country comparison of where recreational fishing needs no licence — and where \"no licence\" still does not mean \"no permission\". Every claim links to the agency that made the rule.",
+      "datePublished": "2026-09-07",
+      "dateModified": "2026-09-07",
+      "countries": ["NO", "SE", "NZ", "GB", "AU", "JP", "RU", "IT", "ES", "FI", "FR"],
+      "intro": [
+        {
+          "type": "p",
+          "text": "Most fishing advice starts with \"buy a licence\". It is good advice almost everywhere — but not everywhere, and the exceptions are more useful than they look. If you are planning a trip, knowing which waters you can simply walk up to and fish changes what is worth flying for."
+        },
+        {
+          "type": "p",
+          "text": "This is a comparison drawn from the nineteen countries we cover; eleven of them have something worth saying on this question. Every claim links to the agency that made the rule. Two warnings before the list: free never means unregulated, and \"no licence\" rarely means \"no permission needed\". Both catch people out, and we come back to them at the end."
+        }
+      ],
+      "sections": [
+        {
+          "heading": "Norway: the sea is free, the rivers are not",
+          "countries": ["NO"],
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Norway draws the cleanest line of any country here. The Norwegian Environment Agency confirms you do not need to pay the national fishing fee to fish with a rod or hand line in the sea — and you may fish there for salmon, sea trout and Arctic char from the shore year-round, subject to local bylaws."
+            },
+            {
+              "type": "p",
+              "text": "That is an unusually generous position. Sea-run salmon from the shore, no paperwork."
+            },
+            {
+              "type": "p",
+              "text": "Fresh water is the opposite. For rivers and lakes holding anadromous fish you must pay the national fishing fee before fishing during the ordinary season, carry proof, and produce it on request. And the fee is not permission to fish — fishing rights belong to the landowner, so you need their licence as well. On a river like the Alta, that landowner permit is the real bottleneck, not the fee."
+            }
+          ]
+        },
+        {
+          "heading": "Sweden: free coast, and five free lakes",
+          "countries": ["SE"],
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Sweden has the most generous access rules on this list, and the boundary is geographic rather than bureaucratic. Along the entire coast, and on the five great lakes — Vänern, Vättern, Mälaren, Hjälmaren and Storsjön in Jämtland — recreational rod fishing is free."
+            },
+            {
+              "type": "p",
+              "text": "That is not a technicality. Vänern is the largest lake in the European Union. You can fish it, with a rod, without buying anything."
+            },
+            {
+              "type": "p",
+              "text": "Outside those waters, fishing rights are private. Most managed waters are organised into fishing conservation areas selling a *fiskekort*, and the Swedish Agency for Marine and Water Management maps them — species, permit sellers and all — so a specific water is easy to check before you travel."
+            }
+          ]
+        },
+        {
+          "heading": "New Zealand: free at sea, one trap inland",
+          "countries": ["NZ"],
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Sea fishing in New Zealand needs no licence at all. The freshwater rules are the only paperwork most visitors face, and they contain a trap worth knowing: a Fish & Game licence covers the whole country **except** the Taupō district, which the Department of Conservation administers separately. A Fish & Game licence is not valid there. Lake Rotoaira is a third district again, with its own licences."
+            },
+            {
+              "type": "p",
+              "text": "Since Taupō is one of the best trout fisheries on earth, this catches a lot of people."
+            }
+          ]
+        },
+        {
+          "heading": "United Kingdom: sea angling free, fresh water split in two",
+          "countries": ["GB"],
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Sea angling is free throughout the UK. Fresh water is really two systems."
+            },
+            {
+              "type": "p",
+              "text": "In England and Wales you need an Environment Agency rod licence to fish for salmon, trout, freshwater fish, smelt or eel with a rod and line — and GOV.UK is explicit that this applies on private water too, club lakes included. The licence permits you to hold a rod; it is not permission to fish a particular water, so you still need the owner's consent."
+            },
+            {
+              "type": "p",
+              "text": "Scotland issues no rod licence at all. Instead you need a permit from whoever owns the beat, usually an estate or a District Salmon Fishery Board. So Scotland is simultaneously licence-free and among the harder places to arrange access."
+            },
+            {
+              "type": "p",
+              "text": "Children under 13 need no licence in England and Wales; 13-to-16-year-olds hold a free junior one."
+            }
+          ]
+        },
+        {
+          "heading": "Australia: it depends entirely which state you are standing in",
+          "countries": ["AU"],
+          "blocks": [
+            {
+              "type": "p",
+              "text": "There is no Australian fishing licence. Each state and territory runs its own system, and the gap between neighbours is wide."
+            },
+            {
+              "type": "p",
+              "text": "The **Northern Territory requires no recreational licence whatsoever** — though boating rules, closed areas and Aboriginal land permissions all still apply. **New South Wales** sits at the other end: the Recreational Fishing Fee covers both fresh and salt water, and you must carry proof while fishing. NSW does publish exemptions, including anglers fishing under a guide or charter operator holding an exemption certificate."
+            },
+            {
+              "type": "p",
+              "text": "On border rivers like the Murray, which bank you are standing on decides whose rules apply."
+            }
+          ]
+        },
+        {
+          "heading": "Japan and Russia: no licence, but not open access",
+          "countries": ["JP", "RU"],
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Japan has no recreational fishing licence in the European sense. The Fisheries Agency treats recreational fishing as \"minor capture\" and sets out what foreign nationals may do by method and vessel: from shore, rod, hand line, net and spear fishing are permitted. Inland waters are different — local fisheries cooperatives set rules approved by the prefectural governor, including a fee and a permit called a *yugyoken*."
+            },
+            {
+              "type": "p",
+              "text": "Russia likewise has no recreational licence, and the Federal Agency for Fishery states that public waters may be fished freely and free of charge, subject to the fishing rules for the relevant basin. But on designated fishing grounds — which is what the famous salmon and trout rivers are — fishing runs under a *putyovka*, a paid-services contract specifying catch, area, methods and period. Those fisheries are booked commercially, well in advance."
+            }
+          ]
+        },
+        {
+          "heading": "Free of charge, but not free of paperwork",
+          "countries": ["IT", "ES", "FR"],
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Three countries charge nothing for sea angling, or nothing beyond a regional licence, and still require you to file something."
+            },
+            {
+              "type": "p",
+              "text": "**Italy**: sea fishing is free of charge, but MASAF operates a sport-fishing census through which recreational sea anglers must file a *comunicazione*. The practical catch is the login — access has run exclusively through Italian digital identity credentials (SPID, electronic ID card, or national services card) since 2022, which most visitors do not hold. Resolve it with a charter operator before travelling, not at the harbour."
+            },
+            {
+              "type": "p",
+              "text": "**Spain**: on top of a regional licence, the Ministry of Agriculture, Fisheries and Food runs PescaREC, an app through which sea anglers register and report catches daily — from shore as well as from a boat."
+            },
+            {
+              "type": "p",
+              "text": "**France**: fresh water needs a *carte de pêche*, which is really membership of a local AAPPMA association. The sea sits outside that system — but since 2026 it is not outside the paperwork. The maritime fishing code subjects recreational sea fishing to the same provisions as professional fishing on minimum sizes, permitted gear, zones and periods, and allows specific recreational activities to be made subject to authorisation by ministerial order. One such order now applies broadly: sea anglers aged 16 and over targeting the species it lists must register — a registration valid twelve months, through the European Commission's recreational fisheries platform or the RecFishing app — and must declare catches of those species on the day they are taken."
+            },
+            {
+              "type": "p",
+              "text": "We looked hard for an official page stating that French sea angling needs no licence, because it would have been the most useful line in this article. There is not one. Légifrance shows only that authorisation regimes *may* be imposed on activities listed by order, which is not the same as a statement that none applies to ordinary rod-and-line fishing, and the ministry's own page discusses the new registration duty and nothing else. So France appears here for its paperwork, and not in the licence-free column."
+            }
+          ]
+        },
+        {
+          "heading": "Age exemptions worth knowing",
+          "countries": ["FI", "GB"],
+          "blocks": [
+            {
+              "type": "p",
+              "text": "**Finland** applies its state fisheries management fee to anglers aged 18 to 69 fishing with lures. Outside that band, no fee. Finland's everyman's-right tradition also leaves simple methods — ice fishing, basic float fishing — outside the fee regime entirely, which is why a Finnish winter trip involves almost no paperwork."
+            },
+            {
+              "type": "p",
+              "text": "**England and Wales**: under-13s free, 13–16 free junior licence."
+            }
+          ]
+        },
+        {
+          "heading": "The two things that catch people out",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "**Free does not mean unregulated.** Sweden's free waters still carry size rules and closed seasons. Norway's free sea fishing is still subject to local bylaws. The Northern Territory still has closed areas. Removing the licence removes one requirement, not the rest."
+            },
+            {
+              "type": "p",
+              "text": "**No licence is not the same as permission.** This is the one that costs people a day's fishing. In Norway, paying the national fee does not entitle you to fish — the landowner still has to sell you a permit. In Scotland there is no licence at all, but you cannot fish without the beat owner's say-so. In England and Wales the rod licence is explicitly not permission to fish a given water. In Finland, the state fee covers single-rod fishing in much of the country, but the good rivers and rapids need the water owner's permit too."
+            },
+            {
+              "type": "p",
+              "text": "The pattern: countries that removed the licence usually did so because fishing rights sit with landowners instead. The paperwork moved rather than disappeared."
+            }
+          ]
+        },
+        {
+          "heading": "Quick reference",
+          "blocks": [
+            {
+              "type": "table",
+              "columns": ["Country", "Free sea fishing", "Free fresh water", "Note"],
+              "rows": [
+                ["Norway", "Yes", "No", "Fee plus landowner permit inland"],
+                ["Sweden", "Yes", "Coast + 5 great lakes", "Elsewhere needs a fiskekort"],
+                ["New Zealand", "Yes", "No", "Taupō licensed separately from Fish & Game"],
+                ["United Kingdom", "Yes", "No (E&W); no licence in Scotland", "Scotland needs beat permission"],
+                ["Australia (NT)", "Yes", "Yes", "No recreational licence at all"],
+                ["Australia (NSW)", "No", "No", "Recreational Fishing Fee both waters"],
+                ["Italy", "Free of charge", "No", "Census filing required; SPID login"],
+                ["France", "Not confirmed — see above", "No (carte de pêche)", "Register and declare listed sea species since 2026"],
+                ["Japan", "No licence", "Local permit inland", "Method and vessel rules apply"],
+                ["Russia", "No licence", "No licence on public water", "Putyovka on designated grounds"],
+                ["Finland", "—", "Free outside ages 18–69", "Simple methods exempt entirely"]
+              ]
+            },
+            {
+              "type": "p",
+              "text": "Licence requirements change regularly, and this article is a starting point rather than a substitute for the agency pages linked in each section above. Confirm the rules for the specific water before you fish."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

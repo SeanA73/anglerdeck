@@ -1,13 +1,14 @@
 import { useMemo } from "react";
 import { Link, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { MapPin, Fish, ArrowRight, ExternalLink } from "lucide-react";
+import { MapPin, Fish, ArrowRight, ExternalLink, BookOpen } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { SEO, BASE_URL } from "@/components/SEO";
 import { useSpots } from "@/hooks/useSpots";
 import { countryBySlug } from "@/lib/countries";
 import { countryGuide } from "@/lib/country-guides";
+import { guidePath, guidesForCountry } from "@/lib/guides";
 import { Button } from "@/components/ui/button";
 import { AdBanner } from "@/components/ads/AdBanner";
 import { AffiliateGear } from "@/components/ads/AffiliateGear";
@@ -27,6 +28,11 @@ const CountryHub = () => {
   // Same guide the prerenderer writes into the crawlable body, so the hydrated
   // page and the static HTML say the same thing about licensing.
   const guide = country ? countryGuide(country.code) : undefined;
+  // Articles that cover this country, matched on the ISO codes in guides.json.
+  // The prerendered hub body renders the same list from the same data, and each
+  // article section links back here — a comparison article nothing links to
+  // earns nothing.
+  const articles = country ? guidesForCountry(country.code) : [];
 
   const countrySpots = useMemo(
     () => spots.filter((s) => s.country === country?.code),
@@ -145,6 +151,31 @@ const CountryHub = () => {
                   </a>
                 ))}
               </div>
+            </div>
+          </section>
+        )}
+
+        {articles.length > 0 && (
+          <section className="mt-10 max-w-3xl">
+            <h2 className="text-xl font-bold text-foreground mb-3 flex items-center gap-2">
+              <BookOpen className="w-5 h-5 text-accent" />
+              Guides covering {country.name}
+            </h2>
+            <div className="space-y-3">
+              {articles.map((article) => (
+                <Link
+                  key={article.slug}
+                  to={guidePath(article.slug)}
+                  className="group block p-4 rounded-xl border border-border/50 bg-card hover:border-accent/50 transition-colors"
+                >
+                  <h3 className="font-semibold text-foreground group-hover:text-accent transition-colors">
+                    {article.headline}
+                  </h3>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {article.summary}
+                  </p>
+                </Link>
+              ))}
             </div>
           </section>
         )}

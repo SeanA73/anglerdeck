@@ -21,7 +21,14 @@
  * ships here. /pricing is the worked example: "AI Fishing Assistant" was pulled
  * from Pricing.tsx but survived in this file and went out in the prerendered
  * <head>. When changing a page's description, change both.
+ *
+ * The /guides entries are the exception, and deliberately so: they are generated
+ * from src/data/guides.json by guideRoutes(), which is the same data the page
+ * components and prerender.mjs read. There is no second copy to keep in step, so
+ * adding an article is a data change and never a change here.
  */
+import { guideRoutes } from "./guides.mjs";
+
 export const STATIC_ROUTES = [
   { path: "/spots", title: "Fishing Spots — AnglerDeck", description: "Browse researched fishing spots worldwide. Filter by country, species and water type, or sort by the spots nearest you." },
   // The map filters by water type and country only — not species or
@@ -37,6 +44,10 @@ export const STATIC_ROUTES = [
   // src/pages/Regulations.tsx — this copy is the one crawlers read. No bag or
   // size numbers — see content rule 3.
   { path: "/regulations", title: "Fishing Regulations — AnglerDeck", description: "Licence requirements and official fisheries links for all 19 countries AnglerDeck covers, from the rod licence in England to Japan's local yugyo permits." },
+  // /guides and one route per article, from src/data/guides.json. Placed above
+  // the hand-written pages because these are content routes, like /spots and
+  // /regulations, rather than utility ones.
+  ...guideRoutes(),
   { path: "/support", title: "Help Centre — AnglerDeck", description: "Answers to common questions about AnglerDeck." },
   { path: "/contact", title: "Contact — AnglerDeck", description: "Get in touch with the AnglerDeck team." },
   { path: "/privacy", title: "Privacy Policy — AnglerDeck", description: "How AnglerDeck handles your data." },

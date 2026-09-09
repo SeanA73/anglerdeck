@@ -19,6 +19,8 @@ import { fileURLToPath } from "node:url";
 import { loadEnv } from "vite";
 import { isPublished, PUBLISH_THRESHOLD } from "./spot-quality.mjs";
 import { STATIC_ROUTES } from "./static-routes.mjs";
+import { GUIDES, GUIDES_INDEX_PATH, guidePath, guidesForCountry } from "./guides.mjs";
+import { inlineRuns } from "./guide-inline.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "..");
@@ -391,6 +393,10 @@ function hubContent(country, spots) {
   spots.forEach((s) => (types[s.type] = (types[s.type] || 0) + 1));
   const guide = countryGuide(country.code);
   const sources = guideSources(guide);
+  // Articles that cover this country, from the codes in guides.json. The link
+  // runs both ways — each article section links back to this hub — because a
+  // comparison article that nothing links to earns nothing.
+  const articles = guidesForCountry(country.code);
 
   return `
     <article>
@@ -411,6 +417,23 @@ function hubContent(country, spots) {
 
       <h2>What the fishing is like</h2>
       <p>${esc(guide.water)}</p>`
+          : ""
+      }
+
+      ${
+        articles.length
+          ? `
+      <h2>Guides covering ${esc(country.name)}</h2>
+      <ul>
+        ${articles
+          .map(
+            (a) =>
+              `<li><a href="${esc(guidePath(a.slug))}">${esc(a.headline)}</a> — ${inline(
+                a.summary
+              )}</li>`
+          )
+          .join("")}
+      </ul>`
           : ""
       }
 
@@ -440,6 +463,7 @@ function hubContent(country, spots) {
       with the relevant fisheries authority before you fish — each spot page links
       to its source.</p>
       <p><a href="/regulations">Fishing regulations and licences by country</a>
+      &middot; <a href="/guides">Fishing guides</a>
       &middot; <a href="/map">View the fishing map</a></p>
     </article>`;
 }
@@ -808,7 +832,8 @@ function homeContent(spots, countriesWithSpots) {
       </ul>
       <p><a href="/spots">Browse all fishing spots</a> &middot;
       <a href="/map">View the fishing map</a> &middot;
-      <a href="/regulations">Fishing regulations by country</a></p>
+      <a href="/regulations">Fishing regulations by country</a> &middot;
+      <a href="/guides">Fishing guides</a></p>
 
       <h2>Species covered</h2>
       ${list(species)}
@@ -817,6 +842,248 @@ function homeContent(spots, countriesWithSpots) {
       regularly. Always confirm with the relevant fisheries authority before you
       fish — each spot page links to its source.</p>
     </article>`;
+}
+
+/* ------------------------------------------------------------------ /guides */
+
+/**
+ * Inline text for the guide bodies.
+ *
+ * Escaping happens per run, after the marks are stripped, so a `*` inside prose
+ * is never confused with markup and a `<` inside prose is never emitted raw.
+ * The tokenising itself is not done here — it is imported, because
+ * src/pages/GuideArticle.tsx applies the same parser to build React elements and
+ * the two must not diverge. See scripts/guide-inline.mjs.
+ */
+const inline = (text) =>
+  inlineRuns(text)
+    .map((r) => {
+      const body = esc(r.text);
+      if (r.strong) return `<strong>${body}</strong>`;
+      if (r.em) return `<em>${body}</em>`;
+      return body;
+    })
+    .join("");
+
+/**
+ * The block vocabulary, mirrored by GuideArticle.tsx. Three types only —
+ * paragraph, bulleted list, comparison table — which is what keeps a markdown
+ * parser out of this script. An unknown type renders nothing rather than
+ * throwing: a typo in guides.json should cost one block, not the build.
+ */
+function guideBlock(block) {
+  if (!block || typeof block !== "object") return "";
+
+  if (block.type === "p") return `<p>${inline(block.text)}</p>`;
+
+  if (block.type === "list") {
+    const items = Array.isArray(block.items) ? block.items : [];
+    if (!items.length) return "";
+    return `<ul>${items.map((i) => `<li>${inline(i)}</li>`).join("")}</ul>`;
+  }
+
+  if (block.type === "table") {
+    const columns = Array.isArray(block.columns) ? block.columns : [];
+    const rows = Array.isArray(block.rows) ? block.rows : [];
+    if (!columns.length || !rows.length) return "";
+    return `
+      <table>
+        <thead><tr>${columns.map((c) => `<th>${inline(c)}</th>`).join("")}</tr></thead>
+        <tbody>
+          ${rows
+            .map((r) => `<tr>${r.map((cell) => `<td>${inline(cell)}</td>`).join("")}</tr>`)
+            .join("")}
+        </tbody>
+      </table>`;
+  }
+
+  return "";
+}
+
+/**
+ * A section's official sources and hub links, resolved from COUNTRY_GUIDES.
+ *
+ * The article stores ISO codes, never URLs, so the links here are the same ones
+ * the country hub and /regulations render. That is what makes the article's
+ * opening promise — "every claim links to the agency that made the rule" —
+ * something the data enforces rather than something a writer has to remember,
+ * and it means an authority that moves its page is corrected in one file.
+ *
+ * The hub link is the other half: hubs link down into the articles that cover
+ * them and each section links back up, which is the internal linking this
+ * section exists to build.
+ */
+function guideSectionLinks(codes) {
+  const wanted = Array.isArray(codes) ? codes : [];
+  if (!wanted.length) return "";
+
+  const sources = [];
+  const hubs = [];
+  for (const code of wanted) {
+    const guide = countryGuide(code);
+    const name = COUNTRY_NAMES[code] || code;
+    for (const link of guideSources(guide)) sources.push(link);
+    hubs.push(
+      `<a href="/fishing/${esc(countrySlug(code))}">Fishing in ${esc(name)}</a>`
+    );
+  }
+  if (!sources.length && !hubs.length) return "";
+
+  return `
+      ${
+        sources.length
+          ? `<p>Official sources: ${sources
+              .map(
+                (l) =>
+                  `<a href="${esc(l.url)}" rel="noopener noreferrer">${esc(l.name)}</a>`
+              )
+              .join(" &middot; ")}</p>`
+          : ""
+      }
+      ${hubs.length ? `<p>${hubs.join(" &middot; ")}</p>` : ""}`;
+}
+
+/** One article's crawlable body. Mirrors src/pages/GuideArticle.tsx. */
+function guideArticleContent(article) {
+  return `
+    <article>
+      <nav><a href="/guides">Guides</a> / ${esc(article.headline)}</nav>
+      <h1>${esc(article.headline)}</h1>
+      <p><time datetime="${esc(article.datePublished)}">Published ${esc(
+        article.datePublished
+      )}</time>${
+        article.dateModified && article.dateModified !== article.datePublished
+          ? ` &middot; <time datetime="${esc(article.dateModified)}">updated ${esc(
+              article.dateModified
+            )}</time>`
+          : ""
+      }</p>
+      ${(article.intro || []).map(guideBlock).join("")}
+      ${(article.sections || [])
+        .map(
+          (s) => `
+      <h2>${esc(s.heading)}</h2>
+      ${(s.blocks || []).map(guideBlock).join("")}
+      ${guideSectionLinks(s.countries)}`
+        )
+        .join("")}
+
+      <p>Licence requirements and closed seasons change regularly. Always confirm
+      with the relevant fisheries authority before you fish.</p>
+      <p><a href="/guides">All fishing guides</a>
+      &middot; <a href="/regulations">Fishing regulations and licences by country</a>
+      &middot; <a href="/spots">Browse all fishing spots</a></p>
+    </article>`;
+}
+
+/** The /guides index body. */
+function guidesIndexContent() {
+  return `
+    <article>
+      <nav><a href="/">AnglerDeck</a> / Guides</nav>
+      <h1>Fishing Guides</h1>
+      <p>Long-form guides to the rules that decide where you can actually fish —
+      licences, permits, access and the exceptions that catch visiting anglers
+      out. Each one compares countries side by side and links every claim to the
+      agency that made the rule. ${GUIDES.length}
+      ${GUIDES.length === 1 ? "guide" : "guides"}.</p>
+
+      ${GUIDES.map(
+        (g) => `
+      <h2><a href="${esc(guidePath(g.slug))}">${esc(g.headline)}</a></h2>
+      <p>${inline(g.summary)}</p>
+      <p><time datetime="${esc(g.datePublished)}">${esc(g.datePublished)}</time>${
+          (g.countries || []).length
+            ? ` &middot; Covers ${(g.countries || [])
+                .map((c) => esc(COUNTRY_NAMES[c] || c))
+                .join(", ")}`
+            : ""
+        }</p>
+      <p><a href="${esc(guidePath(g.slug))}">Read ${esc(g.headline)}</a></p>`
+      ).join("")}
+
+      <p><a href="/regulations">Fishing regulations and licences by country</a>
+      &middot; <a href="/spots">Browse all fishing spots</a>
+      &middot; <a href="/map">View the fishing map</a></p>
+    </article>`;
+}
+
+/**
+ * Article markup for a guide.
+ *
+ * No rating and no review of any kind, here or anywhere in this section: there
+ * are no reviews of an article to aggregate, and inventing one would be the same
+ * structured-data policy violation content rule 4 exists to prevent. Author and
+ * publisher are the organisation, not a person — there is no byline to claim.
+ */
+function guideArticleJsonLd(article) {
+  const url = `${SITE_URL}${guidePath(article.slug)}`;
+  const organisation = {
+    "@type": "Organization",
+    name: "AnglerDeck",
+    url: `${SITE_URL}/`,
+  };
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: article.headline,
+    description: article.description,
+    datePublished: article.datePublished,
+    dateModified: article.dateModified || article.datePublished,
+    author: organisation,
+    publisher: {
+      ...organisation,
+      logo: {
+        "@type": "ImageObject",
+        url: `${SITE_URL}/pwa-512x512.png`,
+        width: 512,
+        height: 512,
+      },
+    },
+    url,
+    mainEntityOfPage: { "@type": "WebPage", "@id": url },
+    inLanguage: "en",
+    isAccessibleForFree: true,
+    about: (article.countries || []).map((c) => ({
+      "@type": "Country",
+      name: COUNTRY_NAMES[c] || c,
+    })),
+    breadcrumb: {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Guides", item: `${SITE_URL}${GUIDES_INDEX_PATH}` },
+        { "@type": "ListItem", position: 2, name: article.headline, item: url },
+      ],
+    },
+  };
+}
+
+/** CollectionPage for /guides — the same type the country hubs use. */
+function guidesIndexJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "Fishing Guides — AnglerDeck",
+    description:
+      "Long-form guides comparing fishing licences, permits and access across the countries AnglerDeck covers, sourced to official fisheries agencies.",
+    url: `${SITE_URL}${GUIDES_INDEX_PATH}`,
+    inLanguage: "en",
+    hasPart: GUIDES.map((g) => ({
+      "@type": "Article",
+      headline: g.headline,
+      description: g.description,
+      datePublished: g.datePublished,
+      url: `${SITE_URL}${guidePath(g.slug)}`,
+    })),
+    breadcrumb: {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "AnglerDeck", item: `${SITE_URL}/` },
+        { "@type": "ListItem", position: 2, name: "Guides", item: `${SITE_URL}${GUIDES_INDEX_PATH}` },
+      ],
+    },
+  };
 }
 
 function write(routePath, html) {
@@ -909,6 +1176,24 @@ async function main() {
     // Head-only when the catalog is empty or unreachable, same as before /gear
     // had a body — an empty <ul> would be worse than no body at all.
     ...(gearProducts.length ? { "/gear": () => gearContent(gearProducts) } : {}),
+    // Guides come from src/data/guides.json, not Supabase, so they cannot fail
+    // to load and are always written. Both the index and every article get a
+    // real body: head tags alone are what left /spots and /map invisible.
+    [GUIDES_INDEX_PATH]: () => guidesIndexContent(),
+    ...Object.fromEntries(
+      GUIDES.map((g) => [guidePath(g.slug), () => guideArticleContent(g)])
+    ),
+  };
+
+  // Structured data for the static routes that have any. Spots emit Place and
+  // hubs emit CollectionPage; this adds Article per guide and CollectionPage for
+  // the guides index. No rating or review type appears in either — see the note
+  // on guideArticleJsonLd.
+  const staticJsonLd = {
+    [GUIDES_INDEX_PATH]: guidesIndexJsonLd(),
+    ...Object.fromEntries(
+      GUIDES.map((g) => [guidePath(g.slug), guideArticleJsonLd(g)])
+    ),
   };
 
   for (const route of STATIC_ROUTES) {
@@ -916,6 +1201,7 @@ async function main() {
       title: route.title,
       description: route.description,
       canonical: `${SITE_URL}${route.path}`,
+      jsonLd: staticJsonLd[route.path],
     });
     const body = staticBodies[route.path];
     if (body) html = withBody(html, body());
