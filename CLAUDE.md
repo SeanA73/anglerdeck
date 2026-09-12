@@ -9,6 +9,33 @@ rather than first-hand knowledge, which shapes several rules below.
 
 ---
 
+## Commands
+
+```bash
+npm run dev            # Vite dev server at http://127.0.0.1:8080
+npm run build           # vite build && node scripts/prerender.mjs — reads live Supabase; see Deploy
+npm run build:nossg      # vite build only, skips prerender.mjs (fast local iteration on the client bundle)
+npm run preview          # serve the last production build locally
+npm run lint            # ESLint over the whole repo
+npm test                 # vitest run — full suite, one pass
+npm run test:watch       # vitest, watch mode
+npx vitest run src/test/gear.test.ts   # single test file
+npx vitest run -t "name" # single test by name, any file
+```
+
+App startup and `npm run build` both require the env vars validated in
+`src/lib/env.ts` (Supabase URL/key, `VITE_SITE_URL`, Stripe publishable key and
+4 price IDs) — see `.env.example` for the full list. `npm run build` additionally
+needs live Supabase access; see the migration-ordering rule under Deploy before
+running it against a database you just migrated.
+
+Two scripts validate before touching data rather than after: `node
+scripts/check-access-migration.mjs <file>` checks a not-yet-applied access
+migration against the content rules below, and `node scripts/access-audit.mjs`
+reports the current publication-gate status per spot (see that section).
+
+---
+
 ## Non-negotiable content rules
 
 These exist because the site makes factual claims people act on, and because
