@@ -1,12 +1,14 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import { MapPin, Bookmark, Search, Filter, X, Navigation } from "lucide-react";
+import { MapPin, Bookmark, Search, Filter, X, Navigation, Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { AdBanner } from "@/components/ads/AdBanner";
 import { FishingSpot } from "@/data/spots";
 import { useSpots } from "@/hooks/useSpots";
+import { useSpotRatings, SpotRating } from "@/hooks/useSpotRatings";
+import { cn } from "@/lib/utils";
 import CountrySelector, { countries } from "@/components/CountrySelector";
 import { COUNTRIES } from "@/lib/countries";
 import FishSpeciesFilter from "@/components/FishSpeciesFilter";
@@ -42,6 +44,7 @@ const Spots = () => {
   const [sortBy, setSortBy] = useState<SortOption>("name");
   const [showFilters, setShowFilters] = useState(false);
   const { data: spots = [], isLoading: spotsLoading } = useSpots();
+  const { data: ratings } = useSpotRatings();
 
   // Visitor location: country is inferred from the browser timezone (no
   // prompt, no network). Precise coordinates only arrive if the visitor
@@ -219,17 +222,23 @@ const Spots = () => {
 
             <div className="flex items-center gap-2">
               <span className="text-muted-foreground text-sm font-medium">Type:</span>
-              <Select value={selectedType} onValueChange={setSelectedType}>
-                <SelectTrigger className="w-[150px]">
-                  <SelectValue placeholder="All Types" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ALL">All Types</SelectItem>
-                  <SelectItem value="Freshwater">Freshwater</SelectItem>
-                  <SelectItem value="Saltwater">Saltwater</SelectItem>
-                  <SelectItem value="Fly Fishing">Fly Fishing</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="flex flex-wrap gap-1.5">
+                {(["ALL", "Freshwater", "Saltwater", "Fly Fishing"] as const).map((type) => (
+                  <button
+                    key={type}
+                    type="button"
+                    onClick={() => setSelectedType(type)}
+                    className={cn(
+                      "px-3 py-1.5 rounded-full text-sm font-medium border transition-colors",
+                      selectedType === type
+                        ? "bg-accent text-accent-foreground border-accent"
+                        : "bg-card text-muted-foreground border-border hover:border-accent/50 hover:text-foreground"
+                    )}
+                  >
+                    {type === "ALL" ? "All Types" : type}
+                  </button>
+                ))}
+              </div>
             </div>
 
             <div className="flex items-center gap-2">
@@ -246,23 +255,26 @@ const Spots = () => {
                 </SelectContent>
               </Select>
 
-              <Button
-                variant="outline"
-                size="sm"
+              <button
+                type="button"
                 onClick={handleNearMe}
                 disabled={locating}
-                className="gap-1.5"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border border-border bg-card text-foreground hover:border-accent/50 disabled:opacity-60 transition-colors"
               >
                 <Navigation className="w-4 h-4" />
                 {locating ? "Locating…" : "Near me"}
-              </Button>
+              </button>
             </div>
 
             {hasActiveFilters && (
-              <Button variant="ghost" size="sm" onClick={clearFilters} className="gap-1">
+              <button
+                type="button"
+                onClick={clearFilters}
+                className="flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              >
                 <X className="w-4 h-4" />
                 Clear
-              </Button>
+              </button>
             )}
           </motion.div>
 
@@ -332,6 +344,7 @@ const Spots = () => {
                   spot={spot}
                   index={index}
                   distance={origin ? distanceKm(origin, spot.coordinates) : undefined}
+                  rating={ratings?.get(spot.id)}
                 />
               ))
             )}
@@ -351,10 +364,12 @@ const SpotCard = ({
   spot,
   index,
   distance,
+  rating,
 }: {
   spot: FishingSpot;
   index: number;
   distance?: number;
+  rating?: SpotRating;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -447,7 +462,7 @@ const SpotCard = ({
             </span>
           </div>
 
-          {/* Weather Badge */}
+          {/* Weather + rating badges */}
           <div className="flex flex-wrap items-center gap-2 mb-3">
             <WeatherBadge
               temperature={weather?.temperature}
@@ -466,6 +481,15 @@ const SpotCard = ({
                 weatherCode={weather.weatherCode}
                 isLoading={weatherLoading}
               />
+            )}
+            {/* Only rendered once a spot has an approved review — never a
+                placeholder "0.0" for spots with none. */}
+            {rating && rating.count > 0 && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold border border-amber-400/30 bg-amber-400/10 text-amber-400">
+                <Star className="w-3 h-3 fill-amber-400" />
+                {rating.average.toFixed(1)}
+                <span className="text-amber-400/70">({rating.count})</span>
+              </span>
             )}
           </div>
 
