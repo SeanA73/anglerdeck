@@ -112,7 +112,7 @@ const PostCard = ({ post, onLike, sessionId }: PostCardProps) => {
   };
 
   return (
-    <Card className="bg-card border-border">
+    <Card className="bg-card border-border/50 rounded-2xl">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
@@ -138,7 +138,7 @@ const PostCard = ({ post, onLike, sessionId }: PostCardProps) => {
       <CardContent className="pb-3">
         <p className="text-foreground whitespace-pre-wrap">{post.content}</p>
         {post.image_url && (
-          <div className="mt-4 rounded-lg overflow-hidden">
+          <div className="mt-4 rounded-xl overflow-hidden">
             <img
               src={post.image_url}
               alt={`Post photo by ${post.author_name}`}

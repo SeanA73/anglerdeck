@@ -65,7 +65,7 @@ const Guides = () => {
               >
                 <Link
                   to={guidePath(article.slug)}
-                  className="group flex h-full flex-col p-6 rounded-xl border border-border/50 bg-card hover:border-accent/50 transition-colors"
+                  className="group flex h-full flex-col p-6 rounded-2xl border border-border/50 bg-card hover:border-accent/50 transition-colors"
                 >
                   <div className="flex items-start gap-3">
                     <div className="p-2 rounded-lg bg-accent/10 shrink-0">

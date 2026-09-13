@@ -166,7 +166,7 @@ const CountryHub = () => {
                 <Link
                   key={article.slug}
                   to={guidePath(article.slug)}
-                  className="group block p-4 rounded-xl border border-border/50 bg-card hover:border-accent/50 transition-colors"
+                  className="group block p-4 rounded-2xl border border-border/50 bg-card hover:border-accent/50 transition-colors"
                 >
                   <h3 className="font-semibold text-foreground group-hover:text-accent transition-colors">
                     {article.headline}
@@ -232,7 +232,7 @@ const CountryHub = () => {
                 <Link
                   key={spot.id}
                   to={`/spot/${spot.slug}`}
-                  className="group block p-5 rounded-xl border border-border/50 bg-card hover:border-accent/50 transition-colors"
+                  className="group block p-5 rounded-2xl border border-border/50 bg-card hover:border-accent/50 transition-colors"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>

@@ -54,7 +54,7 @@ const Regulations = () => {
           </p>
         </motion.div>
 
-        <Card className="bg-amber-500/10 border-amber-500/20 mb-8">
+        <Card className="bg-amber-500/10 border-amber-500/20 rounded-2xl mb-8">
           <CardContent className="p-6">
             <div className="flex items-start gap-4">
               <AlertTriangle className="w-6 h-6 text-amber-500 flex-shrink-0 mt-1" />
@@ -80,7 +80,7 @@ const Regulations = () => {
               // two seconds, so later cards would appear to be missing.
               transition={{ delay: Math.min(index * 0.05, 0.4) }}
             >
-              <Card className="h-full">
+              <Card className="h-full rounded-2xl border-border/50">
                 <CardHeader>
                   <div className="flex items-center gap-3">
                     <div className="p-2 rounded-lg bg-accent/10">
@@ -118,7 +118,7 @@ const Regulations = () => {
           ))}
         </div>
 
-        <Card>
+        <Card className="rounded-2xl border-border/50">
           <CardHeader>
             <CardTitle>General Best Practices</CardTitle>
           </CardHeader>

@@ -1,4 +1,4 @@
-import { Crown, Calendar, TrendingUp, Settings, Loader2 } from "lucide-react";
+import { Crown, Calendar, TrendingUp, Settings, Loader2, Fish, MapPin, CalendarDays } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +8,43 @@ import { SUBSCRIPTION_TIERS } from "@/lib/stripe";
 import { UsageSummary } from "@/components/UsageMeter";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+
+/**
+ * Distinct species/spots and days-active-this-month, computed from the
+ * signed-in angler's own catch_logs (RLS already scopes rows to the owner,
+ * the same trust CatchLog.tsx's own query relies on). All three are real
+ * counts over data the user already entered — no estimate, no new table.
+ */
+const useCatchStats = () => {
+  const { user } = useAuth();
+  return useQuery({
+    queryKey: ["catch-stats", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("catch_logs")
+        .select("species, spot_id, caught_at");
+      if (error) throw error;
+
+      const rows = data ?? [];
+      const species = new Set(rows.map((r) => r.species)).size;
+      const spots = new Set(rows.filter((r) => r.spot_id != null).map((r) => r.spot_id)).size;
+
+      const now = new Date();
+      const daysActiveThisMonth = new Set(
+        rows
+          .map((r) => new Date(r.caught_at))
+          .filter((d) => d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth())
+          .map((d) => d.toDateString())
+      ).size;
+
+      return { species, spots, daysActiveThisMonth };
+    },
+  });
+};
 
 const tierColors: Record<string, string> = {
   free: "bg-muted text-muted-foreground",
@@ -23,6 +60,7 @@ const tierLabels: Record<string, string> = {
 
 const AccountOverview = () => {
   const { subscription, usageStats, isLoading, cancelSubscription } = useSubscription();
+  const { data: catchStats } = useCatchStats();
   const [portalLoading, setPortalLoading] = useState(false);
 
   const handleManageSubscription = async () => {
@@ -131,8 +169,8 @@ const AccountOverview = () => {
       </Card>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-2 gap-4">
-        <Card>
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+        <Card className="rounded-2xl">
           <CardContent className="p-4 text-center">
             <div className="text-3xl font-bold text-foreground">
               {usageStats?.spotsViewedThisMonth || 0}
@@ -140,12 +178,39 @@ const AccountOverview = () => {
             <div className="text-sm text-muted-foreground">Spots Viewed</div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="rounded-2xl">
           <CardContent className="p-4 text-center">
             <div className="text-3xl font-bold text-foreground">
               {usageStats?.catchesLoggedThisMonth || 0}
             </div>
-            <div className="text-sm text-muted-foreground">Catches Logged</div>
+            <div className="text-sm text-muted-foreground">Catches This Month</div>
+          </CardContent>
+        </Card>
+        <Card className="rounded-2xl">
+          <CardContent className="p-4 text-center">
+            <Fish className="w-4 h-4 text-accent mx-auto mb-1" />
+            <div className="text-3xl font-bold text-foreground">
+              {catchStats?.species ?? 0}
+            </div>
+            <div className="text-sm text-muted-foreground">Species Caught</div>
+          </CardContent>
+        </Card>
+        <Card className="rounded-2xl">
+          <CardContent className="p-4 text-center">
+            <MapPin className="w-4 h-4 text-accent mx-auto mb-1" />
+            <div className="text-3xl font-bold text-foreground">
+              {catchStats?.spots ?? 0}
+            </div>
+            <div className="text-sm text-muted-foreground">Spots Visited</div>
+          </CardContent>
+        </Card>
+        <Card className="rounded-2xl">
+          <CardContent className="p-4 text-center">
+            <CalendarDays className="w-4 h-4 text-accent mx-auto mb-1" />
+            <div className="text-3xl font-bold text-foreground">
+              {catchStats?.daysActiveThisMonth ?? 0}
+            </div>
+            <div className="text-sm text-muted-foreground">Days Active This Month</div>
           </CardContent>
         </Card>
       </div>
