@@ -1,6 +1,6 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { motion } from "framer-motion";
 import { 
   ArrowLeft, 
@@ -25,7 +25,8 @@ import {
   CloudSun,
   Loader2,
   CloudSnow,
-  CloudLightning
+  CloudLightning,
+  Map as MapIcon
 } from "lucide-react";
 import { FishingSpot } from "@/data/spots";
 import { useSpotBySlug } from "@/hooks/useSpots";
@@ -39,6 +40,11 @@ import { useAuth } from "@/contexts/AuthContext";
 import { SpotReviews } from "@/components/spots/SpotReviews";
 import { SpotAccessCard } from "@/components/spots/SpotAccessCard";
 import { SpotGuideSections } from "@/components/spots/SpotGuideSections";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+// Lazy-loaded the same way MapView.tsx loads it, so a spot page that never
+// opens the Map tab never pays for Leaflet.
+const LeafletMap = lazy(() => import("@/components/map/LeafletMap"));
 import { useSubscription } from "@/hooks/useSubscription";
 import { UpgradePrompt } from "@/components/UpgradePrompt";
 import { UsageMeter } from "@/components/UsageMeter";
@@ -90,6 +96,7 @@ const SpotDetail = () => {
   const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
   const [hasTrackedView, setHasTrackedView] = useState(false);
   const [useCelsius, setUseCelsius] = useState(getDefaultUseCelsius);
+  const [activeTab, setActiveTab] = useState("overview");
 
   // Track spot view on mount (only for logged-in users)
   useEffect(() => {
@@ -354,206 +361,252 @@ const SpotDetail = () => {
       <div className="container mx-auto px-4 lg:px-8 py-12">
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Description */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="bg-card rounded-2xl p-6 border border-border/50"
-            >
-              <h2 className="text-xl font-bold text-foreground mb-4">About This Spot</h2>
-              <p className="text-muted-foreground leading-relaxed">{spot.description}</p>
-              
-              {/* Species */}
-              <div className="mt-6">
-                <h3 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
-                  <Fish className="w-4 h-4 text-accent" />
-                  Target Species
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {spot.species.map((s) => (
-                    <span
-                      key={s}
-                      className="px-3 py-1.5 bg-muted rounded-full text-sm text-foreground capitalize"
-                    >
-                      {s}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
+          <div className="lg:col-span-2">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="mb-6">
+                <TabsTrigger value="overview">Overview</TabsTrigger>
+                <TabsTrigger value="reports">
+                  Reports{reviewCount > 0 ? ` (${reviewCount})` : ""}
+                </TabsTrigger>
+                <TabsTrigger value="map">Map</TabsTrigger>
+              </TabsList>
 
-            {/* Researched prose. Renders nothing for spots without a guide. */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15 }}
-            >
-              <SpotGuideSections slug={spot.slug} />
-            </motion.div>
+              {/* Overview */}
+              <TabsContent value="overview" className="mt-0 space-y-8">
+                {/* Description */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="bg-card rounded-2xl p-6 border border-border/50"
+                >
+                  <h2 className="text-xl font-bold text-foreground mb-4">About This Spot</h2>
+                  <p className="text-muted-foreground leading-relaxed">{spot.description}</p>
 
-            {/* Weather & Conditions */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="bg-card rounded-2xl p-6 border border-border/50"
-            >
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-foreground">Current Conditions</h2>
-                <div className="flex items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setUseCelsius((c) => !c)}
-                    className="text-xs px-2 py-1 rounded-md border border-border text-muted-foreground hover:text-foreground"
-                    aria-label={useCelsius ? "Switch to Fahrenheit" : "Switch to Celsius"}
-                  >
-                    {useCelsius ? "°C" : "°F"}
-                  </button>
-                  {liveWeather && (
-                    <span className="text-xs text-accent flex items-center gap-1">
-                      <span className="w-2 h-2 bg-accent rounded-full animate-pulse" />
-                      Live
-                    </span>
+                  {/* Species */}
+                  <div className="mt-6">
+                    <h3 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
+                      <Fish className="w-4 h-4 text-accent" />
+                      Target Species
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {spot.species.map((s) => (
+                        <span
+                          key={s}
+                          className="px-3 py-1.5 bg-muted rounded-full text-sm text-foreground capitalize"
+                        >
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Weather & Conditions */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.15 }}
+                  className="bg-card rounded-2xl p-6 border border-border/50"
+                >
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-xl font-bold text-foreground">Current Conditions</h2>
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setUseCelsius((c) => !c)}
+                        className="text-xs px-2 py-1 rounded-md border border-border text-muted-foreground hover:text-foreground"
+                        aria-label={useCelsius ? "Switch to Fahrenheit" : "Switch to Celsius"}
+                      >
+                        {useCelsius ? "°C" : "°F"}
+                      </button>
+                      {liveWeather && (
+                        <span className="text-xs text-accent flex items-center gap-1">
+                          <span className="w-2 h-2 bg-accent rounded-full animate-pulse" />
+                          Live
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="grid sm:grid-cols-2 gap-6">
+                    {/* Weather */}
+                    <div className="bg-muted/50 rounded-xl p-5">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-sm font-medium text-muted-foreground">Weather</h3>
+                        {weatherLoading ? (
+                          <Loader2 className="w-8 h-8 text-accent animate-spin" />
+                        ) : (
+                          <WeatherIcon icon={displayWeather.icon || "cloud"} />
+                        )}
+                      </div>
+                      <p className="text-3xl font-bold text-foreground mb-1">
+                        {formatTemperature(displayWeather.temperature, useCelsius)}
+                      </p>
+                      <p className="text-sm text-muted-foreground mb-4">{displayWeather.condition}</p>
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div className="flex items-center gap-2 text-muted-foreground">
+                          <Droplets className="w-4 h-4" />
+                          <span>{displayWeather.humidity}% humidity</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-muted-foreground">
+                          <Wind className="w-4 h-4" />
+                          <span>{formatWindSpeed(displayWeather.windSpeed, useCelsius)} {displayWeather.windDirection}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Water Temperature */}
+                    <div className="bg-muted/50 rounded-xl p-5">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-sm font-medium text-muted-foreground">Water Temperature</h3>
+                        <Thermometer className="w-8 h-8 text-accent" />
+                      </div>
+                      <div className="flex items-end gap-2 mb-1">
+                        <p className="text-3xl font-bold text-foreground">
+                          {spot.waterTemperature.current}{spot.waterTemperature.unit}
+                        </p>
+                        <TrendIcon trend={spot.waterTemperature.trend} />
+                      </div>
+                      <p className="text-sm text-muted-foreground capitalize">
+                        {spot.waterTemperature.trend}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Tide Chart — hidden until a live tide feed exists (static N/A data) */}
+                  {spot.type === "Saltwater" && spot.tides.nextHigh !== "N/A" && (
+                    <div className="mt-6 bg-muted/50 rounded-xl p-5">
+                      <div className="flex items-center gap-2 mb-4">
+                        <Waves className="w-5 h-5 text-accent" />
+                        <h3 className="text-sm font-medium text-foreground">Tide Information</h3>
+                      </div>
+                      <div className="grid grid-cols-3 gap-4">
+                        <div className="text-center">
+                          <p className="text-xs text-muted-foreground mb-1">Next High</p>
+                          <p className="text-lg font-semibold text-foreground">{spot.tides.nextHigh}</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="text-xs text-muted-foreground mb-1">Current</p>
+                          <p className="text-lg font-semibold text-accent capitalize">{spot.tides.current}</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="text-xs text-muted-foreground mb-1">Next Low</p>
+                          <p className="text-lg font-semibold text-foreground">{spot.tides.nextLow}</p>
+                        </div>
+                      </div>
+                      {/* Tide Visual */}
+                      <div className="mt-4 h-16 bg-background/50 rounded-lg overflow-hidden relative">
+                        <svg viewBox="0 0 200 40" className="w-full h-full" preserveAspectRatio="none">
+                          <defs>
+                            <linearGradient id="tideGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                              <stop offset="0%" stopColor="hsl(38 85% 55% / 0.4)" />
+                              <stop offset="100%" stopColor="hsl(38 85% 55% / 0.1)" />
+                            </linearGradient>
+                          </defs>
+                          <path
+                            d="M 0 20 Q 25 5, 50 20 T 100 20 T 150 20 T 200 20 L 200 40 L 0 40 Z"
+                            fill="url(#tideGradient)"
+                          />
+                          <path
+                            d="M 0 20 Q 25 5, 50 20 T 100 20 T 150 20 T 200 20"
+                            fill="none"
+                            stroke="hsl(38 85% 55%)"
+                            strokeWidth="2"
+                          />
+                        </svg>
+                        <div
+                          className="absolute top-1/2 transform -translate-y-1/2 w-3 h-3 bg-accent rounded-full shadow-lg"
+                          style={{ left: spot.tides.current === "incoming" ? "25%" : spot.tides.current === "outgoing" ? "75%" : "50%" }}
+                        />
+                      </div>
+                    </div>
                   )}
+                </motion.div>
+
+                {/* Access details (renders nothing when unverified) */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <SpotAccessCard access={spot.access} />
+                </motion.div>
+
+                {/* Regulations */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.25 }}
+                  className="bg-card rounded-2xl p-6 border border-border/50"
+                >
+                  <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+                    <Shield className="w-5 h-5 text-accent" />
+                    Regulations & Requirements
+                  </h2>
+                  <ul className="space-y-3">
+                    {spot.regulations.map((reg, index) => (
+                      <li key={index} className="flex items-start gap-3 text-muted-foreground">
+                        <span className="w-1.5 h-1.5 bg-accent rounded-full mt-2 flex-shrink-0" />
+                        <span>{reg}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
+
+                {/* Map preview teaser — the full embed lives in the Map tab so
+                    Leaflet only loads once, on demand. */}
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("map")}
+                  className="w-full flex items-center justify-between gap-3 bg-card rounded-2xl p-6 border border-border/50 hover:border-accent/50 transition-colors text-left"
+                >
+                  <div className="flex items-center gap-3">
+                    <MapIcon className="w-5 h-5 text-accent" />
+                    <div>
+                      <p className="font-medium text-foreground">View on the map</p>
+                      <p className="text-sm text-muted-foreground">
+                        {spot.location}, {countryName}
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-sm text-accent">Open map tab →</span>
+                </button>
+              </TabsContent>
+
+              {/* Reports — the researched prose layer plus angler reviews */}
+              <TabsContent value="reports" className="mt-0 space-y-8">
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                  <SpotGuideSections slug={spot.slug} />
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="bg-card rounded-2xl p-6 border border-border/50"
+                >
+                  <SpotReviews spotId={spot.id} spotTitle={spot.title} />
+                </motion.div>
+              </TabsContent>
+
+              {/* Map — single-spot embed of the same LeafletMap used on /map */}
+              <TabsContent value="map" className="mt-0">
+                <div className="bg-card rounded-2xl p-2 border border-border/50 overflow-hidden">
+                  <Suspense
+                    fallback={
+                      <div className="w-full h-[400px] flex items-center justify-center">
+                        <Loader2 className="w-8 h-8 text-accent animate-spin" />
+                      </div>
+                    }
+                  >
+                    <div className="[&_.leaflet-container]:h-[400px] [&_.leaflet-container]:rounded-xl">
+                      <LeafletMap filteredSpots={[spot]} onSpotSelect={() => {}} />
+                    </div>
+                  </Suspense>
                 </div>
-              </div>
-              
-              <div className="grid sm:grid-cols-2 gap-6">
-                {/* Weather */}
-                <div className="bg-muted/50 rounded-xl p-5">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium text-muted-foreground">Weather</h3>
-                    {weatherLoading ? (
-                      <Loader2 className="w-8 h-8 text-accent animate-spin" />
-                    ) : (
-                      <WeatherIcon icon={displayWeather.icon || "cloud"} />
-                    )}
-                  </div>
-                  <p className="text-3xl font-bold text-foreground mb-1">
-                    {formatTemperature(displayWeather.temperature, useCelsius)}
-                  </p>
-                  <p className="text-sm text-muted-foreground mb-4">{displayWeather.condition}</p>
-                  <div className="grid grid-cols-2 gap-3 text-sm">
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <Droplets className="w-4 h-4" />
-                      <span>{displayWeather.humidity}% humidity</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <Wind className="w-4 h-4" />
-                      <span>{formatWindSpeed(displayWeather.windSpeed, useCelsius)} {displayWeather.windDirection}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Water Temperature */}
-                <div className="bg-muted/50 rounded-xl p-5">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium text-muted-foreground">Water Temperature</h3>
-                    <Thermometer className="w-8 h-8 text-accent" />
-                  </div>
-                  <div className="flex items-end gap-2 mb-1">
-                    <p className="text-3xl font-bold text-foreground">
-                      {spot.waterTemperature.current}{spot.waterTemperature.unit}
-                    </p>
-                    <TrendIcon trend={spot.waterTemperature.trend} />
-                  </div>
-                  <p className="text-sm text-muted-foreground capitalize">
-                    {spot.waterTemperature.trend}
-                  </p>
-                </div>
-              </div>
-
-              {/* Tide Chart — hidden until a live tide feed exists (static N/A data) */}
-              {spot.type === "Saltwater" && spot.tides.nextHigh !== "N/A" && (
-                <div className="mt-6 bg-muted/50 rounded-xl p-5">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Waves className="w-5 h-5 text-accent" />
-                    <h3 className="text-sm font-medium text-foreground">Tide Information</h3>
-                  </div>
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="text-center">
-                      <p className="text-xs text-muted-foreground mb-1">Next High</p>
-                      <p className="text-lg font-semibold text-foreground">{spot.tides.nextHigh}</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-xs text-muted-foreground mb-1">Current</p>
-                      <p className="text-lg font-semibold text-accent capitalize">{spot.tides.current}</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-xs text-muted-foreground mb-1">Next Low</p>
-                      <p className="text-lg font-semibold text-foreground">{spot.tides.nextLow}</p>
-                    </div>
-                  </div>
-                  {/* Tide Visual */}
-                  <div className="mt-4 h-16 bg-background/50 rounded-lg overflow-hidden relative">
-                    <svg viewBox="0 0 200 40" className="w-full h-full" preserveAspectRatio="none">
-                      <defs>
-                        <linearGradient id="tideGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                          <stop offset="0%" stopColor="hsl(38 85% 55% / 0.4)" />
-                          <stop offset="100%" stopColor="hsl(38 85% 55% / 0.1)" />
-                        </linearGradient>
-                      </defs>
-                      <path
-                        d="M 0 20 Q 25 5, 50 20 T 100 20 T 150 20 T 200 20 L 200 40 L 0 40 Z"
-                        fill="url(#tideGradient)"
-                      />
-                      <path
-                        d="M 0 20 Q 25 5, 50 20 T 100 20 T 150 20 T 200 20"
-                        fill="none"
-                        stroke="hsl(38 85% 55%)"
-                        strokeWidth="2"
-                      />
-                    </svg>
-                    <div 
-                      className="absolute top-1/2 transform -translate-y-1/2 w-3 h-3 bg-accent rounded-full shadow-lg"
-                      style={{ left: spot.tides.current === "incoming" ? "25%" : spot.tides.current === "outgoing" ? "75%" : "50%" }}
-                    />
-                  </div>
-                </div>
-              )}
-            </motion.div>
-
-            {/* Access details (renders nothing when unverified) */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.25 }}
-            >
-              <SpotAccessCard access={spot.access} />
-            </motion.div>
-
-            {/* Regulations */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="bg-card rounded-2xl p-6 border border-border/50"
-            >
-              <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
-                <Shield className="w-5 h-5 text-accent" />
-                Regulations & Requirements
-              </h2>
-              <ul className="space-y-3">
-                {spot.regulations.map((reg, index) => (
-                  <li key={index} className="flex items-start gap-3 text-muted-foreground">
-                    <span className="w-1.5 h-1.5 bg-accent rounded-full mt-2 flex-shrink-0" />
-                    <span>{reg}</span>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-
-            {/* Reviews Section */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="bg-card rounded-2xl p-6 border border-border/50"
-            >
-              <SpotReviews spotId={spot.id} spotTitle={spot.title} />
-            </motion.div>
+              </TabsContent>
+            </Tabs>
           </div>
 
           {/* Sidebar */}
