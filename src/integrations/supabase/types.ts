@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       catch_logs: {
         Row: {
+          bait_types: string[] | null
           caught_at: string
           created_at: string
           id: string
@@ -34,6 +35,7 @@ export type Database = {
           weight_unit: string | null
         }
         Insert: {
+          bait_types?: string[] | null
           caught_at?: string
           created_at?: string
           id?: string
@@ -52,6 +54,7 @@ export type Database = {
           weight_unit?: string | null
         }
         Update: {
+          bait_types?: string[] | null
           caught_at?: string
           created_at?: string
           id?: string

@@ -58,8 +58,14 @@ interface CatchLog {
   caught_at: string;
   location_name: string | null;
   spot_id: number | null;
+  bait_types: string[] | null;
   created_at: string;
 }
+
+// catch_logs.bait_types is a nullable text[] (supabase/migrations/20260914_add_catch_bait_type.sql).
+// Optional and multi-select — a session can use more than one bait — and additive:
+// existing rows stay NULL until edited.
+const baitOptions = ["Crankbait", "Worm", "Jig", "Fly", "Spinner", "PowerBait"];
 
 const speciesOptions = [
   "Bass",
@@ -107,8 +113,18 @@ const CatchLog = () => {
     notes: "",
     location_name: "",
     spot_id: "",
+    bait_types: [] as string[],
     caught_at: new Date().toISOString().split("T")[0],
   });
+
+  const toggleBait = (bait: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      bait_types: prev.bait_types.includes(bait)
+        ? prev.bait_types.filter((b) => b !== bait)
+        : [...prev.bait_types, bait],
+    }));
+  };
 
   // Fetch catches
   const { data: catches = [], isLoading, error, refetch } = useQuery({
@@ -173,6 +189,7 @@ const CatchLog = () => {
         notes: data.notes || null,
         location_name: data.location_name || null,
         spot_id: data.spot_id ? parseInt(data.spot_id) : null,
+        bait_types: data.bait_types.length > 0 ? data.bait_types : null,
         caught_at: data.caught_at,
         photo_url: photoUrl,
       };
@@ -231,6 +248,7 @@ const CatchLog = () => {
       notes: "",
       location_name: "",
       spot_id: "",
+      bait_types: [],
       caught_at: new Date().toISOString().split("T")[0],
     });
     setPhotoFile(null);
@@ -250,6 +268,7 @@ const CatchLog = () => {
       notes: catch_.notes || "",
       location_name: catch_.location_name || "",
       spot_id: catch_.spot_id?.toString() || "",
+      bait_types: catch_.bait_types || [],
       caught_at: catch_.caught_at.split("T")[0],
     });
     setPhotoPreview(catch_.photo_url);
@@ -520,6 +539,30 @@ const CatchLog = () => {
                           className="mt-1"
                         />
                       </div>
+
+                      <div>
+                        <Label>Bait / lure used (optional)</Label>
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {baitOptions.map((bait) => {
+                            const active = formData.bait_types.includes(bait);
+                            return (
+                              <button
+                                key={bait}
+                                type="button"
+                                onClick={() => toggleBait(bait)}
+                                aria-pressed={active}
+                                className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                                  active
+                                    ? "bg-accent text-accent-foreground border-accent"
+                                    : "bg-card text-muted-foreground border-border hover:border-accent/50 hover:text-foreground"
+                                }`}
+                              >
+                                {bait}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
                     </motion.div>
                   )}
 
@@ -732,6 +775,19 @@ const CatchLog = () => {
                           <Calendar className="w-4 h-4" />
                           {format(new Date(catch_.caught_at), "MMM d, yyyy")}
                         </div>
+
+                        {catch_.bait_types && catch_.bait_types.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5">
+                            {catch_.bait_types.map((bait) => (
+                              <span
+                                key={bait}
+                                className="px-2 py-0.5 rounded-full text-xs bg-muted text-muted-foreground"
+                              >
+                                {bait}
+                              </span>
+                            ))}
+                          </div>
+                        )}
 
                         {catch_.notes && (
                           <p className="text-muted-foreground italic line-clamp-2">
