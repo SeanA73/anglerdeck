@@ -57,9 +57,20 @@ ssh root@72.60.42.216
    - `npm ci` only needed if `package.json` or `package-lock.json` changed
    - `npm run build` produces `dist/` which nginx serves immediately, no restart needed
 
-3. Verify the change is live by visiting `https://anglerdeck.com` in a browser
+3. Verify the change actually built, on the VPS itself — **not** by visiting
+   `https://anglerdeck.com`. Cloudflare, the PWA service worker and the
+   browser cache all sit between you and the live `dist/`, so a browser check
+   can pass or fail for reasons that have nothing to do with this deploy. Use
+   `grep` against `dist/` for prerendered/build output, and an incognito
+   window only if you need to see the rendered UI. See CLAUDE.md's Deploy
+   section for the full caching writeup.
 
-**No nginx restart or PM2 command is needed for deploys** — nginx serves the `dist/` folder, and rebuilding replaces its contents atomically.
+**No nginx restart or PM2 command is needed for deploys** — nginx serves the
+`dist/` folder. Rebuilding is **not** atomic: `vite build` clears and rewrites
+`dist/` in place, so a build that dies partway (seen in practice — see
+CLAUDE.md) leaves the live site serving a broken shell until the next
+successful build. Treat a failed build on the VPS as a live incident, not
+just local noise.
 
 ## Rollback
 

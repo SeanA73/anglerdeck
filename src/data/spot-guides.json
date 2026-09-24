@@ -166,5 +166,94 @@
     ],
     "sourcing": "partial",
     "sourceNotes": "Written 25 Aug 2026. The no-permit coastal fishing right, the 62 spring-closed bays, the 9 year-round closures, the 14 autumn river-mouth closures, the 300 registered spawning sites and the PDF map are from Länsstyrelsen Stockholm. The mercury advisory (pike, perch, zander, burbot; 2-3 times/year for pregnant/breastfeeding/trying-to-conceive) is from Livsmedelsverket. Marked partial because: (1) Länsstyrelsen pages returned mixed results to the fetcher — some loaded, others blocked — and the specific PDF map of closed bays could not be read to verify the current count. The 62-bay figure is from the access record which was read with a real browser. (2) The mercury advice is stated without specific water-by-water figures, which the county board holds but which were not available online in a citable form. (3) The spring/autumn seasonality description is biological consensus from Swedish fishing media and Länsstyrelsen educational material rather than a single regulatory citation. (4) The 'thirty thousand islands' figure is the commonly cited count for the full Stockholm archipelago; the actual number depends on the minimum size threshold used and varies between sources. Deliberately omitted: any specific pike weights or lengths, which are not from official sources and would be guide-site filler."
+  },
+
+  "great-lake-tasmania-trout": {
+    "sections": [
+      {
+        "heading": "A trout fishery built on top of a hydro reservoir",
+        "body": "Yingina/Great Lake is a highland plateau lake in Tasmania's Central Highlands, managed by the Inland Fisheries Service as what IFS itself designates a \"Premium Wild Trout Fishery,\" run in partnership with Hydro Tasmania. The lake is a hydroelectric storage rather than a natural fixed-level lake, and its surface can sit many metres below Full Supply Level depending on generation demand. That is why the concrete boat ramps built for full-level conditions can strand a trailer or hide submerged hazards at low water, and why IFS's own guidance is to check the current level before launching rather than trust the ramp being usable. Camping is restricted to the formal ground at Miena, the small township on the lake's shore, rather than informal camping around the rest of the shoreline."
+      },
+      {
+        "heading": "Two threatened natives share the water with the trout",
+        "body": "Great Lake paragalaxias and Shannon paragalaxias, both listed as threatened, are native to this system alongside the introduced brown and rainbow trout that draw anglers; spotted and climbing galaxias also occur here. IFS's management reflects that dual mandate: brown trout are sustained mainly through natural recruitment rather than heavy stocking, while active enhancement effort is concentrated on the rainbow population, and inlet streams within a set distance of the lake are closed to fishing year-round to protect spawning fish and the native galaxiid populations alike. Using live fish or fish products as bait anywhere on the system is prohibited, which functions as much as a native-species protection measure as a trout-fishery one."
+      },
+      {
+        "heading": "Where the rules tighten: Tods Corner and Canal Bay",
+        "body": "Most of Yingina/Great Lake is open to fishing year-round, but the Tods Corner and Canal Bay arms run on a defined season instead and are restricted to artificial lures and flies only, with no bait permitted — a stricter rule than the rest of the lake. Bag and minimum-size limits apply lake-wide and differ between brown and rainbow trout, with an additional cap on how many rainbow trout may be retained. Both the season dates and the exact limits are revised between seasons, so confirm the current figures directly with IFS rather than from a number repeated here or elsewhere."
+      }
+    ],
+    "sources": [
+      { "name": "Inland Fisheries Service Tasmania — Yingina/Great Lake", "url": "https://www.ifs.tas.gov.au/fisheries/waters-a-z/yingina-great-lake/" }
+    ],
+    "sourcing": "full",
+    "sourceNotes": "Fetched and read directly 23 Sep 2026. Season dates (currently 28 Nov 2026 - 28 Mar 2027 for Tods Corner/Canal Bay), the bag limit (12 fish lake-wide) and the size figures (300mm minimum brown trout; 400mm minimum and a 3-fish cap on rainbow trout) are all on the source page but deliberately not printed per content rule 3 — they are exactly the kind of regulatory figure that is revised between seasons. The prose states that limits exist and differ by species/zone rather than quoting them. Threatened-species and stocking detail (natural recruitment for browns, enhancement focus for rainbows, most recent stocking record a single adult brown in July 2026) is from the same page. No second source was used for this entry — everything here traces to this one IFS page, which is why it is marked full rather than partial despite being a single source."
+  },
+
+  "montauk-striped-bass": {
+    "sections": [
+      {
+        "heading": "One park, three separate permits",
+        "body": "Montauk Point State Park runs its own permit system for fishing rather than folding it into a general park entry fee. The park sells annual sport fishing permits covering most of the year plus a separate short-term permit for the summer window when the annual permit is not on sale, and fishing at the adjoining Camp Hero State Park after dark needs its own distinct night-fishing permit on top of whichever daytime permit is held. Driving a vehicle onto the beach itself is a third, separate authorization again — a 4-wheel-drive beach permit, distinct from both fishing permits and from the day-use vehicle entrance fee. Three different things are being authorized here, not one, and New York State Parks recommends confirming current terms with the park office before a trip rather than assuming last year's rules still apply."
+      },
+      {
+        "heading": "New York doesn't licence saltwater anglers — it registers them",
+        "body": "New York does not operate a traditional fishing licence for recreational saltwater fishing. Instead, NYSDEC requires anyone aged 16 or older fishing for migratory or marine species in the state's Marine and Coastal District — which includes Montauk — to enrol in the Recreational Marine Fishing Registry, a free, no-fee enrolment (aside from a small optional print/mailing charge) that is valid for one full year from the date of registration, with no lifetime option. This registry is a state requirement layered underneath the park's own fishing permit, not a substitute for it — an angler at Montauk needs both the park permit to fish inside the park boundary and the state registry enrolment to be fishing for a marine species at all."
+      },
+      {
+        "heading": "Striped bass specifically: a slot, not just a minimum",
+        "body": "NYSDEC manages striped bass under a slot-limit system rather than a single size floor — a fish must fall inside a specific size window to be legally kept, not merely clear one threshold, and the window itself differs between the Hudson River and the marine district that includes Montauk. A strict per-trip retention cap applies on top of the slot, and the open season runs on a defined annual window that is a few weeks longer in marine waters than on the Hudson. Anyone fishing bait for striped bass is required to use a non-offset (inline) circle hook, a gear rule that does not apply when fishing artificial lures. The current slot dimensions, the possession number and the exact season dates are set by NYSDEC (coordinated with the Atlantic States Marine Fisheries Commission's coastwide management plan) and are revised by addendum, so check them directly rather than from a fixed figure repeated here."
+      }
+    ],
+    "sources": [
+      { "name": "New York State Parks — Montauk Point State Park", "url": "https://parks.ny.gov/parks/montaukpoint/details.aspx?os=os" },
+      { "name": "NYSDEC — Recreational Marine Fishing Registry", "url": "https://dec.ny.gov/regulatory/permits-licenses/sporting-and-use/sporting/recreational-marine-fishing-registry" },
+      { "name": "NYSDEC — recreational saltwater fishing regulations", "url": "https://dec.ny.gov/things-to-do/saltwater-fishing/recreational-fishing-regulations" }
+    ],
+    "sourcing": "full",
+    "sourceNotes": "Fetched and read directly 23 Sep 2026, all three sources. Permit calendar windows and every dollar figure (permit fees, camping fee, vehicle fee, beach-vehicle permit fee) are on the Parks page but deliberately not printed, matching the convention this spot's access record already established (batch 6 migration) for the same reason the Amazon gear prices were pulled — a quoted figure goes stale. Striped bass slot inches, the per-trip possession number, and the exact season open/close dates are on the DEC page but withheld under content rule 3 for the same reason, stated only as 'a slot exists and differs by region' rather than as fixed numbers. Not verified this session: whether any Montauk-specific provision (e.g. surfcasting access rules distinct from the general marine district) exists — the DEC regulations page covers marine waters uniformly and names no Montauk-specific rule, so none is claimed."
+  },
+
+  "river-tay-scotland": {
+    "sections": [
+      {
+        "heading": "No licence, but no free access either",
+        "body": "Scotland has no general rod licence for salmon fishing, and on the Tay that does not mean open access — it means access runs through private riparian rights instead, let out beat by beat via estates and angling associations. For the stretches nearest Dunkeld, the Dunkeld & Birnam Angling Association sells day and week permits, with concessions for juniors and seniors, covering its own beats on the Tay itself (the Dunkeld beat, the Murthly & Glendelvine beat, and the Stanley/Upper Scone beat) plus a beat on the River Braan and two lochs, booked through its own online system. DBAA's permits cover only its own water, not the river as a whole — other stretches of the Tay are let through entirely different estates or associations, so confirming which body actually holds the beat in question matters before travelling, not after."
+      },
+      {
+        "heading": "A statutory board older than most of the buildings on its banks",
+        "body": "Above the individual beats sits the Tay District Salmon Fisheries Board, the statutory body empowered to protect and improve fisheries across the whole Tay district, which describes itself as operating since 1863 — among the oldest such boards in Scotland. It is governed by a mix of upper- and lower-proprietor representatives plus co-opted members representing anglers and netsmen, runs its own hatchery near Perth, and employs fisheries officers and biologists managing several thousand miles of river, burn and loch across the catchment. That is the same two-layer structure already documented for the Spey: the beat sells the day, the statutory board sets the conservation rules that apply regardless of which beat you are standing on."
+      },
+      {
+        "heading": "Release rules stronger than the law requires",
+        "body": "Scottish Government regulation, introduced in January 2015, makes catch-and-release compulsory on the Tay for a defined early-season window running from mid-January to the end of March — every salmon taken in that period must be returned, even a fish that has died. The Board's own guidance goes further: it recommends releasing all salmon and grilse for the rest of the season too, a voluntary extension adopted because spring-run numbers, and since 2016 the summer and autumn grilse runs as well, have kept declining, with exploitation rates on some rivers reported as high as 40 per cent. The mandatory window is a legal floor, not the Board's actual expectation of anglers on the river."
+      }
+    ],
+    "sources": [
+      { "name": "Dunkeld & Birnam Angling Association — non-member permits", "url": "https://dbaa.co.uk/non-member-permits/" },
+      { "name": "Tay Rivers — Tay District Salmon Fisheries Board", "url": "https://tayrivers.org/tdsfb/" },
+      { "name": "Tay Rivers — conservation code", "url": "https://tayrivers.org/conservation-code/" }
+    ],
+    "sourcing": "full",
+    "sourceNotes": "Fetched and read directly 23 Sep 2026, all three sources (tayrivers.org is the Board's own site). Permit prices are on the DBAA page but deliberately not printed, matching the existing access record's convention for this spot. DBAA's page does not state whether its beats are fly-only or catch-and-release beyond the district-wide rule above, so that remains marked as varying by beat, exactly as the existing access record already says — not independently resolved this session. The Board's own page states its 1863 origin as a fact about itself rather than citing the founding statute directly; a primary legislative source for that date was not fetched."
+  },
+
+  "madison-river-montana": {
+    "sections": [
+      {
+        "heading": "Public access here means a mapped site, not a riverside right",
+        "body": "Unlike the Tay or the Spey, the Madison in Montana runs through a formal Fishing Access Site (FAS) network operated by Montana Fish, Wildlife & Parks — publicly owned parcels along the river rather than a general right to walk the bank. The Ennis FAS, just outside the town of Ennis, is a documented example: a roughly 49-acre site with a gravel boat ramp, on-site camping capped at a short per-stay limit, day-use-only enforced over winter, a trailer-length ceiling, and camping fees that are lower for anglers holding a valid fishing licence than for those without one. Facilities and exact limits vary site to site along the river, so an angler should confirm the specific FAS being used rather than assume every access point on the Madison behaves like Ennis."
+      },
+      {
+        "heading": "Afternoons close first when the river runs hot",
+        "body": "In drought years the Madison is one of the rivers Montana FWP restricts under what it calls a \"hoot owl\" rule: fishing is prohibited every day between early afternoon and midnight, rather than the river being closed outright, which lets angling continue during the cooler morning hours when a stressed, warm-water fishery is least able to tolerate the added stress of being caught and released. FWP has applied this to sections of the Madison in past drought summers, sometimes alongside a full round-the-clock closure on a specific stretch when reservoir outflows keep the water too warm even overnight. Because the trigger is water temperature and flow rather than the calendar, whether a hoot-owl restriction is active on any given date has to be checked against FWP's current closures list rather than assumed from the season."
+      }
+    ],
+    "sources": [
+      { "name": "Montana FWP — Ennis Fishing Access Site detail", "url": "https://myfwp.mt.gov/fwpPub/landsMgmt/siteDetail.action?lmsId=39753534" },
+      { "name": "Montana FWP — current closures and restrictions", "url": "https://fwp.mt.gov/news/current-closures-restrictions/waterbody-closures" }
+    ],
+    "sourcing": "partial",
+    "sourceNotes": "Fetched and read directly 23 Sep 2026, both sources above. FWP's Madison River special-rules PDF and the statewide fishing regulations PDF were also fetched but returned as unreadable binary/compressed PDF streams rather than extractable text — the same class of fetcher block CLAUDE.md already documents for other spots (a tooling problem, not a source problem; poppler-utils is not installed in this environment and apt is currently broken here, so a PDF-text fallback was not available either). Because of that block, this entry deliberately omits: season open/close dates, the artificial-lures-only and barbless-hook sections of river, the catch-and-release-only vs. limited-retention boundary at Ennis Dam, and the specific water-temperature/flow threshold that triggers a hoot-owl order. All of those exist on the blocked PDF or were seen only in secondary reporting (news coverage, tackle-shop sites) rather than a primary page read directly this session, so per content rule 1 none of them are stated here. Marked partial for exactly this gap — worth a follow-up pass with a real browser or a working PDF-to-text tool. The existing access record's sourceUrl (myfwp.mt.gov/fwpPub/landsMgmt/search.action) is a search application, not a content page; the working detail page for Ennis specifically is the one cited above."
   }
 }

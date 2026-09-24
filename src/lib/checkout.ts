@@ -28,14 +28,18 @@ export const createCheckoutSession = async ({
   });
 
   if (error) {
-    // The edge function returns a structured error with `use_portal: true`
-    // when the user already has an active subscription. Surface this as a
-    // distinct error type so the UI can redirect to the billing portal.
-    const errBody = (error as any)?.context;
-    if (errBody?.use_portal) {
-      throw new PortalRedirectError(errBody.error || error.message);
+    // functions.invoke collapses every non-2xx into a generic "Edge Function
+    // returned a non-2xx status code" — the edge function's own JSON body
+    // (e.g. `use_portal: true` when the user already has an active
+    // subscription) is on the Response it attaches, so read that when it's
+    // there.
+    const body = await (error as { context?: Response }).context
+      ?.json()
+      .catch(() => null);
+    if (body?.use_portal) {
+      throw new PortalRedirectError(body.error || error.message);
     }
-    throw new Error(error.message || 'Failed to create checkout session');
+    throw new Error(body?.error || error.message || 'Failed to create checkout session');
   }
 
   const url = (data as { url?: string })?.url;

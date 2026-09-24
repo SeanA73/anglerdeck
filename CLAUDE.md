@@ -250,6 +250,33 @@ a deliberate ceiling: this is a fishing guide with affiliate links, not a
 storefront, and an ad-heavy layout is a common AdSense rejection reason while
 item 4 below is still pending.
 
+**Guides section (`/guides`), added Sep 2026 — same JSON-source-of-truth
+pattern as `country-guides.json`, one level up.** `src/data/guides.json` holds
+the comparison articles; `scripts/guides.mjs` is the shared module (the
+`spot-quality.mjs` sharing pattern again) that both `scripts/static-routes.mjs`
+and `scripts/prerender.mjs` import from, and `src/lib/guides.ts` is the typed
+accessor the React pages (`Guides.tsx`, `GuideArticle.tsx`) use. Inline
+`**bold**`/`*italic*` markup in the JSON is parsed by shared
+`scripts/guide-inline.mjs` — deliberately no markdown parser, per the plan
+that introduced it. Country hubs cross-link via `guidesForCountry()`.
+
+**Per-spot researched prose** lives in `src/data/spot-guides.json`, rendered by
+`SpotGuideSections.tsx` on spot pages and by `prerender.mjs` in the static
+HTML. `scripts/check-spot-guides.mjs` validates a batch before commit — same
+job `check-access-migration.mjs` does for access records: slug must be
+published, every source must be https, no bag/size numbers (content rule 3),
+headings not reused verbatim across spots (that would rebuild the template
+this exists to escape). Written a few spots at a time; check the JSON file
+rather than trusting a count here.
+
+**A Sep 2026 VPS-only commit briefly added static ad markup rendered only in
+prerendered/SSR output, with no subscriber-tier check** — caught and dropped
+during the recovery merge (`343493b`) before it reached `main`, because
+server-rendered ad markup a real visitor's hydrated page doesn't match is
+cloaking-adjacent, and skipping the Pro/Elite gate breaks the rule in the Ads
+paragraph above. Any future ad placement touching `prerender.mjs` must apply
+the same subscriber gating the client does, not just crawler-visible markup.
+
 ---
 
 ## Deploy
@@ -266,6 +293,12 @@ git push origin main
 # VPS
 cd /var/www/anglerdeck && git pull origin main && npm run build
 ```
+
+**Never commit on the VPS.** The deploy key there is meant to be read-only
+pull. It happened anyway in Sep 2026 — four commits made directly on
+production and never pushed — and recovering them needed a git bundle pulled
+off the VPS by hand (`343493b`). If you're on the VPS to fix something urgent,
+patch locally and push instead of editing and committing in place.
 
 Migrations in `supabase/migrations/` are applied by hand through the Supabase
 SQL Editor — there is no automated migration runner.
