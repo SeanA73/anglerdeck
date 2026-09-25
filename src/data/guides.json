@@ -17,7 +17,7 @@
       "summary": "Most of what gets written about these destinations assumes you already fish. This is the opposite list — real places, drawn straight from AnglerDeck's own spot pages, that are genuinely built for a first trip, plus a short list of what to save for later.",
       "datePublished": "2026-09-25",
       "dateModified": "2026-09-25",
-      "countries": ["SE", "FI", "PL", "DE", "US", "NZ", "JP", "NO", "GB", "RU", "CA", "MX"],
+      "countries": ["SE", "FI", "PL", "DE", "US", "NZ", "JP", "NO", "GB", "RU", "CA", "MX", "AR"],
       "intro": [
         {
           "type": "p",
@@ -61,11 +61,15 @@
         },
         {
           "heading": "What to save for later",
-          "countries": ["NO", "GB", "RU", "MX"],
+          "countries": ["NO", "GB", "RU", "MX", "AR"],
           "blocks": [
             {
               "type": "p",
               "text": "The flip side is worth naming too, because a first trip built around one of these will mostly teach frustration rather than fishing. Norway's Alta allocates access by lottery, largely to locals — advanced anglers plan years ahead, and that's before the fishing itself starts. All three of the UK's published spots are described as advanced fly water, with access running through private beats rather than anything a first-timer can simply book. Russia's two published fisheries are both advanced fly water reached by licensed camp, and Mexico's Ascension Bay is advanced flats fishing for bonefish, permit and tarpon — technical, sight-fished, and unforgiving of a first cast. None of these are bad choices. They're just not first choices."
+            },
+            {
+              "type": "p",
+              "text": "Argentina's Patagonian rivers belong on the same list for a different reason — not difficulty so much as access model. Jurassic Lake and the Río Grande are fished almost entirely through licensed lodges, with no meaningful public road access. That means booking a trip through an outfitter well in advance rather than turning up with a rod and finding a bank to fish from, which is a different kind of planning than any of the beginner spots above require."
             }
           ]
         },
@@ -115,7 +119,7 @@
       "slug": "a-year-of-fishing-seasons-by-country",
       "title": "A Year of Fishing Seasons, by Country — AnglerDeck",
       "headline": "A year of fishing seasons, by country",
-      "description": "A month-by-month guide to when 19 countries actually fish best — from Norway's midnight-sun salmon to Argentina's Patagonian summer. Official and researched sources only.",
+      "description": "A month-by-month guide to when 19 countries fish best, from Norway's midnight-sun salmon to Argentina's Patagonian summer. Official, researched sources only.",
       "summary": "Nineteen countries don't share one calendar — half run on the northern hemisphere's clock, some on the tropics' wet and dry seasons, a few on their own statutory closures entirely. This lays the year out month by month, so a trip gets planned around when a country actually fishes well, not just when it's convenient to fly.",
       "datePublished": "2026-09-25",
       "dateModified": "2026-09-25",
@@ -173,11 +177,15 @@
         },
         {
           "heading": "The ones that run on their own clock",
-          "countries": ["NO", "FI", "BR", "MX", "NZ", "ZA"],
+          "countries": ["NO", "FI", "BR", "MX", "NZ", "ZA", "IT"],
           "blocks": [
             {
               "type": "p",
               "text": "A handful of fisheries don't fit the four windows above at all. Norway's Lofoten skrei — migrating Arctic cod — arrive from January to April, making Lofoten a genuine winter destination while the rest of the country is closed down. Finland's Lake Saimaa becomes an ice fishery in February and March. Brazil's two fisheries run on dry-season water levels rather than temperature: the Pantanal from June to October, the Rio Negro from September to March. New Zealand's snapper and South Africa's False Bay tuna are both described as available essentially year-round, weather permitting, rather than keyed to a single run."
+            },
+            {
+              "type": "p",
+              "text": "Italy's wels catfish fishing runs on its own clock too, and not a calendar one — it fishes best in the days after a flood pulses through the river system, which follows rainfall rather than a fixed month. Its lake trout season is the more conventional half of the pair, fished on spring and summer nights."
             }
           ]
         },
@@ -234,7 +242,7 @@
       "slug": "worlds-great-salmon-rivers-compared",
       "title": "The World's Great Salmon Rivers, Compared — AnglerDeck",
       "headline": "The world's great salmon rivers, compared",
-      "description": "Alta, Spey, Tweed, Mörrum, Tornio and Miramichi compared: how access, season and licensing actually differ on six storied Atlantic salmon rivers. Official sources only.",
+      "description": "Alta, Spey, Tweed, Mörrum, Tornio and Miramichi compared — how access, season and licensing differ across six Atlantic salmon rivers. Official sources only.",
       "summary": "Six Atlantic salmon rivers, on four different licensing systems, with four different ways of deciding who gets to fish them — from a lottery in Arctic Norway to a river no country fully owns. What actually separates a great salmon river from another one isn't the fish. It's how you get access.",
       "datePublished": "2026-09-25",
       "dateModified": "2026-09-25",
@@ -327,6 +335,10 @@
             {
               "type": "p",
               "text": "The pattern worth taking from this: on every river here, the licence or fee is rarely the hard part. Booking the water is. That's true even in Scotland, which charges no licence fee at all."
+            },
+            {
+              "type": "p",
+              "text": "Which of the four models applies is decided long before anyone looks at a fly box, and it's worth confirming before a trip gets planned around a specific week rather than after — a lottery result, a beat booking or a bilateral season date can each move independently of when the fish actually run."
             }
           ]
         },

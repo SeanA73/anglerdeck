@@ -34,7 +34,9 @@ export const useSpotReviews = (spotId: number) => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setReviews(data || []);
+      // Supabase's generated row type widens `status` to `string`; narrow it
+      // back to the real union rather than loosening SpotReview to match.
+      setReviews((data ?? []) as SpotReview[]);
     } catch (error) {
       console.error('Error fetching reviews:', error);
     } finally {
