@@ -39,10 +39,14 @@ const Guides = () => {
           animate={{ opacity: 1, y: 0 }}
           className="max-w-3xl"
         >
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/30 text-accent text-xs font-semibold uppercase tracking-wide mb-5">
+            <BookOpen className="w-3.5 h-3.5" />
+            Guides
+          </div>
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-5 leading-tight">
             Fishing Guides
           </h1>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-lg text-muted-foreground border-l-2 border-accent/50 pl-4">
             Long-form guides to the rules that decide where you can actually fish
             — licences, permits, access and the exceptions that catch visiting
             anglers out. Each one compares countries side by side and links every
@@ -104,14 +108,23 @@ const Guides = () => {
           })}
         </div>
 
-        <div className="flex flex-wrap gap-4 mt-12 text-sm">
-          <Link to="/regulations" className="text-accent hover:underline">
+        <div className="flex flex-wrap gap-3 mt-12 pt-8 border-t border-border/50">
+          <Link
+            to="/regulations"
+            className="px-4 py-2 rounded-full bg-accent text-accent-foreground text-sm font-semibold hover:bg-accent/90 transition-colors"
+          >
             Regulations and licences by country
           </Link>
-          <Link to="/spots" className="text-accent hover:underline">
+          <Link
+            to="/spots"
+            className="px-4 py-2 rounded-full border border-border text-sm text-foreground hover:border-accent hover:text-accent transition-colors"
+          >
             Browse all fishing spots
           </Link>
-          <Link to="/map" className="text-accent hover:underline">
+          <Link
+            to="/map"
+            className="px-4 py-2 rounded-full border border-border text-sm text-foreground hover:border-accent hover:text-accent transition-colors"
+          >
             View the fishing map
           </Link>
         </div>

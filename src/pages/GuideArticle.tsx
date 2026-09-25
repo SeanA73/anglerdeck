@@ -1,6 +1,6 @@
 import { Link, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ExternalLink, MapPin } from "lucide-react";
+import { ExternalLink, MapPin, BookOpen } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { SEO } from "@/components/SEO";
@@ -142,12 +142,19 @@ const GuideArticle = () => {
         <motion.header
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
           className="max-w-3xl"
         >
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/30 text-accent text-xs font-semibold uppercase tracking-wide mb-5">
+            <BookOpen className="w-3.5 h-3.5" />
+            Guide
+          </div>
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-5 leading-tight">
             {article.headline}
           </h1>
-          <p className="text-lg text-muted-foreground">{article.summary}</p>
+          <p className="text-lg text-muted-foreground border-l-2 border-accent/50 pl-4 italic">
+            {article.summary}
+          </p>
           <p className="mt-4 text-sm text-muted-foreground">
             <time dateTime={article.datePublished}>
               Published {article.datePublished}
@@ -167,16 +174,28 @@ const GuideArticle = () => {
           <GuideBlocks blocks={article.intro} />
         </div>
 
-        {article.sections.map((section) => (
-          <section key={section.heading} className="max-w-3xl mt-12">
-            <h2 className="text-2xl font-bold text-foreground mb-4">
-              {section.heading}
-            </h2>
+        {article.sections.map((section, i) => (
+          <motion.section
+            key={section.heading}
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.4 }}
+            className="max-w-3xl mt-14 pt-10 border-t border-border/50"
+          >
+            <div className="flex items-center gap-3 mb-5">
+              <span className="text-xs font-mono text-accent/70 tabular-nums">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <h2 className="text-2xl font-bold text-foreground">
+                {section.heading}
+              </h2>
+            </div>
             <div className="space-y-4">
               <GuideBlocks blocks={section.blocks} />
             </div>
             <SectionLinks codes={section.countries} />
-          </section>
+          </motion.section>
         ))}
 
         {/* One placement, below the article. Hidden from Pro and Elite by
@@ -190,8 +209,8 @@ const GuideArticle = () => {
           />
         </div>
 
-        <div className="max-w-3xl mt-12 pt-8 border-t border-border">
-          <p className="text-sm text-muted-foreground">
+        <div className="max-w-3xl mt-14 pt-8 border-t border-border">
+          <p className="text-sm text-muted-foreground rounded-xl border border-border/50 bg-muted/30 px-4 py-3">
             Licence requirements and closed seasons change regularly. Always
             confirm with the relevant fisheries authority before you fish — every
             section above links to the official source for the claims it makes.
@@ -216,14 +235,23 @@ const GuideArticle = () => {
             </>
           )}
 
-          <div className="flex flex-wrap gap-4 mt-8 text-sm">
-            <Link to="/guides" className="text-accent hover:underline">
+          <div className="flex flex-wrap gap-3 mt-8">
+            <Link
+              to="/guides"
+              className="px-4 py-2 rounded-full bg-accent text-accent-foreground text-sm font-semibold hover:bg-accent/90 transition-colors"
+            >
               All fishing guides
             </Link>
-            <Link to="/regulations" className="text-accent hover:underline">
+            <Link
+              to="/regulations"
+              className="px-4 py-2 rounded-full border border-border text-sm text-foreground hover:border-accent hover:text-accent transition-colors"
+            >
               Regulations and licences by country
             </Link>
-            <Link to="/spots" className="text-accent hover:underline">
+            <Link
+              to="/spots"
+              className="px-4 py-2 rounded-full border border-border text-sm text-foreground hover:border-accent hover:text-accent transition-colors"
+            >
               Browse all fishing spots
             </Link>
           </div>

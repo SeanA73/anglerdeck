@@ -46,7 +46,11 @@ const Regulations = () => {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <h1 className="text-4xl font-bold text-foreground mb-4">Fishing Regulations</h1>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/30 text-accent text-xs font-semibold uppercase tracking-wide mb-5">
+            <MapPin className="w-3.5 h-3.5" />
+            {regions.length} countries
+          </div>
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-5 leading-tight">Fishing Regulations</h1>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
             What a visiting angler actually needs in each of the {regions.length}{" "}
             countries AnglerDeck covers, with a link to the official authority in
@@ -75,10 +79,11 @@ const Regulations = () => {
             <motion.div
               key={region.name}
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
               // Capped: nineteen cards at 0.1s each would stagger for almost
               // two seconds, so later cards would appear to be missing.
-              transition={{ delay: Math.min(index * 0.05, 0.4) }}
+              transition={{ delay: Math.min((index % 2) * 0.05, 0.4) }}
             >
               <Card className="h-full rounded-2xl border-border/50">
                 <CardHeader>
@@ -106,7 +111,7 @@ const Regulations = () => {
                     ))}
                     <Link
                       to={`/fishing/${region.slug}`}
-                      className="flex items-center gap-2 text-sm text-foreground hover:text-accent transition-colors"
+                      className="inline-flex items-center gap-2 mt-2 px-3 py-1.5 rounded-full border border-border text-sm text-foreground hover:border-accent hover:text-accent transition-colors"
                     >
                       <MapPin className="w-4 h-4" />
                       Fishing in {region.name}

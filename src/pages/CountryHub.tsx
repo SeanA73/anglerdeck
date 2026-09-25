@@ -86,10 +86,16 @@ const CountryHub = () => {
         </nav>
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/30 text-accent text-xs font-semibold uppercase tracking-wide mb-5">
+            <MapPin className="w-3.5 h-3.5" />
+            {country.name}
+          </div>
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-5 leading-tight">
             Fishing in {country.name}
           </h1>
-          <p className="text-lg text-muted-foreground max-w-3xl">{country.blurb}</p>
+          <p className="text-lg text-muted-foreground max-w-3xl border-l-2 border-accent/50 pl-4">
+            {country.blurb}
+          </p>
         </motion.div>
 
         {countrySpots.length > 0 && (
@@ -114,27 +120,31 @@ const CountryHub = () => {
             linked at the end of the section — see src/data/country-guides.json,
             which is also what the prerenderer reads. */}
         {guide && (
-          <section className="mt-10 max-w-3xl space-y-8">
-            <div>
-              <h2 className="text-xl font-bold text-foreground mb-3">
-                Licences and permits in {country.name}
-              </h2>
-              <p className="text-muted-foreground leading-relaxed">{guide.licensing}</p>
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-foreground mb-3">
-                When to fish in {country.name}
-              </h2>
-              <p className="text-muted-foreground leading-relaxed">{guide.seasons}</p>
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-foreground mb-3">
-                What the fishing is like
-              </h2>
-              <p className="text-muted-foreground leading-relaxed">{guide.water}</p>
-            </div>
-            <div>
-              <h3 className="text-sm font-medium text-foreground mb-2">
+          <section className="mt-10 max-w-3xl">
+            {[
+              { heading: `Licences and permits in ${country.name}`, body: guide.licensing },
+              { heading: `When to fish in ${country.name}`, body: guide.seasons },
+              { heading: "What the fishing is like", body: guide.water },
+            ].map((item, i) => (
+              <motion.div
+                key={item.heading}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ duration: 0.4 }}
+                className={i === 0 ? "" : "mt-10 pt-8 border-t border-border/50"}
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="text-xs font-mono text-accent/70 tabular-nums">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <h2 className="text-xl font-bold text-foreground">{item.heading}</h2>
+                </div>
+                <p className="text-muted-foreground leading-relaxed">{item.body}</p>
+              </motion.div>
+            ))}
+            <div className="mt-10 pt-8 border-t border-border/50">
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
                 Official sources
               </h3>
               <div className="space-y-2">
@@ -190,7 +200,7 @@ const CountryHub = () => {
               {species.map((sp) => (
                 <span
                   key={sp}
-                  className="px-3 py-1 rounded-full bg-muted text-sm text-foreground"
+                  className="px-3 py-1.5 rounded-full bg-muted text-sm text-foreground"
                 >
                   {sp}
                 </span>
