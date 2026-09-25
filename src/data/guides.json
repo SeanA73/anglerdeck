@@ -10,6 +10,489 @@
   },
   "articles": [
     {
+      "slug": "where-to-fish-if-you-have-never-fished",
+      "title": "Where to Fish If You Have Never Fished — AnglerDeck",
+      "headline": "Where to fish if you have never fished",
+      "description": "Seven genuinely beginner-friendly fishing destinations, and a few extraordinary ones worth saving for later. Drawn from AnglerDeck's own published spot guides.",
+      "summary": "Most of what gets written about these destinations assumes you already fish. This is the opposite list — real places, drawn straight from AnglerDeck's own spot pages, that are genuinely built for a first trip, plus a short list of what to save for later.",
+      "datePublished": "2026-09-25",
+      "dateModified": "2026-09-25",
+      "countries": ["SE", "FI", "PL", "DE", "US", "NZ", "JP", "NO", "GB", "RU", "CA", "MX"],
+      "intro": [
+        {
+          "type": "p",
+          "text": "Most fishing writing assumes a starting level most people don't have. This is the other list: places our own spot guides describe, in their own words, as genuinely approachable — no private beat, no lottery, no exam, nothing that assumes you've done this before."
+        },
+        {
+          "type": "p",
+          "text": "Every entry here is a spot AnglerDeck already publishes and explicitly describes as accessible. It isn't every easy fishery in the world — it's the ones we've actually written up."
+        }
+      ],
+      "sections": [
+        {
+          "heading": "Freshwater lake systems built for a first trip",
+          "countries": ["FI", "PL", "DE"],
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Three countries publish a lake system explicitly framed as an easy entry point, and they share a shape: large, connected, forgiving water rather than a technical river. Finland's Lake Saimaa is described in its own guide as one of the better beginner introductions to fishing anywhere — a maze of islands and channels fishable from a boat in summer and, unusually for a first-timer's destination, from the ice come February and March. Poland's Masurian Lake District is the same idea in Central Europe: a beginner-friendly maze of connected lakes holding pike, zander and perch. Germany's Müritz lakes round out the group, and carry a second advantage beyond ease of fishing — it's the one part of Germany a visitor can actually fish without sitting a state exam."
+            }
+          ]
+        },
+        {
+          "heading": "Accessible saltwater and an easy version of a famous river",
+          "countries": ["SE", "US", "CA"],
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Sweden's Stockholm archipelago is the standout for saltwater: beginner-friendly brackish water among thousands of islands, free to fish with a rod under Sweden's coastal access rule, and reachable in minutes from the capital — a rare combination of easy fishing and zero paperwork. Louisiana's Venice marsh is described the same way among its own country's spots, the beginner-friendly one of the four American entries, fishing redfish and speckled trout in shallow, forgiving marsh water. Canada's Bow River, meanwhile, isn't labelled beginner outright, but it's the most physically accessible of the country's three published rivers — a genuine trout tailwater running straight through the middle of Calgary, which counts for something when the alternative is a lodge with no road in."
+            }
+          ]
+        },
+        {
+          "heading": "A famous fish, made approachable",
+          "countries": ["NZ", "JP"],
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Two spots let you catch a genuinely famous fish without the hardest version of the fishery attached to it. New Zealand's Lake Taupō is explicitly the beginner-friendly counterpart to the Tongariro River next door — the same wild rainbow and brown trout, in a lake rather than technical running water, fished from boat or shore. Japan's Lake Yunoko at Nikkō is described the same way: beginner-friendly fly water for brook, rainbow and brown trout inside a national park. It's strictly catch-and-release, which is a real rule to know before you go, but it doesn't change how approachable the fishing itself is."
+            }
+          ]
+        },
+        {
+          "heading": "What to save for later",
+          "countries": ["NO", "GB", "RU", "MX"],
+          "blocks": [
+            {
+              "type": "p",
+              "text": "The flip side is worth naming too, because a first trip built around one of these will mostly teach frustration rather than fishing. Norway's Alta allocates access by lottery, largely to locals — advanced anglers plan years ahead, and that's before the fishing itself starts. All three of the UK's published spots are described as advanced fly water, with access running through private beats rather than anything a first-timer can simply book. Russia's two published fisheries are both advanced fly water reached by licensed camp, and Mexico's Ascension Bay is advanced flats fishing for bonefish, permit and tarpon — technical, sight-fished, and unforgiving of a first cast. None of these are bad choices. They're just not first choices."
+            }
+          ]
+        },
+        {
+          "heading": "Three things that trip up a first trip, none of them the fishing",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Beginner-friendly water doesn't mean beginner-friendly paperwork, and the two aren't the same question. Germany's Müritz lakes are easy to fish and are also the one part of Germany you can fish without an exam — but elsewhere in the country, the exam applies regardless of how forgiving the water is. Worth reading the licensing comparison above before assuming \"easy fishery\" means \"easy to arrange\"."
+            },
+            {
+              "type": "p",
+              "text": "Approachable doesn't always mean rule-free, either. Lake Yunoko is genuinely beginner-friendly water and is also strictly catch-and-release — nothing may be removed from the lake. That's a real constraint to plan a first trip around, not a technicality."
+            },
+            {
+              "type": "p",
+              "text": "And the closest good water to a major city is often better than it sounds. The Stockholm archipelago is minutes from a capital; the Bow River runs through the middle of Calgary; the Müritz lakes are a short drive from Berlin. A first trip doesn't have to mean a long one."
+            }
+          ]
+        },
+        {
+          "heading": "Quick reference",
+          "blocks": [
+            {
+              "type": "table",
+              "columns": ["Spot", "Country", "Why it's approachable"],
+              "rows": [
+                ["Lake Saimaa", "Finland", "Beginner-friendly by its own guide; boat in summer, ice in winter"],
+                ["Masurian Lake District", "Poland", "Beginner-friendly connected lakes, pike/zander/perch"],
+                ["Müritz lakes", "Germany", "Beginner-friendly, and fishable without Germany's usual exam"],
+                ["Stockholm archipelago", "Sweden", "Beginner-friendly saltwater, free to fish, minutes from the capital"],
+                ["Venice marsh", "United States", "The beginner-friendly one of the four published US spots"],
+                ["Bow River", "Canada", "Most physically accessible of the three — runs through Calgary"],
+                ["Lake Taupō", "New Zealand", "Beginner-friendly version of the Tongariro's famous trout"],
+                ["Lake Yunoko, Nikkō", "Japan", "Beginner-friendly fly water in a national park"]
+              ]
+            },
+            {
+              "type": "p",
+              "text": "This list reflects what our own spot guides say today, not an exhaustive survey of every easy fishery on earth — as more spots publish full guides, this list will grow."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "a-year-of-fishing-seasons-by-country",
+      "title": "A Year of Fishing Seasons, by Country — AnglerDeck",
+      "headline": "A year of fishing seasons, by country",
+      "description": "A month-by-month guide to when 19 countries actually fish best — from Norway's midnight-sun salmon to Argentina's Patagonian summer. Official and researched sources only.",
+      "summary": "Nineteen countries don't share one calendar — half run on the northern hemisphere's clock, some on the tropics' wet and dry seasons, a few on their own statutory closures entirely. This lays the year out month by month, so a trip gets planned around when a country actually fishes well, not just when it's convenient to fly.",
+      "datePublished": "2026-09-25",
+      "dateModified": "2026-09-25",
+      "countries": ["AU", "US", "CA", "NZ", "GB", "DE", "FR", "ES", "IT", "NO", "SE", "FI", "ZA", "AR", "BR", "MX", "JP", "RU", "PL"],
+      "intro": [
+        {
+          "type": "p",
+          "text": "\"Best time to fish\" only makes sense per country, because the calendar underneath it changes completely depending where you're standing. Northern-hemisphere salmon rivers run to the midnight sun. Southern-hemisphere countries flip everything six months out of phase. The tropics run on wet and dry rather than summer and winter at all."
+          },
+        {
+          "type": "p",
+          "text": "This groups the year into windows and places each of the 19 countries we cover into the one (or several) that fits, drawn from the same researched seasonal detail already on each country hub."
+        }
+      ],
+      "sections": [
+        {
+          "heading": "December–March: the southern hemisphere's best months",
+          "countries": ["AU", "NZ", "ZA", "AR", "MX"],
+          "blocks": [
+            {
+              "type": "p",
+              "text": "While the north is shut down for winter, the south is at its best. New Zealand's Bay of Islands runs its game-fishing season from January to May over the southern summer. South Africa's False Bay has yellowtail running November to April. Argentina's Río Grande sea trout peak January to March, fished in the evening as the wind eases. Mexico's Cabo San Lucas fishes striped marlin from October clean through to June, so it straddles this window rather than sitting inside it. Northern Australia is transitioning here too — the barramundi build-up runs October to December, ahead of the true wet-season run-off from February to April."
+            }
+          ]
+        },
+        {
+          "heading": "April–June: two hemispheres in transition",
+          "countries": ["GB", "SE", "FR", "NZ", "ZA", "BR"],
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Europe's spring salmon runs open here — the Spey from April to May, Sweden's Mörrum from April to June — while France's Loire pike season opens once its closed season ends in spring. New Zealand's trout fishing flips the other way, its Tongariro rainbow run climbing from May onward. South Africa's Sodwana couta season starts in April. And in Brazil, this window sits inside the piracema spawning closure in most states, so it's the one country here where these months mean fishing is restricted rather than opening up — the Pantanal's dry season, and the fishing that comes with it, doesn't properly start until June."
+            }
+          ]
+        },
+        {
+          "heading": "June–August: peak northern summer, and the midnight sun",
+          "countries": ["NO", "FI", "RU", "CA", "US", "JP"],
+          "blocks": [
+            {
+              "type": "p",
+              "text": "This is the far-northern window, and it's short and intense rather than a long summer season. Norway's Alta salmon peaks in June and July, fished through the night under a sun that never sets. Finland's Tornio runs the same window, June to August. Russia's Kola Peninsula salmon peak in June and July too, and Kamchatka's rainbow trout season runs July to September. In North America, Canada's Miramichi has its first salmon wave in June and July, and Alaska's Kenai River runs its heaviest sockeye push through July and August. Japan's Lake Yunoko fishes this stretch as its core season, April through September, with these months at the middle of it."
+            }
+          ]
+        },
+        {
+          "heading": "September–November: the second big flip",
+          "countries": ["GB", "AU", "US", "CA", "DE", "PL", "AR", "SE", "FI"],
+          "blocks": [
+            {
+              "type": "p",
+              "text": "The calendar turns again here. Scotland's Tweed has its famous autumn run, September to November. Australia's Cairns marlin season is a defined heavy-tackle window from September to December. Louisiana's redfish run September to November. Canada's Miramichi has its second salmon wave here too, September and October, alongside Sweden's Stockholm archipelago pike (September to November) and its Mörrum autumn sea trout (September and October). Germany's Müritz lakes and Poland's Masurian lakes both fish pike best in this window. Argentina's Paraná dorado run September through April, so this is where that season opens."
+            }
+          ]
+        },
+        {
+          "heading": "The ones that run on their own clock",
+          "countries": ["NO", "FI", "BR", "MX", "NZ", "ZA"],
+          "blocks": [
+            {
+              "type": "p",
+              "text": "A handful of fisheries don't fit the four windows above at all. Norway's Lofoten skrei — migrating Arctic cod — arrive from January to April, making Lofoten a genuine winter destination while the rest of the country is closed down. Finland's Lake Saimaa becomes an ice fishery in February and March. Brazil's two fisheries run on dry-season water levels rather than temperature: the Pantanal from June to October, the Rio Negro from September to March. New Zealand's snapper and South Africa's False Bay tuna are both described as available essentially year-round, weather permitting, rather than keyed to a single run."
+            }
+          ]
+        },
+        {
+          "heading": "Season isn't the only thing to plan around",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "A country's best window only answers half the question. On rivers with lottery or booked-beat access — the Alta, Mörrum, and the private beats on the Spey and Tweed — the booking has to happen long before the season does, sometimes years ahead, independent of when the run actually peaks. Turning up at the right time of year on one of those rivers with no beat booked gets you nowhere. Elsewhere — New Zealand's snapper, South Africa's False Bay tuna, most saltwater flats fishing — access isn't the constraint and the season window above is genuinely the only thing to plan around."
+            },
+            {
+              "type": "p",
+              "text": "The other thing worth factoring in: several of the closures and quotas mentioned above are reset annually rather than fixed on a calendar — Sweden's Mörrum, Finland and Norway's biosecurity rules, Brazil's piracema dates, Argentina's provincial seasons. A window that was open last year isn't a guarantee for this one."
+            }
+          ]
+        },
+        {
+          "heading": "Quick reference",
+          "blocks": [
+            {
+              "type": "table",
+              "columns": ["Country", "Best window(s)", "What's running"],
+              "rows": [
+                ["Australia", "Feb–Apr, Oct–Dec (north); Sep–Dec (Cairns); summer–autumn (south)", "Barramundi run-off/build-up; black marlin; Murray cod, kingfish"],
+                ["United States", "Apr–Jul, Jun–Oct, Sep–Nov (varies by spot)", "Tarpon, salmon, trout hatches, redfish — spread across the country"],
+                ["Canada", "Jun–Jul, Sep–Oct; Jul–Sep (Pacific)", "Atlantic salmon two runs; chinook/coho on the coast"],
+                ["New Zealand", "May–Sep (trout); Jan–May (game); year-round (snapper)", "Rainbow trout run; billfish; snapper"],
+                ["United Kingdom", "Apr–Aug (Spey); Sep–Nov, Feb–Apr (Tweed); late May–Jun (Test mayfly)", "Salmon runs; chalkstream hatches"],
+                ["Germany", "Sep–Nov", "Pike, zander at dusk"],
+                ["France", "May–Oct (coast); summer nights–autumn (Loire)", "Bass on the tide; wels catfish, zander"],
+                ["Spain", "Apr–Jul (Gibraltar); summer–autumn (Ebro)", "Bluefin tuna; wels catfish"],
+                ["Italy", "Spring, summer nights, post-flood", "Lake trout; wels catfish"],
+                ["Norway", "Jun–Jul (Alta); Jan–Apr (Lofoten)", "Atlantic salmon; skrei cod"],
+                ["Sweden", "Apr–Jun, Sep–Nov", "Salmon/sea trout; pike"],
+                ["Finland", "Jun–Aug; Feb–Mar (ice)", "Atlantic salmon; ice fishing"],
+                ["South Africa", "Nov–Apr; Apr–Sep", "Yellowtail; couta"],
+                ["Argentina", "Jan–Mar; Sep–Apr", "Sea trout; golden dorado"],
+                ["Brazil", "Jun–Oct; Sep–Mar", "Pantanal dry season; Rio Negro dry season"],
+                ["Mexico", "Oct–Jun; May–Oct; Mar–Sep", "Striped marlin; roosterfish; tarpon"],
+                ["Japan", "Apr–Sep; summer–autumn", "Trout; sea bass"],
+                ["Russia", "Jun–Jul; Jul–Sep", "Atlantic salmon; rainbow trout"],
+                ["Poland", "Sep–Nov; Jan–Feb (ice)", "Pike; ice fishing"]
+              ]
+            },
+            {
+              "type": "p",
+              "text": "These are typical windows, not guarantees — weather, water levels and, on several rivers here, annually reset quotas all move the real dates. Check the country hub and the current season before booking."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "worlds-great-salmon-rivers-compared",
+      "title": "The World's Great Salmon Rivers, Compared — AnglerDeck",
+      "headline": "The world's great salmon rivers, compared",
+      "description": "Alta, Spey, Tweed, Mörrum, Tornio and Miramichi compared: how access, season and licensing actually differ on six storied Atlantic salmon rivers. Official sources only.",
+      "summary": "Six Atlantic salmon rivers, on four different licensing systems, with four different ways of deciding who gets to fish them — from a lottery in Arctic Norway to a river no country fully owns. What actually separates a great salmon river from another one isn't the fish. It's how you get access.",
+      "datePublished": "2026-09-25",
+      "dateModified": "2026-09-25",
+      "countries": ["NO", "GB", "SE", "FI", "CA"],
+      "intro": [
+        {
+          "type": "p",
+          "text": "Every storied salmon river gets described the same way — big, wild, legendary. What actually separates them has nothing to do with the fish and everything to do with how you get on the water: a lottery, a booked beat, a day ticket, or a run of luck with a river that two countries jointly manage."
+        },
+        {
+          "type": "p",
+          "text": "This compares six rivers across five countries by access model and season rather than by reputation. Every claim traces to the national or regional agency responsible for the water."
+        }
+      ],
+      "sections": [
+        {
+          "heading": "Norway: one national rule, three very different rivers",
+          "countries": ["NO"],
+          "blocks": [
+            {
+              "type": "p",
+              "text": "The Alta, the Gaula and the Namsen all sit under the same Norwegian system: a national fishing fee for the season, plus a separate licence from whoever owns the riverbank, because the fee itself buys nothing beyond conservation funding. Where they differ sharply is what that second permit actually gets you."
+            },
+            {
+              "type": "p",
+              "text": "The Alta, in Finnmark, is the hard one to get on: beats are allocated by lottery and largely reserved for locals, so access is very limited and advanced anglers plan years ahead. It peaks in June and July, fished through the night under the midnight sun. The Gaula and the Namsen, both in Trøndelag, are the more reachable Norwegian rivers by comparison — the Gaula known for long fly-friendly runs and a strong early-season run of large fish, the Namsen for big water traditionally fished by harling from a boat. Whatever river you choose, gear brought into Norway must be disinfected before it touches a salmon river — a biosecurity rule, not a formality."
+            }
+          ]
+        },
+        {
+          "heading": "Scotland: no rod licence anywhere, and the beat is everything",
+          "countries": ["GB"],
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Scotland issues no salmon rod licence at all — a genuine outlier among the rivers here — which sounds like the simplest system on this list and is actually one of the hardest to arrange access on. Instead of a licence, you need a permit from whoever owns the beat: an estate, or a District Salmon Fishery Board. Nearly every beat on the Spey and the Tweed is private, so a day ticket, a syndicate rod or an estate booking is what actually gets you fishing, not a purchase from a national agency."
+            },
+            {
+              "type": "p",
+              "text": "The two rivers run on opposite calendars. The Spey fishes a spring run in April and May and a summer grilse run from June to August. The Tweed is the autumn river — a September-to-November run that's among the best-known in Europe — with a smaller spring run from February to April, and it's administered separately from the England and Wales rod licence system entirely. Two Scottish rules apply to both: no salmon fishing on Sundays, and mandatory catch-and-release early in the season."
+            }
+          ]
+        },
+        {
+          "heading": "Sweden's Mörrum: booked beats and a season reset every year",
+          "countries": ["SE"],
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Mörrum sits apart from the rest of Sweden's largely free-access fishing — a tightly managed Atlantic salmon and sea trout river fished on booked, numbered beats, the one Swedish river on this list where the permit is the whole game. Its spring run runs April to June and autumn sea trout come through in September and October, best when rain lifts the water. Unusually among these six rivers, its season dates, quotas and release rules are reset annually rather than fixed — last year's plan is explicitly not a guide to this year's rules."
+            }
+          ]
+        },
+        {
+          "heading": "Finland's Tornio: a river no single country fully governs",
+          "countries": ["FI"],
+          "blocks": [
+            {
+              "type": "p",
+              "text": "The Tornio forms the border between Finland and Sweden, and its management reflects that: season dates and quotas are agreed jointly between the two countries and change from year to year, rather than being set unilaterally by either. The run climbs from June to August, fished through bright midnight-sun nights and best after a rise in water. Like Norway, Finland requires gear disinfection on its salmon river — here specifically against *Gyrodactylus salaris*, a parasite that has devastated salmon stocks elsewhere in the region. Two countries with almost nothing else in common about how they license fishing agree on that one point."
+            }
+          ]
+        },
+        {
+          "heading": "Canada's Miramichi: two runs, and mostly a release fishery",
+          "countries": ["CA"],
+          "blocks": [
+            {
+              "type": "p",
+              "text": "The Miramichi in New Brunswick runs on Canada's provincial licensing system — a freshwater licence issued by the province, separate from the federal tidal-water system that governs British Columbia's saltwater fisheries. On the river itself, salmon arrive in two distinct waves: a summer run in June and July and an autumn run in September and October, both responding to rain lifting the water. It's largely a live-release fishery today, a conservation posture that sets it apart from rivers on this list where retention is the norm within a quota."
+            }
+          ]
+        },
+        {
+          "heading": "What actually separates these rivers",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Strip away the scenery and four different access models are doing the real work of deciding who fishes:"
+            },
+            {
+              "type": "list",
+              "items": [
+                "**Lottery allocation** — the Alta. Demand so far exceeds capacity that access is randomised and mostly reserved for locals.",
+                "**Booked, numbered beats** — Mörrum, and most of the Spey and Tweed. A finite number of rods per day, sold or allotted per beat, with the estate or river authority controlling the calendar.",
+                "**Bilateral or shared management** — the Tornio, governed jointly by two national fisheries authorities rather than one.",
+                "**Provincial licence plus largely open access** — the Miramichi, where the barrier is the licence rather than a booking system, and much of today's fishery is catch-and-release by convention rather than by universal rule."
+              ]
+            },
+            {
+              "type": "p",
+              "text": "The pattern worth taking from this: on every river here, the licence or fee is rarely the hard part. Booking the water is. That's true even in Scotland, which charges no licence fee at all."
+            }
+          ]
+        },
+        {
+          "heading": "Quick reference",
+          "blocks": [
+            {
+              "type": "table",
+              "columns": ["River", "Country", "Run", "Access model", "Licensing note"],
+              "rows": [
+                ["Alta", "Norway", "June–July", "Lottery, mostly local reserved", "National fee + landowner permit"],
+                ["Gaula", "Norway", "Early season into summer", "More accessible than the Alta", "National fee + landowner permit"],
+                ["Namsen", "Norway", "Summer", "More accessible than the Alta", "National fee + landowner permit"],
+                ["Spey", "Scotland, UK", "Apr–May, Jun–Aug grilse", "Private beats — day ticket/syndicate/estate", "No rod licence; beat permission only"],
+                ["Tweed", "Scotland/England border, UK", "Sep–Nov, spring Feb–Apr", "Private beats — day ticket/syndicate/estate", "No rod licence; administered separately from E&W"],
+                ["Mörrum", "Sweden", "Apr–Jun, autumn sea trout Sep–Oct", "Booked, numbered beats", "Season/quota reset annually"],
+                ["Tornio", "Finland/Sweden border", "Jun–Aug", "Shared bilateral management", "Season set jointly by both countries"],
+                ["Miramichi", "Canada", "Jun–Jul, Sep–Oct", "Largely open, mostly live-release", "Provincial freshwater licence"]
+              ]
+            },
+            {
+              "type": "p",
+              "text": "Season windows and quotas shift year to year on nearly every river here, several by design. Confirm current dates with the linked authority before booking travel."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "fishing-licences-in-europe-compared",
+      "title": "Fishing Licences in Europe, Compared — AnglerDeck",
+      "headline": "Fishing licences in Europe, compared",
+      "description": "How fishing licences actually work across nine European countries, from Sweden's free coast to Germany's exam-only system. Official sources, no fees quoted.",
+      "summary": "Nine European countries, and nine different answers to \"what do I actually need to fish here\". Some issue a licence nationally, some regionally, some through a local association, and one makes you sit an exam. Every claim traces to the agency that made the rule.",
+      "datePublished": "2026-09-25",
+      "dateModified": "2026-09-25",
+      "countries": ["SE", "NO", "DE", "FR", "PL", "ES", "IT", "GB", "FI"],
+      "intro": [
+        {
+          "type": "p",
+          "text": "\"Fishing licence\" sounds like one thing. Across Europe it is at least four: a document you buy nationally, a document your region issues, membership of a local association, or — in one country — a document you can only get by passing an exam. None of these is more \"correct\" than another, but they change what a trip actually involves, and mixing them up is the easiest way to arrive somewhere with the wrong piece of paper."
+        },
+        {
+          "type": "p",
+          "text": "This compares nine countries by how the system is built rather than by what it costs — fees change constantly and are left out everywhere on this site. Every claim below links to the agency, ministry or federation that made the rule."
+        }
+      ],
+      "sections": [
+        {
+          "heading": "Sweden and Norway: free water is the rule, not the exception",
+          "countries": ["SE", "NO"],
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Sweden and Norway both start from a position most of the continent doesn't share: large amounts of water need no licence and no permission at all. In Sweden that's the entire coast plus five named lakes — Vänern, Vättern, Mälaren, Hjälmaren and Storsjön — where recreational rod fishing is simply free, under rules published jointly by the county boards and the national water management agency. Everywhere else in Sweden, fishing rights are private, and a *fiskekort* from the local fishing conservation area is what buys permission."
+            },
+            {
+              "type": "p",
+              "text": "Norway draws a similar line in a different place: the sea is free nationwide, but rivers holding salmon, sea trout or Arctic char are not. There you pay a national fishing fee and, separately, a licence from whoever owns the riverbank — because in Norway the fee funds conservation, it does not buy access. **Neither country's free water is unregulated water.** Size rules and closed seasons still apply on both."
+            }
+          ]
+        },
+        {
+          "heading": "Germany: the one country where you sit an exam",
+          "countries": ["DE"],
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Germany is the hardest country on this list to fish on impulse, and it's a genuine outlier in Europe for the reason why. Fishing law is set by each federal state, and the standard route to a *Fischereischein* is passing a state examination covering fish species, tackle, law and animal welfare — not something arranged in a weekend, let alone from abroad."
+            },
+            {
+              "type": "p",
+              "text": "One state built a deliberate exception. Mecklenburg-Vorpommern issues a *Touristenfischereischein* with no exam at all, valid in its own coastal and inland waters for up to 28 consecutive days and renewable within the same calendar year. It's the one place in Germany a visitor can realistically turn up and fish. Everywhere else, the licence is only step one — a further *Erlaubnisschein* is needed for the specific water regardless of which route got you the Fischereischein."
+            }
+          ]
+        },
+        {
+          "heading": "France and Poland: two separate documents, not one",
+          "countries": ["FR", "PL"],
+          "blocks": [
+            {
+              "type": "p",
+              "text": "France and Poland both split freshwater fishing into two layers, and both catch visitors who only arrange one of them. In France, the *carte de pêche* is really membership of a local AAPPMA — an approved fishing and aquatic-environment association — sold nationally through the federation's own site as daily, weekly or annual cards. That covers fresh water. Sea angling sits outside the carte de pêche system entirely, under the maritime fishing code instead, and since a ministerial order in force from early 2026, recreational sea anglers aged 16 and over targeting listed species must separately register and declare those catches the day they're taken."
+            },
+            {
+              "type": "p",
+              "text": "Poland's split runs the other way: one document authorises the angler, a second authorises the water. The *karta wędkarska* — the fishing card, issued by the district authority — is what lets you fish at all. A separate *zezwolenie*, a permit for the specific fishing ground, comes from whoever holds the rights there; for the many waters managed by the state water authority, Wody Polskie, that permit has been sold exclusively online since January 2026, as a QR-coded PDF rather than a physical card."
+            }
+          ]
+        },
+        {
+          "heading": "Spain and Italy: sea fishing that reports itself",
+          "countries": ["ES", "IT"],
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Spain and Italy both license sea fishing in a way that's less about buying a permit up front and more about ongoing digital reporting. Spain issues recreational licences regionally — one autonomous community's licence doesn't cover another — and layers a national system, PescaREC, on top: anglers register and report their catches daily through the app, whether fishing from shore, a boat or underwater."
+            },
+            {
+              "type": "p",
+              "text": "Italian sea fishing is free of charge but not free of process. The national ministry, MASAF, operates a sport-fishing census that recreational sea anglers must file a notification through — and the practical difficulty for visitors is the login, which has run exclusively through Italian digital identity credentials (SPID, the electronic ID card, or the national services card) since 2022. That's worth resolving with a charter operator before a trip, not at the harbour. Freshwater in Italy runs on an entirely separate, regional system instead."
+            }
+          ]
+        },
+        {
+          "heading": "United Kingdom and Finland: licence-free doesn't mean permission-free",
+          "countries": ["GB", "FI"],
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Scotland issues no rod licence at all for salmon fishing — and is simultaneously one of the hardest places on this list to actually get on the water, because access runs entirely through private riparian rights, let out beat by beat via estates and angling associations. England and Wales are the opposite: an Environment Agency rod licence is required, explicitly including on private club lakes, but the licence is permission to hold a rod, not permission to fish a given water — the owner's consent is still a separate matter."
+            },
+            {
+              "type": "p",
+              "text": "Finland threads a middle path. Its state fisheries management fee, payable by anglers aged 18 to 69 fishing with lures, is by itself sufficient permission for single-rod fishing across much of the country — genuinely rare in Europe. But fishing with several rods, in rapids or flowing water, or at most of the country's better-known sites additionally needs a permit from the water owner, so the good rivers generally need both layers anyway."
+            }
+          ]
+        },
+        {
+          "heading": "What actually differs, underneath the details",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Strip away the specifics and three questions separate every system on this list, and they're worth asking before any trip:"
+            },
+            {
+              "type": "list",
+              "items": [
+                "**Who issues it?** National (France, Italy, Spain's PescaREC layer), regional or state (Germany, Spain's base licence, Italy's freshwater licence), or local association (France's AAPPMA, Poland's water-specific permit).",
+                "**Does it require an exam?** Only Germany, and only outside Mecklenburg-Vorpommern's tourist exception.",
+                "**Does holding it mean you can actually fish a given water, or is that a separate question?** In England and Wales, Poland, and both Norwegian and French freshwater, the licence and the water-access permission are explicitly two different things. In Sweden's free waters and Scotland, the licence question doesn't arise at all — but Scotland still gates access through the beat owner."
+              ]
+            },
+            {
+              "type": "p",
+              "text": "The pattern worth remembering: a country that looks licence-free on paper (Scotland, Norway's sea, Sweden's coast) has usually moved the real gatekeeping somewhere else — to the landowner, the beat, or the association — rather than removed it."
+            }
+          ]
+        },
+        {
+          "heading": "Quick reference",
+          "blocks": [
+            {
+              "type": "table",
+              "columns": ["Country", "Issued by", "Exam required", "Licence = water access?", "Sea fishing"],
+              "rows": [
+                ["Sweden", "None on free water; conservation area elsewhere", "No", "Not on free coast/5 lakes; fiskekort elsewhere", "Free"],
+                ["Norway", "National fee (rivers only)", "No", "No — separate landowner permit", "Free, no fee needed"],
+                ["Germany", "State exam (Fischereischein); no-exam tourist route in M-V only", "Yes, except M-V tourist licence", "No — separate Erlaubnisschein per water", "Regional"],
+                ["France", "National federation (AAPPMA card)", "No", "Card grants association water access", "Outside carte de pêche; registration duty since 2026"],
+                ["Poland", "District (karta wędkarska) + rights holder (zezwolenie)", "No", "No — separate permit per water", "N/A (inland-focused system)"],
+                ["Spain", "Autonomous community, plus national PescaREC reporting", "No", "Regional licence covers the region", "Regional licence + daily PescaREC reporting"],
+                ["Italy", "MASAF census (sea); region (fresh water)", "No", "Regional freshwater licence covers the region", "Free; notification/census required"],
+                ["United Kingdom", "Environment Agency (E&W); no licence in Scotland", "No", "No — separate owner/beat consent everywhere", "Free throughout"],
+                ["Finland", "State fee", "No", "Single rod: often yes. Multiple rods/rapids: separate owner permit", "N/A (inland-focused system)"]
+              ]
+            },
+            {
+              "type": "p",
+              "text": "Rules and systems change — Poland's e-permit requirement and France's sea-angler registration both took effect within the last year. Confirm current requirements with the linked agency before a trip rather than from this table alone."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "slug": "where-you-can-fish-without-a-licence",
       "title": "Where You Can Fish Without a Licence — AnglerDeck",
       "headline": "Where you can fish without a licence",
