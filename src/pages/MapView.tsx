@@ -2,7 +2,7 @@ import { useState, useMemo, lazy, Suspense } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { MapPin, Filter, X, Loader2 } from "lucide-react";
-import { FishingSpot } from "@/data/spots";
+import { FishingSpot, shrinkForCard } from "@/data/spots";
 import { useSpots } from "@/hooks/useSpots";
 import { countries } from "@/components/CountrySelector";
 import Header from "@/components/Header";
@@ -165,7 +165,7 @@ const MapView = () => {
                       className="flex gap-3 p-3 bg-muted/50 rounded-lg"
                     >
                       <img
-                        src={spot.image}
+                        src={shrinkForCard(spot.image, 160)}
                         alt={spot.title}
                         loading="lazy"
                         className="w-20 h-20 object-cover rounded-lg"

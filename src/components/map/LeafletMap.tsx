@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { MapPin, Thermometer, Wind } from "lucide-react";
-import { FishingSpot } from "@/data/spots";
+import { FishingSpot, shrinkForCard } from "@/data/spots";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useWeather } from "@/hooks/useWeather";
@@ -61,7 +61,7 @@ const SpotPopupContent = ({ spot }: { spot: FishingSpot }) => {
   return (
     <div className="p-2 min-w-[220px]">
       <img
-        src={spot.image}
+        src={shrinkForCard(spot.image, 300)}
         alt={spot.title}
         loading="lazy"
         className="w-full h-24 object-cover rounded-lg mb-2"

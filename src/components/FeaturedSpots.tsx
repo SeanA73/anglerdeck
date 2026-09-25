@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { MapPin, Bookmark, RefreshCw } from "lucide-react";
 import { useState, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { FishingSpot } from "@/data/spots";
+import { FishingSpot, shrinkForCard } from "@/data/spots";
 import { useSpots } from "@/hooks/useSpots";
 import { countries } from "./CountrySelector";
 import { Button } from "./ui/button";
@@ -117,7 +117,7 @@ const FeaturedSpotCard = ({ spot, index }: { spot: FishingSpot; index: number })
         {/* Image */}
         <div className="relative h-56 overflow-hidden">
           <img
-            src={spot.image}
+            src={shrinkForCard(spot.image, 600)}
             alt={spot.title}
             loading="lazy"
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"

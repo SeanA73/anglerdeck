@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { AdBanner } from "@/components/ads/AdBanner";
-import { FishingSpot } from "@/data/spots";
+import { FishingSpot, shrinkForCard } from "@/data/spots";
 import { useSpots } from "@/hooks/useSpots";
 import { useSpotRatings, SpotRating } from "@/hooks/useSpotRatings";
 import { cn } from "@/lib/utils";
@@ -391,9 +391,7 @@ const SpotCard = ({
     isVisible
   );
 
-  const imageSrc = spot.image.includes('unsplash.com')
-    ? `${spot.image}${spot.image.includes('?') ? '&' : '?'}w=600&h=400&fit=crop&auto=format`
-    : spot.image;
+  const imageSrc = shrinkForCard(spot.image, 600);
 
   return (
     <Link to={`/spot/${spot.slug}`}>

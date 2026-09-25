@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useSavedItems } from "@/hooks/useSavedItems";
 import { useAllSpots, useSpots } from "@/hooks/useSpots";
+import { shrinkForCard } from "@/data/spots";
 
 const SavedSpotsList = () => {
   const { getSavedByType, toggleSave, isLoading } = useSavedItems();
@@ -89,7 +90,7 @@ const SavedSpotsList = () => {
               <div className="flex gap-4">
                 <div className="w-28 h-28 shrink-0">
                   <img
-                    src={spot.image}
+                    src={shrinkForCard(spot.image, 200)}
                     alt={spot.title}
                     loading="lazy"
                     className="w-full h-full object-cover"
