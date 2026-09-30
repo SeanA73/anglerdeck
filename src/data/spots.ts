@@ -141,17 +141,32 @@ export const spotImageCategory = (
 };
 
 /**
- * Every spot without a bundled local image (i.e. every spot today — the two
- * bundled photos are legacy) gets a real photo by water type and country.
- * `type` and `country` are optional so existing callers that only pass a key
- * keep working; pass them to get the varied, location-matched picture.
+ * Every `spots.image_key` row in Supabase was seeded with one of exactly two
+ * values — "fishing-spot" or "duck-spot" — as a generic placeholder, never as
+ * a real per-spot choice. Treating either as authoritative (the bug this
+ * comment replaces: an early return on `SPOT_IMAGES[key]` fired for nearly
+ * every spot, before type/country were ever consulted, so the category work
+ * below never actually ran) is exactly the two-photo problem this module
+ * exists to fix. Both stay in SPOT_IMAGES for the rare direct caller that
+ * still passes only a key, but resolveSpotImage/resolveSpotThumbnail no
+ * longer treat them as a real per-spot image — they always compute a
+ * category from type/country instead. A future real, spot-specific bundled
+ * photo would use a key outside this set and should be added here.
+ */
+const LEGACY_PLACEHOLDER_KEYS = new Set(["fishing-spot", "duck-spot"]);
+
+/**
+ * Every spot gets a real photo by water type and country. `type` and
+ * `country` are optional so existing callers that only pass a key keep
+ * working; pass them to get the varied, location-matched picture instead of
+ * the generic default.
  */
 export const resolveSpotImage = (
   key?: string | null,
   type?: string | null,
   country?: string | null
 ): string => {
-  if (key && SPOT_IMAGES[key]) return SPOT_IMAGES[key];
+  if (key && SPOT_IMAGES[key] && !LEGACY_PLACEHOLDER_KEYS.has(key)) return SPOT_IMAGES[key];
   const category = spotImageCategory(type, country);
   return withImageParams(REMOTE_SPOT_IMAGES[category], 1200);
 };
@@ -162,7 +177,7 @@ export const resolveSpotThumbnail = (
   type?: string | null,
   country?: string | null
 ): string => {
-  if (key && SPOT_IMAGES[key]) return SPOT_IMAGES[key];
+  if (key && SPOT_IMAGES[key] && !LEGACY_PLACEHOLDER_KEYS.has(key)) return SPOT_IMAGES[key];
   const category = spotImageCategory(type, country);
   return withImageParams(REMOTE_SPOT_IMAGES[category], 480);
 };
@@ -194,7 +209,7 @@ export const spotImageAlt = (
   type?: string | null,
   country?: string | null
 ): string => {
-  if (key && SPOT_IMAGES[key]) return spotTitle;
+  if (key && SPOT_IMAGES[key] && !LEGACY_PLACEHOLDER_KEYS.has(key)) return spotTitle;
   const category = spotImageCategory(type, country);
   const label = category.replace(/-/g, " ");
   return `${label} — representative photo, not ${spotTitle} itself`;

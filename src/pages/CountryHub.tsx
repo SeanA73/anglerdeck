@@ -115,12 +115,22 @@ const CountryHub = () => {
           </div>
         )}
 
+        {/* Two columns from the lg breakpoint up. Below lg the sidebar just
+            stacks under the main column — nothing in it depends on being
+            beside the text. Above lg, capping the reading column at
+            max-w-3xl while the viewport keeps going left the rest of the
+            page as bare background; this fills it with real content (a
+            quick-facts recap, the gear card, a second ad placement) instead
+            of stretching the prose or leaving it empty. */}
+        <div className="lg:grid lg:grid-cols-[1fr_320px] lg:gap-10 lg:items-start mt-10">
+        <div className="min-w-0">
+
         {/* The researched guide: how licensing works, the shape of the season and
             what the water is like. Every claim traces to the official source
             linked at the end of the section — see src/data/country-guides.json,
             which is also what the prerenderer reads. */}
         {guide && (
-          <section className="mt-10 max-w-3xl">
+          <section className="max-w-3xl">
             {[
               { heading: `Licences and permits in ${country.name}`, body: guide.licensing },
               { heading: `When to fish in ${country.name}`, body: guide.seasons },
@@ -191,7 +201,7 @@ const CountryHub = () => {
         )}
 
         {species.length > 0 && (
-          <section className="mt-10">
+          <section className="mt-10 max-w-3xl">
             <h2 className="text-xl font-bold text-foreground mb-3 flex items-center gap-2">
               <Fish className="w-5 h-5 text-accent" />
               Species you can target
@@ -209,25 +219,68 @@ const CountryHub = () => {
           </section>
         )}
 
+        </div>
+
+        {/* Sidebar: only reachable above lg (see the grid wrapper this and
+            the main column both sit in), where the reading column alone
+            would otherwise leave the rest of the viewport bare. Nothing
+            here is load-bearing content the page would be incomplete
+            without — it's the supplementary material (a recap, gear, a
+            second ad unit) that makes sense parked beside the article
+            rather than stacked inside it. */}
+        <aside className="mt-10 lg:mt-0 space-y-6 lg:sticky lg:top-28">
+          {countrySpots.length > 0 && (
+            <div className="rounded-2xl border border-border/50 bg-card p-5">
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
+                At a glance
+              </h3>
+              <dl className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <dt className="text-muted-foreground">Published spots</dt>
+                  <dd className="font-semibold text-foreground">{countrySpots.length}</dd>
+                </div>
+                {waterTypes.map(([type, n]) => (
+                  <div key={type} className="flex justify-between">
+                    <dt className="text-muted-foreground">{type}</dt>
+                    <dd className="font-semibold text-foreground">{n}</dd>
+                  </div>
+                ))}
+                {species.length > 0 && (
+                  <div className="flex justify-between">
+                    <dt className="text-muted-foreground">Species on record</dt>
+                    <dd className="font-semibold text-foreground">{species.length}</dd>
+                  </div>
+                )}
+              </dl>
+            </div>
+          )}
+
+          {/* Second ad placement, only for the space this layout freed up —
+              not a second unit crammed into the reading column. Same
+              subscriber/consent gating as every other AdBanner on the
+              site; renders nothing until VITE_ADSENSE_SLOT_HUB_SIDEBAR is
+              set to a real slot. */}
+          <AdBanner
+            slot={import.meta.env.VITE_ADSENSE_SLOT_HUB_SIDEBAR ?? ""}
+            format="rectangle"
+          />
+
+          {countrySpots.length > 0 && (
+            <AffiliateGear
+              waterTypes={waterTypes.map(([type]) => type)}
+              heading={`Gear for fishing in ${country.name}`}
+              blurb="Hand-picked gear for the water here. We may earn a commission on purchases."
+            />
+          )}
+        </aside>
+        </div>
+
         {/* Hubs are primary organic landing pages, so they carry a placement.
             Hidden from Pro and Elite subscribers by AdBanner. */}
         <AdBanner
           slot={import.meta.env.VITE_ADSENSE_SLOT_HUB ?? ""}
           format="horizontal"
         />
-
-        {/* Matched on the water types this country actually has, not its
-            species — a country-wide species list is too broad to rank
-            usefully. Spot pages do the species-level matching. */}
-        {countrySpots.length > 0 && (
-          <div className="mt-8 max-w-xl">
-            <AffiliateGear
-              waterTypes={waterTypes.map(([type]) => type)}
-              heading={`Gear for fishing in ${country.name}`}
-              blurb="Hand-picked gear for the water here. We may earn a commission on purchases."
-            />
-          </div>
-        )}
 
         <section className="mt-12">
           <h2 className="text-2xl font-bold text-foreground mb-6">

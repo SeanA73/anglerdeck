@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 import { SEO } from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { GuideBlocks } from "@/components/guides/GuideBlocks";
-import { guideBySlug } from "@/lib/guides";
+import { guideBySlug, guidePath, guides } from "@/lib/guides";
 import { countryByCode } from "@/lib/countries";
 import { countryGuide } from "@/lib/country-guides";
 import { AdBanner } from "@/components/ads/AdBanner";
@@ -113,6 +113,13 @@ const GuideArticle = () => {
     .map((code) => countryByCode(code))
     .filter((c): c is NonNullable<typeof c> => Boolean(c));
 
+  // Up to 3 other articles, for the sidebar. Not a recirculation gimmick —
+  // it's the same "more to read" link every list-style page on the site
+  // already offers, just reachable without scrolling to the very bottom.
+  const otherArticles = guides()
+    .filter((g) => g.slug !== article.slug)
+    .slice(0, 3);
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Keep in step with src/data/guides.json, which is where the prerendered
@@ -139,6 +146,15 @@ const GuideArticle = () => {
           <span className="text-foreground">{article.headline}</span>
         </nav>
 
+        {/* Two columns from lg up, same reasoning as the country hub: capping
+            the reading column at max-w-3xl on a wide screen otherwise leaves
+            everything past it bare. No gear card in the sidebar here — see
+            the note by the in-article AdBanner below on why guides stay
+            free of commercial blocks; the sidebar carries only a second ad
+            placement and a pointer to other guides, nothing that would read
+            as monetizing the comparison itself. */}
+        <div className="lg:grid lg:grid-cols-[1fr_320px] lg:gap-10 lg:items-start">
+        <div className="min-w-0">
         <motion.header
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -207,6 +223,75 @@ const GuideArticle = () => {
             slot={import.meta.env.VITE_ADSENSE_SLOT_HUB ?? ""}
             format="horizontal"
           />
+        </div>
+
+        </div>
+
+        <aside className="mt-10 lg:mt-0 space-y-6 lg:sticky lg:top-28">
+          <div className="rounded-2xl border border-border/50 bg-card p-5">
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
+              In this guide
+            </h3>
+            <dl className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <dt className="text-muted-foreground">Countries covered</dt>
+                <dd className="font-semibold text-foreground">{countries.length}</dd>
+              </div>
+              <div className="flex justify-between">
+                <dt className="text-muted-foreground">Sections</dt>
+                <dd className="font-semibold text-foreground">{article.sections.length}</dd>
+              </div>
+            </dl>
+            {countries.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mt-4 pt-4 border-t border-border/50">
+                {countries.slice(0, 6).map((country) => (
+                  <Link
+                    key={country.code}
+                    to={`/fishing/${country.slug}`}
+                    className="px-2.5 py-1 rounded-full bg-muted text-xs text-foreground hover:bg-accent/10 hover:text-accent transition-colors"
+                  >
+                    {country.name}
+                  </Link>
+                ))}
+                {countries.length > 6 && (
+                  <span className="px-2.5 py-1 text-xs text-muted-foreground">
+                    +{countries.length - 6} more
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Same subscriber/consent-gated component as every other AdBanner
+              on the site, reusing the hub sidebar slot rather than minting a
+              third one — set VITE_ADSENSE_SLOT_HUB_SIDEBAR to a real slot for
+              this to render anything. */}
+          <AdBanner
+            slot={import.meta.env.VITE_ADSENSE_SLOT_HUB_SIDEBAR ?? ""}
+            format="rectangle"
+          />
+
+          {otherArticles.length > 0 && (
+            <div className="rounded-2xl border border-border/50 bg-card p-5">
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
+                More guides
+              </h3>
+              <div className="space-y-4">
+                {otherArticles.map((g) => (
+                  <Link
+                    key={g.slug}
+                    to={guidePath(g.slug)}
+                    className="group block"
+                  >
+                    <h4 className="text-sm font-semibold text-foreground group-hover:text-accent transition-colors leading-snug">
+                      {g.headline}
+                    </h4>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+        </aside>
         </div>
 
         <div className="max-w-3xl mt-14 pt-8 border-t border-border">
