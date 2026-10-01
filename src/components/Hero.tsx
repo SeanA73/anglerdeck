@@ -76,7 +76,7 @@ const Hero = () => {
             <Button
               variant="heroOutline"
               size="xl"
-              onClick={() => navigate('/map')}
+              onClick={() => navigate('/spots')}
             >
               <MapPin className="w-5 h-5" />
               Explore Spots
