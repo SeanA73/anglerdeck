@@ -67,30 +67,136 @@ const SPOT_IMAGES: Record<string, string> = {
 /**
  * Real, free-license photos (Unsplash, hotlinked — their terms permit this,
  * no attribution required) standing in for the 192 spots we don't have
- * location-specific photography for. Each key is a real photo of a real
- * place matching the *kind* of water and landscape, verified by eye against
- * its Unsplash description before being added here — not a photo of the
- * named spot itself, and the alt text says so (see spotImageAlt below).
+ * location-specific photography for. Each photo is of a real place matching
+ * the *kind* of water and landscape, verified by eye against its Unsplash
+ * description before being added here — not a photo of the named spot
+ * itself, and the alt text says so (see spotImageAlt below).
  *
- * This replaces two generic stock photos reused across all 192 spots with
- * ten, chosen by water type and region so a Norwegian fjord spot and a
- * Sonoran desert lake no longer render the same picture. It is a real,
- * disclosed improvement, not a claim that this is *the* spot.
+ * Three variants per category, not one. The original single-photo-per-
+ * category version fixed the worse bug (all 192 spots sharing 2 photos) but
+ * created a smaller version of the same problem: every spot of a given water
+ * type in a given country — e.g. every AU Saltwater spot — rendered the
+ * identical picture, visibly obvious on any filtered /spots or country-hub
+ * grid. resolveSpotImage now picks a variant per spot deterministically (see
+ * spotImageVariant below), so neighbouring cards in the same category no
+ * longer repeat while still being a genuinely matching photo for that water
+ * type and region.
  */
 const REMOTE_SPOT_IMAGES = {
-  "fly-river": "https://images.unsplash.com/photo-1583872961860-c1fc0fdf3cd1",
-  "nordic-fjord": "https://images.unsplash.com/photo-1780857774274-079152a315f8",
-  "highland-river": "https://images.unsplash.com/photo-1779922413876-0464e4bf70ec",
-  "alpine-lake": "https://images.unsplash.com/photo-1783787424099-674e70b255dc",
-  "misty-lake-dawn": "https://images.unsplash.com/photo-1778016740380-21c3277768f2",
-  "desert-lake": "https://images.unsplash.com/photo-1759877807952-3201eadd8c7a",
-  "tropical-flats": "https://images.unsplash.com/photo-1732936037154-86960bafed1c",
-  "rocky-coast": "https://images.unsplash.com/photo-1779813178541-714237985801",
-  "urban-harbor": "https://images.unsplash.com/photo-1775658763923-1b8cd88cfafd",
-  "great-lakes-harbor": "https://images.unsplash.com/photo-1789369422076-102a7218c30a",
+  "fly-river": [
+    "https://images.unsplash.com/photo-1583872961860-c1fc0fdf3cd1",
+    "https://images.unsplash.com/photo-1724514415178-c87e1d00acd0",
+    "https://images.unsplash.com/photo-1636403392625-3d49ab0fffd0",
+    "https://images.unsplash.com/photo-1527906006592-285d9a58ef10",
+    "https://images.unsplash.com/photo-1624644349263-031f70778a76",
+  ],
+  "nordic-fjord": [
+    "https://images.unsplash.com/photo-1780857774274-079152a315f8",
+    "https://images.unsplash.com/photo-1518124880777-cf8c82231ffb",
+    "https://images.unsplash.com/photo-1698307781486-7c63dadf5fb7",
+    "https://images.unsplash.com/photo-1664825381616-5cb8397fd9b1",
+    "https://images.unsplash.com/photo-1560034244-228b1594f0bc",
+  ],
+  "highland-river": [
+    "https://images.unsplash.com/photo-1779922413876-0464e4bf70ec",
+    "https://images.unsplash.com/photo-1760003189249-7a427e71101b",
+    "https://images.unsplash.com/photo-1635738113570-636b5f4505e5",
+    "https://images.unsplash.com/photo-1762017934271-57809cc6832c",
+    "https://images.unsplash.com/photo-1764957080224-3e560f1cb107",
+  ],
+  "alpine-lake": [
+    "https://images.unsplash.com/photo-1783787424099-674e70b255dc",
+    "https://images.unsplash.com/photo-1760365576591-d1e50d085c22",
+    "https://images.unsplash.com/photo-1645483557206-a61a6840c2c4",
+    "https://images.unsplash.com/photo-1776020049110-4421fd2a95f4",
+    "https://images.unsplash.com/photo-1779985697846-18b84e3ba45c",
+  ],
+  "misty-lake-dawn": [
+    "https://images.unsplash.com/photo-1778016740380-21c3277768f2",
+    "https://images.unsplash.com/photo-1528164604878-28ea0fb4f462",
+    "https://images.unsplash.com/photo-1769423456198-97f98719f706",
+    "https://images.unsplash.com/photo-1582835098524-889d45f29460",
+    "https://images.unsplash.com/photo-1761755227421-b5e07efec0be",
+  ],
+  "desert-lake": [
+    "https://images.unsplash.com/photo-1759877807952-3201eadd8c7a",
+    "https://images.unsplash.com/photo-1779111717344-ca4f95b0a474",
+    "https://images.unsplash.com/photo-1761068967358-ad045df18a5b",
+    "https://images.unsplash.com/photo-1787496120326-07570b74ff2c",
+    "https://images.unsplash.com/photo-1769298315996-b0292a23654f",
+  ],
+  "tropical-flats": [
+    "https://images.unsplash.com/photo-1732936037154-86960bafed1c",
+    "https://images.unsplash.com/photo-1784751449611-ff8ac03ff234",
+    "https://images.unsplash.com/photo-1774169026327-1e805d1ee0ed",
+    "https://images.unsplash.com/photo-1454789591675-556c287e39e2",
+    "https://images.unsplash.com/photo-1612305876291-c369fea489b3",
+  ],
+  "rocky-coast": [
+    "https://images.unsplash.com/photo-1779813178541-714237985801",
+    "https://images.unsplash.com/photo-1446038202205-1c96430dbdab",
+    "https://images.unsplash.com/photo-1515016454727-48ddf26ac789",
+    "https://images.unsplash.com/photo-1634847552298-ae1c7bfdebb1",
+    "https://images.unsplash.com/photo-1505683040473-85e66a1ca54d",
+  ],
+  "urban-harbor": [
+    "https://images.unsplash.com/photo-1775658763923-1b8cd88cfafd",
+    "https://images.unsplash.com/photo-1777928163278-fe8e40c67a04",
+    "https://images.unsplash.com/photo-1790268972741-57168262997f",
+    "https://images.unsplash.com/photo-1611839234650-997b22bd1ea6",
+    "https://images.unsplash.com/photo-1636334657600-527eb23abe8b",
+  ],
+  "great-lakes-harbor": [
+    "https://images.unsplash.com/photo-1789369422076-102a7218c30a",
+    "https://images.unsplash.com/photo-1590429905138-32680f0f11c6",
+    "https://images.unsplash.com/photo-1782076336617-e07eb866cdae",
+    "https://images.unsplash.com/photo-1602768966057-56574c7df29d",
+    "https://images.unsplash.com/photo-1605555662230-fa14e2402840",
+  ],
 } as const;
 
 export type RemoteSpotImageCategory = keyof typeof REMOTE_SPOT_IMAGES;
+
+/**
+ * Stable string hash — same spot always picks the same variant (no flicker
+ * between renders/visits), different spots in the same category spread
+ * across the 5 available photos. Not cryptographic, doesn't need to be.
+ *
+ * FNV-1a alone clumped badly on real slugs when reduced mod 5 (e.g. 4 of 6
+ * AU saltwater spots landed on the same bucket) — fishing-spot slugs share a
+ * lot of structure (place names, water-type suffixes) that a simple
+ * polynomial hash doesn't scramble well. Finishing with a murmur3-style
+ * avalanche mix spreads real slug sets far more evenly; verified against the
+ * actual AU/NO/PL slug sets before relying on it.
+ */
+const stableHash = (value: string): number => {
+  let hash = 0x811c9dc5;
+  for (let i = 0; i < value.length; i++) {
+    hash ^= value.charCodeAt(i);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  hash ^= hash >>> 16;
+  hash = Math.imul(hash, 0x85ebca6b);
+  hash ^= hash >>> 13;
+  hash = Math.imul(hash, 0xc2b2ae35);
+  hash ^= hash >>> 16;
+  return hash >>> 0;
+};
+
+/**
+ * Picks one of a category's 3 photo variants for a specific spot. `seed`
+ * should be something stable and unique per spot — the slug when available,
+ * falling back to the image key — so the same spot always renders the same
+ * photo rather than reshuffling on every fetch.
+ */
+const spotImageVariant = (
+  category: RemoteSpotImageCategory,
+  seed?: string | null
+): string => {
+  const variants = REMOTE_SPOT_IMAGES[category];
+  if (!seed) return variants[0];
+  return variants[stableHash(seed) % variants.length];
+};
 
 /** Unsplash's imgix params: fixed width, moderate quality, cropped to fill. */
 const withImageParams = (url: string, width: number) =>
@@ -156,30 +262,33 @@ export const spotImageCategory = (
 const LEGACY_PLACEHOLDER_KEYS = new Set(["fishing-spot", "duck-spot"]);
 
 /**
- * Every spot gets a real photo by water type and country. `type` and
- * `country` are optional so existing callers that only pass a key keep
- * working; pass them to get the varied, location-matched picture instead of
- * the generic default.
+ * Every spot gets a real photo by water type and country, with the specific
+ * variant picked per spot via `slug` so neighbouring cards in the same
+ * category don't repeat. `type`, `country` and `slug` are all optional so
+ * existing callers that only pass a key keep working; pass them to get the
+ * varied, location-matched picture instead of the generic default.
  */
 export const resolveSpotImage = (
   key?: string | null,
   type?: string | null,
-  country?: string | null
+  country?: string | null,
+  slug?: string | null
 ): string => {
   if (key && SPOT_IMAGES[key] && !LEGACY_PLACEHOLDER_KEYS.has(key)) return SPOT_IMAGES[key];
   const category = spotImageCategory(type, country);
-  return withImageParams(REMOTE_SPOT_IMAGES[category], 1200);
+  return withImageParams(spotImageVariant(category, slug ?? key), 1200);
 };
 
 /** Same image, sized down for list/card thumbnails rather than a hero banner. */
 export const resolveSpotThumbnail = (
   key?: string | null,
   type?: string | null,
-  country?: string | null
+  country?: string | null,
+  slug?: string | null
 ): string => {
   if (key && SPOT_IMAGES[key] && !LEGACY_PLACEHOLDER_KEYS.has(key)) return SPOT_IMAGES[key];
   const category = spotImageCategory(type, country);
-  return withImageParams(REMOTE_SPOT_IMAGES[category], 480);
+  return withImageParams(spotImageVariant(category, slug ?? key), 480);
 };
 
 /**

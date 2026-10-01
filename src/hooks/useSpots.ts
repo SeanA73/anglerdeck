@@ -40,7 +40,7 @@ const mapRow = (row: SpotRow): FishingSpot => ({
   country: row.country,
   type: row.type,
   species: row.species ?? [],
-  image: resolveSpotImage(row.image_key, row.type, row.country),
+  image: resolveSpotImage(row.image_key, row.type, row.country, row.slug),
   featured: row.featured,
   description: row.description,
   coordinates: row.coordinates,
