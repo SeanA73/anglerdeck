@@ -14,7 +14,7 @@ const Cookies = () => {
       <main id="main-content" className="container mx-auto px-4 py-16 max-w-3xl">
         <article className="prose prose-invert max-w-none">
           <h1 className="text-3xl font-bold text-foreground mb-2">Cookie Policy</h1>
-          <p className="text-sm text-muted-foreground mb-8">Last updated: 6 July 2026</p>
+          <p className="text-sm text-muted-foreground mb-8">Last updated: 17 October 2026</p>
 
           <p className="text-muted-foreground mb-6">
             This Cookie Policy explains how AnglerDeck uses cookies and similar
@@ -53,10 +53,13 @@ const Cookies = () => {
 
           <h3 className="text-lg font-semibold text-foreground mt-6 mb-2">Advertising and affiliate</h3>
           <p className="text-muted-foreground mb-6">
-            We do not currently use advertising or third-party marketing cookies. If we
-            introduce advertising or affiliate tracking in the future (for example, to
-            support the free tier), we will update this policy and give you the ability to
-            opt out.
+            Google AdSense may use advertising cookies when its consent platform allows
+            an ad unit to load. Google's privacy message manages advertising choices
+            separately from our site preferences. No usable consent response means no
+            ad units. Pro and Elite subscribers do not see ad units.
+            Affiliate click measurement requires analytics consent and does not include
+            your account ID in click records. Amazon OneLink loads only if you allow
+            affiliate-link localization. Shopping links still work without either choice.
           </p>
 
           <h2 className="text-xl font-semibold text-foreground mt-8 mb-3">3. Third-party cookies</h2>
@@ -64,6 +67,8 @@ const Cookies = () => {
           <ul className="text-muted-foreground mb-6 list-disc pl-6 space-y-2">
             <li><strong>Stripe:</strong> during checkout, Stripe may set cookies for fraud prevention and to process your payment.</li>
             <li><strong>Supabase:</strong> sets authentication and session cookies.</li>
+            <li><strong>Google:</strong> provides advertising consent management and, when allowed, advertising and analytics.</li>
+            <li><strong>Amazon:</strong> OneLink can localize shopping links after your opt-in.</li>
           </ul>
           <p className="text-muted-foreground mb-6">
             These providers have their own cookie policies which we recommend reviewing:
@@ -74,7 +79,10 @@ const Cookies = () => {
           <p className="text-muted-foreground mb-6">
             You can change your cookie preferences at any time using the{" "}
             <strong>Cookie preferences</strong> link at the bottom of any page, or by
-            clearing cookies through your browser settings. Note that disabling essential
+            clearing cookies through your browser settings. Where Google's advertising
+            message is active, its <strong>Privacy and cookie settings</strong> link lets
+            you revisit advertising consent. Withdrawing OneLink consent reloads the
+            page to stop its loaded code. Note that disabling essential
             cookies will prevent the Service from working properly.
           </p>
 

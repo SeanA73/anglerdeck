@@ -14,7 +14,7 @@ const Privacy = () => {
       <main id="main-content" className="container mx-auto px-4 py-16 max-w-3xl">
         <article className="prose prose-invert max-w-none">
           <h1 className="text-3xl font-bold text-foreground mb-2">Privacy Policy</h1>
-          <p className="text-sm text-muted-foreground mb-8">Last updated: 6 July 2026</p>
+          <p className="text-sm text-muted-foreground mb-8">Last updated: 17 October 2026</p>
 
           <p className="text-muted-foreground mb-6">
             This Privacy Policy describes how MRS Design ("we", "us", "our") collects,
@@ -98,10 +98,13 @@ const Privacy = () => {
               .
             </li>
             <li>
-              We use Google Consent Mode. If you decline marketing cookies in our cookie
-              banner, ads are still shown but are <strong>not personalised</strong>. You
-              can change your choice at any time using the{" "}
-              <strong>Cookie preferences</strong> link at the bottom of any page. Our{" "}
+              Advertising choices are handled by Google's consent message. Ad units
+              stay hidden until the consent platform provides a usable response;
+              declining the required advertising consent keeps them hidden. Where the
+              message is active, use Google's <strong>Privacy and cookie settings</strong>
+              {" "}link to revisit advertising choices. Site analytics and affiliate-link
+              localization are separate choices under <strong>Cookie preferences</strong>.
+              {" "}Our{" "}
               <a href="/cookies" className="underline hover:text-foreground">
                 cookie policy
               </a>{" "}

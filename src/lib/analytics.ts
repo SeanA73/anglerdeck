@@ -1,3 +1,4 @@
+import { CONSENT_CHANGED_EVENT, readConsent } from "@/lib/cookieConsent";
 const RAW_GA_ID = import.meta.env.VITE_GA_ID;
 
 /**
@@ -19,9 +20,15 @@ declare global {
 }
 
 let initialized = false;
+let watchingConsent = false;
 
 export const initAnalytics = () => {
   if (initialized || !GA_ID || typeof window === 'undefined') return;
+  if (!watchingConsent) {
+    watchingConsent = true;
+    window.addEventListener(CONSENT_CHANGED_EVENT, initAnalytics);
+  }
+  if (readConsent()?.analytics !== true) return;
 
   const script = document.createElement('script');
   script.async = true;
@@ -41,13 +48,13 @@ export const initAnalytics = () => {
 };
 
 export const pageview = (url: string) => {
-  if (typeof window !== 'undefined' && window.gtag && GA_ID) {
+  if (typeof window !== 'undefined' && window.gtag && GA_ID && readConsent()?.analytics === true) {
     window.gtag('config', GA_ID, { page_path: url });
   }
 };
 
 export const trackEvent = (action: string, params?: Record<string, unknown>) => {
-  if (typeof window !== 'undefined' && window.gtag) {
+  if (typeof window !== 'undefined' && window.gtag && readConsent()?.analytics === true) {
     window.gtag('event', action, params);
   }
 };
