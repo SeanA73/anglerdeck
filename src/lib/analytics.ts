@@ -29,8 +29,10 @@ export const initAnalytics = () => {
   document.head.appendChild(script);
 
   window.dataLayer = window.dataLayer || [];
-  window.gtag = function gtag(...args: unknown[]) {
-    window.dataLayer?.push(args);
+  window.gtag = window.gtag || function gtag(..._args: unknown[]) {
+    // Google consumes command arguments objects, rather than rest arrays.
+    // eslint-disable-next-line prefer-rest-params
+    window.dataLayer?.push(arguments);
   };
   window.gtag('js', new Date());
   window.gtag('config', GA_ID);

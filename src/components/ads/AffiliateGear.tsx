@@ -4,10 +4,10 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ShoppingBag, ExternalLink, ArrowRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
+import { readConsent } from "@/lib/cookieConsent";
 import { trackAffiliateClick } from "@/lib/affiliate";
 import { loadOneLinkScript } from "@/lib/onelink";
-import { gearCtaLabel, gearImage, priceBand, rankGear } from "@/lib/gear";
+import { gearCtaLabel, gearImage, priceBand, recommendGear } from "@/lib/gear";
 
 interface GearProduct {
   id: string;
@@ -81,9 +81,9 @@ interface AffiliateGearProps {
 /**
  * Renders admin-curated affiliate products (Amazon, ClickBank, …) as a
  * "Shop Gear" card. Products tagged to match the spot's water type or species
- * rank first; falls back to the newest active products. Renders nothing when
- * the catalog is empty. Every click is recorded in affiliate_clicks (for the
- * /admin/affiliate dashboard) and as a GA event.
+ * rank first; unrelated products never fill spare positions. Renders nothing
+ * when there are no matches. Click counts require analytics consent and omit
+ * the viewer's account ID.
  *
  * No numeric price is ever rendered here — see the PRICE_BANDS comment in
  * src/lib/gear.ts for why, and do not "restore" one.
@@ -95,7 +95,6 @@ export const AffiliateGear = ({
   heading = "Shop Gear",
   blurb = "Hand-picked gear for this spot. We may earn a commission on purchases.",
 }: AffiliateGearProps) => {
-  const { user } = useAuth();
 
   const { data: products } = useQuery({
     queryKey: ["affiliate-gear"],
@@ -105,8 +104,7 @@ export const AffiliateGear = ({
         .from("affiliate_products")
         .select("id, title, description, price, image_url, affiliate_url, merchant, category, tags")
         .eq("is_active", true)
-        .order("created_at", { ascending: false })
-        .limit(50);
+        .order("created_at", { ascending: false });
       if (error) throw error;
       return data ?? [];
     },
@@ -121,14 +119,16 @@ export const AffiliateGear = ({
 
   if (!products?.length) return null;
 
-  const shown = rankGear(products, { waterTypes, species }).slice(0, limit);
+  const shown = recommendGear(products, { waterTypes, species }, limit);
+  if (!shown.length) return null;
 
   const handleClick = async (p: GearProduct) => {
+    if (readConsent()?.analytics !== true) return;
     trackAffiliateClick(p.merchant ?? "unknown", p.id, { title: p.title });
     // Fire-and-forget; never block the outbound navigation on this insert.
     supabase
       .from("affiliate_clicks")
-      .insert({ product_id: p.id, user_id: user?.id ?? null })
+      .insert({ product_id: p.id, user_id: null })
       .then(({ error }) => {
         if (error) console.error("affiliate click insert failed:", error.message);
       });

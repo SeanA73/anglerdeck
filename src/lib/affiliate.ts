@@ -1,4 +1,5 @@
 import { trackEvent } from '@/lib/analytics';
+import { readConsent } from '@/lib/cookieConsent';
 
 const amazonTag = import.meta.env.VITE_AMAZON_AFFILIATE_TAG || 'anglerdeck-20';
 const clickbankHop = import.meta.env.VITE_CLICKBANK_HOP_ID || 'anglerdeck';
@@ -22,8 +23,18 @@ export const extractAsin = (url: string): string | null => {
  * carrying OUR affiliate tag. Returns null when no ASIN can be found.
  */
 export const normalizeAmazonUrl = (url: string): string | null => {
-  if (!/amazon\.[a-z.]+\//i.test(url)) return null;
-  const asin = extractAsin(url);
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return null;
+  }
+  if (
+    !["https:", "http:"].includes(parsed.protocol) ||
+    parsed.username || parsed.password || parsed.port ||
+    !/^(?:www\.|m\.|smile\.)?amazon\.(?:com|co\.uk|de|fr|it|es|ca|com\.au|co\.jp|in|com\.br|com\.mx|nl|se|pl|com\.be|ie|sg|ae|sa|com\.tr|eg|co\.za)$/.test(parsed.hostname)
+  ) return null;
+  const asin = extractAsin(parsed.pathname + parsed.search);
   return asin ? buildAmazonUrl(asin) : null;
 };
 
@@ -35,6 +46,7 @@ export const trackAffiliateClick = (
   productId?: string,
   extra?: Record<string, unknown>
 ) => {
+  if (readConsent()?.analytics !== true) return;
   trackEvent('affiliate_click', {
     product_source: source,
     product_id: productId,

@@ -13,22 +13,34 @@
  * the site behaves exactly as before.
  */
 
+import { CONSENT_CHANGED_EVENT, readConsent } from "@/lib/cookieConsent";
 const ONELINK_ID = import.meta.env.VITE_AMAZON_ONELINK_ID;
 
 /** Home marketplace the stored links are built against — see buildAmazonUrl. */
 const HOME_MARKETPLACE = "US";
 
 let oneLinkScriptLoaded = false;
+let awaitingConsent = false;
 
 export const loadOneLinkScript = () => {
   if (oneLinkScriptLoaded || !ONELINK_ID || typeof document === "undefined") return;
+  if (!awaitingConsent) {
+    awaitingConsent = true;
+    window.addEventListener(CONSENT_CHANGED_EVENT, () => {
+      if (readConsent()?.marketing === true) loadOneLinkScript();
+      // Removing an executed script cannot remove its click listeners.
+      // A fresh document is required to honor withdrawal of OneLink consent.
+      else if (oneLinkScriptLoaded) window.location.reload();
+    });
+  }
+  if (readConsent()?.marketing !== true) return;
   if (document.querySelector('script[src*="widgets/onejs"]')) {
     oneLinkScriptLoaded = true;
     return;
   }
   const script = document.createElement("script");
   script.async = true;
-  script.src = `https://z-na.amazon-adsystem.com/widgets/onejs?MarketPlace=${HOME_MARKETPLACE}&adInstanceId=${ONELINK_ID}`;
+  script.src = `https://z-na.amazon-adsystem.com/widgets/onejs?MarketPlace=${HOME_MARKETPLACE}&adInstanceId=${encodeURIComponent(ONELINK_ID)}`;
   document.head.appendChild(script);
   oneLinkScriptLoaded = true;
 };

@@ -15,6 +15,7 @@ interface AuthContextType {
   session: Session | null;
   profile: Profile | null;
   loading: boolean;
+  sessionError: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signUp: (email: string, password: string, displayName?: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
@@ -36,6 +37,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [sessionError, setSessionError] = useState(false);
 
   const fetchProfile = useCallback(async (userId: string) => {
     try {
@@ -66,13 +68,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     async function getInitialSession() {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) throw error;
 
         if (mounted) {
           setSession(session);
+          setSessionError(false);
           setUser(session?.user ?? null);
         }
       } catch (error) {
+        if (mounted) setSessionError(true);
         console.error("Error creating auth session:", error);
       } finally {
         if (mounted) {
@@ -86,6 +91,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         if (mounted) {
+          setSessionError(false);
           setSession(session);
           setUser(session?.user ?? null);
           setLoading(false);
@@ -148,6 +154,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         session,
         profile,
         loading,
+        sessionError,
         signIn,
         signUp,
         signOut,

@@ -7,7 +7,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { SEO } from "@/components/SEO";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
+import { readConsent } from "@/lib/cookieConsent";
 import { trackAffiliateClick } from "@/lib/affiliate";
 import { loadOneLinkScript } from "@/lib/onelink";
 import { gearCtaLabel, gearImage, priceBand } from "@/lib/gear";
@@ -55,7 +55,6 @@ const categoryLabel = (category: string | null): string =>
  * queries — keep the two in step when the structure changes.
  */
 const Gear = () => {
-  const { user } = useAuth();
 
   const { data: products, isLoading } = useQuery({
     queryKey: ["gear-catalog"],
@@ -90,10 +89,11 @@ const Gear = () => {
   }, [products]);
 
   const handleClick = (p: GearProduct) => {
+    if (readConsent()?.analytics !== true) return;
     trackAffiliateClick(p.merchant ?? "unknown", p.id, { title: p.title, surface: "gear_page" });
     supabase
       .from("affiliate_clicks")
-      .insert({ product_id: p.id, user_id: user?.id ?? null })
+      .insert({ product_id: p.id, user_id: null })
       .then(({ error }) => {
         if (error) console.error("affiliate click insert failed:", error.message);
       });

@@ -313,3 +313,8 @@ export const rankGear = <T extends GearMatchable>(
   const scores = new Map<T, number>(products.map((p) => [p, gearScore(p, context)]));
   return [...products].sort((a, b) => (scores.get(b) ?? 0) - (scores.get(a) ?? 0));
 };
+
+/** Contextual recommendations must earn a match, rather than fill empty slots. */
+export const recommendGear = <T extends GearMatchable>(products: T[], context: GearMatchContext, limit = 4): T[] =>
+  rankGear(products.filter((product) => gearScore(product, context) > 0), context)
+    .slice(0, Math.max(0, limit));

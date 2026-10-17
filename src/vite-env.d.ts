@@ -16,6 +16,8 @@ interface ImportMetaEnv {
   readonly VITE_ADSENSE_SLOT_SPOTS?: string;
   readonly VITE_ADSENSE_SLOT_SPOT_DETAIL?: string;
   readonly VITE_ADSENSE_SLOT_COMMUNITY?: string;
+  readonly VITE_ADSENSE_SLOT_HUB?: string;
+  readonly VITE_ADSENSE_SLOT_HUB_SIDEBAR?: string;
   readonly VITE_ADSENSE_SLOT_MARKETPLACE?: string;
 }
 

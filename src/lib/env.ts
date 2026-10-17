@@ -80,6 +80,8 @@ const EnvSchema = z.object({
   VITE_ADSENSE_SLOT_SPOTS: optionalVar(z.string()),
   VITE_ADSENSE_SLOT_SPOT_DETAIL: optionalVar(z.string()),
   VITE_ADSENSE_SLOT_COMMUNITY: optionalVar(z.string()),
+  VITE_ADSENSE_SLOT_HUB: optionalVar(z.string().regex(/^\d+$/, "AdSense slot must contain digits only")),
+  VITE_ADSENSE_SLOT_HUB_SIDEBAR: optionalVar(z.string().regex(/^\d+$/, "AdSense slot must contain digits only")),
 });
 
 /**

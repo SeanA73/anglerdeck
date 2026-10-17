@@ -41,8 +41,8 @@ const cookieTypes = [
   },
   {
     key: "marketing" as const,
-    label: "Marketing Cookies",
-    description: "Used to deliver relevant advertisements and track marketing campaign effectiveness.",
+    label: "Affiliate link localization",
+    description: "Allow Amazon OneLink to direct product links to your local store. Advertising choices are managed separately in Google's privacy message.",
     required: false,
   },
 ];

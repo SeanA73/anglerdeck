@@ -18,6 +18,20 @@
     <meta name="twitter:description" content="Discover, save, and share the best fishing spots worldwide." />
     <meta name="twitter:image" content="/pwa-512x512.png" />
 
+    <!-- Establish consent before the asynchronous AdSense loader can execute. -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
+      window.gtag('consent', 'default', {
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        analytics_storage: 'denied',
+        functionality_storage: 'denied',
+        security_storage: 'granted'
+      });
+      window.anglerdeckConsentDefaultsSet = true;
+    </script>
     <!--
       AdSense loader. Required on the site for Google's site review.
 
@@ -29,7 +43,7 @@
       anywhere, including for paying users who were promised an ad-free
       experience.
 
-      Consent Mode defaults are set in src/main.tsx before this runs.
+      Consent Mode defaults are set above; the app restores saved choices.
     -->
     <script
       async

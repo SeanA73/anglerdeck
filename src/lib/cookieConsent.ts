@@ -41,8 +41,15 @@ export const readConsent = (): CookiePreferences | null => {
   try {
     const raw = localStorage.getItem(COOKIE_CONSENT_KEY);
     if (!raw) return null;
-    const parsed = JSON.parse(raw) as Partial<CookiePreferences>;
-    return { ...DEFAULT_PREFERENCES, ...parsed, essential: true };
+    const parsed: unknown = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return null;
+    const values = parsed as Record<string, unknown>;
+    return {
+      essential: true,
+      functional: values.functional === true,
+      analytics: values.analytics === true,
+      marketing: values.marketing === true,
+    };
   } catch {
     return null;
   }
@@ -50,8 +57,8 @@ export const readConsent = (): CookiePreferences | null => {
 
 export const writeConsent = (prefs: CookiePreferences) => {
   localStorage.setItem(COOKIE_CONSENT_KEY, JSON.stringify(prefs));
-  window.dispatchEvent(new CustomEvent(CONSENT_CHANGED_EVENT, { detail: prefs }));
   updateGoogleConsent(prefs);
+  window.dispatchEvent(new CustomEvent(CONSENT_CHANGED_EVENT, { detail: prefs }));
 };
 
 /**
@@ -68,27 +75,35 @@ export const writeConsent = (prefs: CookiePreferences) => {
 type ConsentValue = "granted" | "denied";
 
 interface GtagWindow extends Window {
+  anglerdeckConsentDefaultsSet?: boolean;
   dataLayer?: unknown[];
   gtag?: (...args: unknown[]) => void;
 }
 
-const gtag = (...args: unknown[]) => {
+const gtag = function (..._args: unknown[]) {
   const win = window as GtagWindow;
   win.dataLayer = win.dataLayer || [];
   // Google's snippet requires `arguments`, not an array.
-  win.dataLayer.push(args);
+  // eslint-disable-next-line prefer-rest-params
+  win.dataLayer.push(arguments);
 };
 
 export const initGoogleConsentDefaults = () => {
   if (typeof window === "undefined") return;
   const stored = readConsent();
-  const marketing: ConsentValue = stored?.marketing ? "granted" : "denied";
+  const win = window as GtagWindow;
+  // The HTML bootstrap runs before AdSense; standalone consumers still need a default.
+  if (win.anglerdeckConsentDefaultsSet) {
+    if (stored) updateGoogleConsent(stored);
+    return;
+  }
+  win.anglerdeckConsentDefaultsSet = true;
   const analytics: ConsentValue = stored?.analytics ? "granted" : "denied";
 
   gtag("consent", "default", {
-    ad_storage: marketing,
-    ad_user_data: marketing,
-    ad_personalization: marketing,
+    ad_storage: "denied",
+    ad_user_data: "denied",
+    ad_personalization: "denied",
     analytics_storage: analytics,
     functionality_storage: stored?.functional ? "granted" : "denied",
     security_storage: "granted",
@@ -97,13 +112,10 @@ export const initGoogleConsentDefaults = () => {
 
 export const updateGoogleConsent = (prefs: CookiePreferences) => {
   if (typeof window === "undefined") return;
-  const marketing: ConsentValue = prefs.marketing ? "granted" : "denied";
   const analytics: ConsentValue = prefs.analytics ? "granted" : "denied";
 
   gtag("consent", "update", {
-    ad_storage: marketing,
-    ad_user_data: marketing,
-    ad_personalization: marketing,
+    // Ad signals belong to the certified CMP; local preferences cannot override it.
     analytics_storage: analytics,
     functionality_storage: prefs.functional ? "granted" : "denied",
     security_storage: "granted",

@@ -3,6 +3,7 @@ import {
   matchStrength,
   gearScore,
   rankGear,
+  recommendGear,
   priceBand,
   gearCtaLabel,
   categoryArt,
@@ -156,6 +157,13 @@ describe("gearScore", () => {
 });
 
 describe("rankGear", () => {
+  it("never pads recommendations with zero-score or incompatible products", () => {
+    const context = { waterTypes: ["Saltwater"], species: ["yellowfin tuna"] };
+    const result = recommendGear([flies, bassLures, saltReel], context);
+    expect(result).toEqual([saltReel]);
+    expect(recommendGear([flies, bassLures], context)).toEqual([]);
+    expect(recommendGear([saltReel], context, 0)).toEqual([]);
+  });
   it("reorders a mixed catalog around the spot, keeping ties stable", () => {
     const catalog = [genericFresh, saltReel, bassLures, flies];
 

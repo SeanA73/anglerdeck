@@ -27,7 +27,7 @@ export interface UsageStats {
 }
 
 export const useSubscription = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading, sessionError } = useAuth();
   const queryClient = useQueryClient();
 
   // Fetch subscription from database
@@ -50,7 +50,7 @@ export const useSubscription = () => {
 
       if (error) {
         console.error('Error fetching subscription:', error);
-        return { id: '', tier: 'free', status: 'active' };
+        throw error;
       }
 
       if (!data) {
@@ -63,7 +63,7 @@ export const useSubscription = () => {
 
         if (insertError) {
           console.error('Error creating subscription:', insertError);
-          return { id: '', tier: 'free', status: 'active' };
+          throw insertError;
         }
 
         return {
@@ -87,7 +87,7 @@ export const useSubscription = () => {
         cancel_at_period_end: data.cancel_at_period_end || undefined,
       };
     },
-    enabled: !!user,
+    enabled: !!user && !authLoading,
   });
 
   // Fetch usage stats from database
@@ -247,7 +247,8 @@ export const useSubscription = () => {
   return {
     subscription,
     usageStats,
-    isLoading,
+    isLoading: authLoading || isLoading,
+    canShowAds: !authLoading && !sessionError && (!user || (!isLoading && !error && subscription?.tier === 'free')),
     error,
     hasReachedLimit,
     checkFeatureAccess,

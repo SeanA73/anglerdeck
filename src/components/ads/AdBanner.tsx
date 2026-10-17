@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useSubscription } from '@/hooks/useSubscription';
-import { CONSENT_CHANGED_EVENT, readConsent } from '@/lib/cookieConsent';
+import { useAdConsent } from '@/lib/adConsent';
 
 const ADSENSE_CLIENT = import.meta.env.VITE_ADSENSE_CLIENT_ID;
 
@@ -34,48 +34,36 @@ const loadAdSenseScript = () => {
  *  1. Never render until the subscription has loaded — otherwise Pro and Elite
  *     users see an ad flash on every page load, which is exactly what they paid
  *     to avoid.
- *  2. Never render until the visitor has answered the cookie banner. Once they
- *     have, ads may load either way: Google Consent Mode decides whether they
- *     are personalised, so declining marketing yields non-personalised ads
- *     rather than no ads at all.
+ *  2. Wait for the certified CMP's TCF response. Outside its regulated region,
+ *     an explicit gdprApplies=false response suffices; within it, require
+ *     completed storage consent for Google. No CMP response means no unit.
  *  3. Never render without a configured client ID and slot.
  *
  * EEA/UK/SWITZERLAND COMPLIANCE: Google requires a *certified* Consent
  * Management Platform for traffic from the EEA, the UK and Switzerland. The
- * in-house banner sets Consent Mode signals correctly but is not certified, so
- * a certified CMP must be in place before serving ads to those visitors.
+ * local banner controls site analytics and affiliate localization only.
+ * Publish the Google Privacy & messaging message before enabling ad units.
  */
 export const AdBanner = ({ slot, format = 'auto', className = '' }: AdBannerProps) => {
-  const { subscription, isLoading } = useSubscription();
-  const [hasConsentDecision, setHasConsentDecision] = useState(
-    () => readConsent() !== null
-  );
-  const pushed = useRef(false);
-
-  useEffect(() => {
-    const onChange = () => setHasConsentDecision(readConsent() !== null);
-    window.addEventListener(CONSENT_CHANGED_EVENT, onChange);
-    return () => window.removeEventListener(CONSENT_CHANGED_EVENT, onChange);
-  }, []);
-
-  const isPaidTier =
-    subscription?.tier === 'pro' || subscription?.tier === 'elite';
+  const { canShowAds } = useSubscription();
+  const hasConsentDecision = useAdConsent();
+  const unit = useRef<HTMLModElement | null>(null);
+  const pushedUnit = useRef<HTMLModElement | null>(null);
 
   const showAd =
-    !isLoading &&
-    !isPaidTier &&
+    canShowAds &&
     hasConsentDecision &&
     Boolean(ADSENSE_CLIENT) &&
     Boolean(slot);
 
   useEffect(() => {
-    if (!showAd || pushed.current) return;
+    if (!showAd || !unit.current || pushedUnit.current === unit.current || unit.current.hasAttribute('data-adsbygoogle-status')) return;
     loadAdSenseScript();
     try {
       const win = window as Window & { adsbygoogle?: unknown[] };
       win.adsbygoogle = win.adsbygoogle || [];
       win.adsbygoogle.push({});
-      pushed.current = true;
+      pushedUnit.current = unit.current;
     } catch (e) {
       console.error('AdSense error:', e);
     }
@@ -88,6 +76,8 @@ export const AdBanner = ({ slot, format = 'auto', className = '' }: AdBannerProp
   return (
     <div className={`my-4 text-center ${className}`}>
       <ins
+        key={slot}
+        ref={unit}
         className="adsbygoogle"
         style={{ display: 'block' }}
         data-ad-client={ADSENSE_CLIENT}

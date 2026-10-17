@@ -6,7 +6,8 @@ import { Link } from "react-router-dom";
 import CookiePreferencesDialog from "./CookiePreferencesDialog";
 
 import {
-  COOKIE_CONSENT_KEY,
+  DEFAULT_PREFERENCES,
+  readConsent,
   OPEN_PREFERENCES_EVENT,
   writeConsent,
   type CookiePreferences,
@@ -17,15 +18,10 @@ export type { CookiePreferences };
 const CookieConsent = () => {
   const [showBanner, setShowBanner] = useState(false);
   const [showPreferences, setShowPreferences] = useState(false);
-  const [preferences, setPreferences] = useState<CookiePreferences>({
-    essential: true,
-    functional: true,
-    analytics: true,
-    marketing: false,
-  });
+  const [preferences, setPreferences] = useState<CookiePreferences>(DEFAULT_PREFERENCES);
 
   useEffect(() => {
-    const stored = localStorage.getItem(COOKIE_CONSENT_KEY);
+    const stored = readConsent();
     if (!stored) {
       // Delay showing the banner for better UX
       const timer = setTimeout(() => {
@@ -33,13 +29,7 @@ const CookieConsent = () => {
       }, 1500);
       return () => clearTimeout(timer);
     } else {
-      try {
-        const parsedPrefs = JSON.parse(stored);
-        setPreferences(parsedPrefs);
-      } catch {
-        // Invalid stored data, show banner
-        setShowBanner(true);
-      }
+      setPreferences(stored);
     }
   }, []);
 
@@ -116,8 +106,9 @@ const CookieConsent = () => {
                     </button>
                   </div>
                   <p className="text-muted-foreground text-sm mb-4">
-                    We use cookies to enhance your experience, analyze site traffic, and for marketing purposes. 
-                    By clicking "Accept All", you consent to our use of cookies. Read our{" "}
+                    Choose whether to allow site analytics and affiliate-link localization.
+                    Advertising consent is managed separately by Google's privacy message.
+                    Read our{" "}
                     <Link to="/cookies" className="text-accent hover:underline">
                       Cookie Policy
                     </Link>{" "}
