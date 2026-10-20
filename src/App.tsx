@@ -24,6 +24,7 @@ const Auth = lazy(() => import("./pages/Auth"));
 const Pricing = lazy(() => import("./pages/Pricing"));
 const Account = lazy(() => import("./pages/Account"));
 const Support = lazy(() => import("./pages/Support"));
+const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
 const Regulations = lazy(() => import("./pages/Regulations"));
 const Guides = lazy(() => import("./pages/Guides"));
@@ -82,6 +83,7 @@ const App = () => (
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/account" element={<ProtectedRoute><Account /></ProtectedRoute>} />
                 <Route path="/support" element={<Support />} />
+                <Route path="/about" element={<About />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/regulations" element={<Regulations />} />
                 <Route path="/guides" element={<Guides />} />

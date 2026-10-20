@@ -23,6 +23,12 @@ export const SpotGuideSections = ({ slug }: { slug: string }) => {
 
   return (
     <div className="bg-card rounded-2xl p-6 border border-border/50 space-y-6">
+      {guide.sourcesCheckedOn && (
+        <p className="text-sm text-muted-foreground">
+          Sources for these researched sections checked on <time dateTime={guide.sourcesCheckedOn}>{guide.sourcesCheckedOn}</time>.
+          {" "}This is not a live conditions report.
+        </p>
+      )}
       {guide.sections.map((section) => (
         <section key={section.heading}>
           <h2 className="text-xl font-bold text-foreground mb-3">{section.heading}</h2>

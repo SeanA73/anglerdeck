@@ -1,3 +1,4 @@
+import EditorialCredit from "@/components/EditorialCredit";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { useState, useEffect, lazy, Suspense } from "react";
@@ -373,6 +374,7 @@ const SpotDetail = () => {
 
               {/* Overview */}
               <TabsContent value="overview" className="mt-0 space-y-8">
+                <EditorialCredit />
                 {/* Description */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}

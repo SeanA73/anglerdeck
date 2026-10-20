@@ -1,3 +1,4 @@
+import EditorialCredit from "@/components/EditorialCredit";
 import { Link, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ExternalLink, MapPin, BookOpen } from "lucide-react";
@@ -187,6 +188,7 @@ const GuideArticle = () => {
         </motion.header>
 
         <div className="max-w-3xl mt-10 space-y-4">
+          <EditorialCredit />
           <GuideBlocks blocks={article.intro} />
         </div>
 

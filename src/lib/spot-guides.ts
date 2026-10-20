@@ -33,6 +33,8 @@ export interface SpotGuide {
   /** Rendered under the guide as visible citations. */
   sources: { name: string; url: string }[];
   sourcing: "full" | "partial";
+  /** Actual date these section sources were read; not a whole-page review. */
+  sourcesCheckedOn?: string;
   sourceNotes?: string;
 }
 

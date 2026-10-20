@@ -255,5 +255,61 @@
     ],
     "sourcing": "partial",
     "sourceNotes": "Fetched and read directly 23 Sep 2026, both sources above. FWP's Madison River special-rules PDF and the statewide fishing regulations PDF were also fetched but returned as unreadable binary/compressed PDF streams rather than extractable text — the same class of fetcher block CLAUDE.md already documents for other spots (a tooling problem, not a source problem; poppler-utils is not installed in this environment and apt is currently broken here, so a PDF-text fallback was not available either). Because of that block, this entry deliberately omits: season open/close dates, the artificial-lures-only and barbless-hook sections of river, the catch-and-release-only vs. limited-retention boundary at Ennis Dam, and the specific water-temperature/flow threshold that triggers a hoot-owl order. All of those exist on the blocked PDF or were seen only in secondary reporting (news coverage, tackle-shop sites) rather than a primary page read directly this session, so per content rule 1 none of them are stated here. Marked partial for exactly this gap — worth a follow-up pass with a real browser or a working PDF-to-text tool. The existing access record's sourceUrl (myfwp.mt.gov/fwpPub/landsMgmt/search.action) is a search application, not a content page; the working detail page for Ennis specifically is the one cited above."
+  },
+
+  "lake-wanaka-trout": {
+    "sections": [
+      {
+        "heading": "Choose the lake shore before choosing your tackle",
+        "body": "A visitor without a boat should plan around a particular bay rather than treat the lake outline as a continuous access route. Fish & Game identifies shore access near the launching areas around Wānaka and notes that much of the western shoreline is reached by boat. Its lake guide lists ramps at the town marina, Waterfall Creek, Glendhu Bay and the Outlet. Those are useful starting points for checking a route, not a promise of unrestricted access along every adjoining bank.\n\nFor the fishing itself, the same guide distinguishes the shallow margins of Paddock and Parkins bays from the deeper water targeted by trolling. It describes fish feeding closer to shore early and late in summer, with deeper daytime fishing. Our planning takeaway is to choose between a shore session and a boat session first, then select tackle for that water. A general lake tackle list cannot make those two plans interchangeable."
+      },
+      {
+        "heading": "The Outlet is a change of fishery, not just another lake bank",
+        "body": "The Clutha / Mata-Au begins at the lake outlet. Fish & Game describes walking access between the Outlet and Albert Town, but also warns about the river's powerful current and changing flows. Being able to walk to the water is a different question from being able to enter it safely. Plan a bank-based visit unless you have independently assessed conditions and your ability.\n\nThe Upper Clutha guide also identifies Deans Bank as fly-only water and describes restrictions on fishing from boats between the Outlet and Albert Town. Check the current regional regulations for your exact stretch and method rather than carrying assumptions from a lake session into the river. For a mixed lake-and-river day, write down the bank or bay you intend to use, the permitted method there and a second shore option before leaving. That avoids arriving with a single setup intended for two different fisheries."
+      }
+    ],
+    "sources": [
+      {
+        "name": "Fish & Game Otago — Lake Wānaka: access and fishing methods",
+        "url": "https://www.fishandgame.org.nz/freshwater-fishing-in-new-zealand/where-to-fish/regional-info/otago/lake-wanaka"
+      },
+      {
+        "name": "Fish & Game Otago — Upper Clutha / Mata-Au: access, safety and regulations",
+        "url": "https://www.fishandgame.org.nz/freshwater-fishing-in-new-zealand/where-to-fish/regional-info/otago/upper-clutha-rivermata-au/"
+      }
+    ],
+    "sourcing": "full",
+    "sourcesCheckedOn": "2026-10-20",
+    "sourceNotes": "Read both Fish & Game pages on 20 October 2026. Lake section uses the Access and Methods sections; Outlet section uses Angler Access, Angler Safety and Rules and Regulations. Planning conclusions are explicitly editorial. No current flow claim, bag/size limit or unsupported parking/facility claim. Existing Supabase access/gear fields were not revalidated by this research."
+  },
+
+  "motueka-river": {
+    "sections": [
+      {
+        "heading": "Pick a reach instead of a single catchment pin",
+        "body": "The official access pamphlet divides the Motueka into lower, middle and upper reaches. These are useful planning choices, rather than three versions of the same fishing. Its lower-river description includes tidal water and mixed runs and pools; the middle reach has willow edges and riffles; the upper catchment is more exposed to low flows and fluctuating fish numbers. In warm summer conditions the pamphlet describes trout moving towards cooler Wangapeka water.\n\nFor a first visit, use those differences to narrow the day before choosing an access point. Decide whether you want to explore lower-river water or a middle-river fly session, then use the pamphlet's numbered map to identify the approach. Do not interpret a pin labelled Motueka River as permission to cross the nearest property. The pamphlet specifically marks some approaches as requiring landowner permission. Check the current regional rules separately for your chosen reach and method."
+      },
+      {
+        "heading": "Why an older access map needs a current check",
+        "body": "Fish & Game's catchment overview points visitors to its access pamphlet, but a mapped route and an open route are not the same thing. In its December 2025 regional update, the agency reported that some Motueka access points remained unavailable after that year's floods, despite repair work downstream of the Stanleybrook confluence. That is a dated account of disruption, not confirmation that those routes are still closed today or have since reopened.\n\nUse the map to make a shortlist, then ask the regional office about the specific numbered approaches before travelling. Have a second option in the same reach if your first route is unavailable, and respect signs and gates on arrival. This extra check is particularly useful here: the broad catchment description emphasizes easy access, while the later maintenance report demonstrates how individual approaches can change. Our guide cannot verify their condition in real time."
+      }
+    ],
+    "sources": [
+      {
+        "name": "Fish & Game Nelson Marlborough — Motueka catchment overview",
+        "url": "https://www.fishandgame.org.nz/freshwater-fishing-in-new-zealand/where-to-fish/regional-info/nelson-marlborough/motueka-catchment"
+      },
+      {
+        "name": "Fish & Game — Motueka River access pamphlet (PDF)",
+        "url": "https://www.fishandgame.org.nz/assets/DMS/Fishing/Where-to-fish/Regional-info/Nelson/Marlborough-v3/Motueka-Catchment/MOTUEKA-RIVER-updated-Sept-23.pdf"
+      },
+      {
+        "name": "Fish & Game — December 2025 regional update (historical access disruption)",
+        "url": "https://www.fishandgame.org.nz/freshwater-fishing-in-new-zealand/follow-the-fish/reel-life/reel-life-december-2025-nelson-marlborough/"
+      }
+    ],
+    "sourcing": "partial",
+    "sourcesCheckedOn": "2026-10-20",
+    "sourceNotes": "Read official catchment overview, official PDF (pages 1-3) and December 2025 update on 20 October 2026. PDF is reached via current official newsletter link; non-www variant returned 404. Could not establish present-day status of each numbered access point; historical disruption explicitly dated, no route claimed currently open or closed. Existing database access wording was not changed. No bag/size numbers or season dates repeated."
   }
 }

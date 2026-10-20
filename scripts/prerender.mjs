@@ -87,6 +87,14 @@ const countryGuide = (code) => (code === "_README" ? undefined : COUNTRY_GUIDES[
  * Most spots have no entry. That is deliberate — these are researched a few at a
  * time — and a spot without one renders exactly as it did before.
  */
+const PUBLISHER_PAGES = JSON.parse(fs.readFileSync(path.join(root, "src/data/publisher-pages.json"), "utf8"));
+const editorialCredit = '<p>Published by AnglerDeck · Research-based guide · <a href="/about">How we research and correct our guides</a></p>';
+function publisherPageContent(page) {
+  return `<article><h1>${esc(page.title)}</h1><p>${esc(page.intro)}</p>${page.sections.map(section =>
+    `<h2>${esc(section.heading)}</h2>${section.paragraphs.map(p => `<p>${esc(p)}</p>`).join("")}`
+  ).join("")}<p><a href="mailto:support@anglerdeck.com">Email support@anglerdeck.com</a> · <a href="/about">About our research</a> · <a href="/contact">Contact us</a></p></article>`;
+}
+
 const SPOT_GUIDES = JSON.parse(
   fs.readFileSync(path.join(root, "src/data/spot-guides.json"), "utf8")
 );
@@ -371,6 +379,7 @@ function spotGuideSection(slug) {
   const guide = spotGuide(slug);
   if (!guide || !Array.isArray(guide.sections) || !guide.sections.length) return "";
 
+  const checked = guide.sourcesCheckedOn ? `<p>Sources for these researched sections checked on <time datetime="${esc(guide.sourcesCheckedOn)}">${esc(guide.sourcesCheckedOn)}</time>. This is not a live conditions report.</p>` : "";
   const sections = guide.sections
     .map((s) => `<h2>${esc(s.heading)}</h2><p>${esc(s.body)}</p>`)
     .join("");
@@ -384,7 +393,7 @@ function spotGuideSection(slug) {
         .join("")}</ul>`
     : "";
 
-  return `\n      ${sections}\n      ${sources}`;
+  return `\n      ${checked}\n      ${sections}\n      ${sources}`;
 }
 
 function spotContent(spot, all, reviews = []) {
@@ -401,6 +410,7 @@ function spotContent(spot, all, reviews = []) {
   return `
     <article>
       <h1>${esc(spot.title)}</h1>
+      ${editorialCredit}
       <p><strong>${esc(spot.location)}, ${esc(country)}</strong> &middot; ${esc(spot.type)} &middot; ${esc(spot.difficulty)}</p>
       <p>${esc(spot.description)}</p>
       ${spotGuideSection(spot.slug)}
@@ -1014,6 +1024,7 @@ function guideArticleContent(article) {
     <article>
       <nav><a href="/guides">Guides</a> / ${esc(article.headline)}</nav>
       <h1>${esc(article.headline)}</h1>
+      ${editorialCredit}
       <p><time datetime="${esc(article.datePublished)}">Published ${esc(
         article.datePublished
       )}</time>${
@@ -1235,6 +1246,8 @@ async function main() {
   // no Supabase content behind them, so head tags are all they can honestly
   // get from here — their copy lives in the React components.
   const staticBodies = {
+    "/about": () => publisherPageContent(PUBLISHER_PAGES.about),
+    "/contact": () => publisherPageContent(PUBLISHER_PAGES.contact),
     "/spots": () => spotsContent(published, countriesWithSpots),
     "/map": () => mapContent(published, countriesWithSpots),
     "/regulations": () => regulationsContent(countriesWithSpots),

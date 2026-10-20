@@ -49,6 +49,7 @@ export const STATIC_ROUTES = [
   // /regulations, rather than utility ones.
   ...guideRoutes(),
   { path: "/support", title: "Help Centre — AnglerDeck", description: "Answers to common questions about AnglerDeck." },
+  { path: "/about", title: "About & Editorial Policy — AnglerDeck", description: "Who publishes AnglerDeck, how our fishing guides are researched, and how to report a correction." },
   { path: "/contact", title: "Contact — AnglerDeck", description: "Get in touch with the AnglerDeck team." },
   { path: "/privacy", title: "Privacy Policy — AnglerDeck", description: "How AnglerDeck handles your data." },
   { path: "/terms", title: "Terms of Service — AnglerDeck", description: "The terms governing use of AnglerDeck." },

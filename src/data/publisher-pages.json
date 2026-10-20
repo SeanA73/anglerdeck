@@ -1,0 +1,67 @@
+{
+  "about": {
+    "title": "About AnglerDeck",
+    "description": "Who publishes AnglerDeck, how our fishing guides are researched, and how to report a correction.",
+    "intro": "AnglerDeck is an independent fishing trip research guide. We bring together spot information, access sources and licence guidance to help you decide what to check before a trip.",
+    "sections": [
+      {
+        "heading": "Who publishes this guide",
+        "paragraphs": [
+          "AnglerDeck publishes and maintains this site. Our destination coverage is based on desk research; it is not a claim that we have personally fished every location. Research-based guidance and community angler reports are presented separately."
+        ]
+      },
+      {
+        "heading": "How we research a destination",
+        "paragraphs": [
+          "For access and licence information, we use government fisheries agencies, statutory licensing bodies, councils and park authorities. Source links on spot pages and country guides let you check the underlying information. Our comparison guides bring those sources together to explain differences between destinations.",
+          "A map pin identifies a fishing area, not permission to enter land, launch a boat or fish every part of the water. Check the linked authority for the exact access point, current closures and permitted methods before travelling."
+        ]
+      },
+      {
+        "heading": "What a page does and does not verify",
+        "paragraphs": [
+          "A source link supports the information attributed to it; it does not mean the authority has endorsed AnglerDeck. We omit access details we cannot substantiate. General seasonal and tackle suggestions are planning guidance, not a current fishing report or a guarantee of catches.",
+          "Publication and update dates on articles describe those articles. They do not certify that every rule or access point has been checked again on that date. Where a researched spot section shows a source-check date, it applies to that section only. Always check current rules with the responsible authority."
+        ]
+      },
+      {
+        "heading": "Corrections and angler reports",
+        "paragraphs": [
+          "If you find an access change, broken source link or inaccurate statement, email support@anglerdeck.com with the page URL, the statement concerned and an official source if available. We can use that evidence to investigate the correction.",
+          "Community reports are moderated before publication. They describe the contributor\u2019s experience and do not replace current access permissions or fisheries rules. We do not manufacture reviews or ratings."
+        ]
+      },
+      {
+        "heading": "How the site is funded",
+        "paragraphs": [
+          "AnglerDeck offers paid subscriptions and includes affiliate shopping links. As an Amazon Associate, AnglerDeck earns from qualifying purchases. Some pages include advertising when available and permitted by your consent choices. Affiliate links are commercial links, not independent field-test evidence."
+        ]
+      }
+    ]
+  },
+  "contact": {
+    "title": "Contact AnglerDeck",
+    "description": "Contact AnglerDeck for support, source corrections and access updates.",
+    "intro": "Email support@anglerdeck.com for support, feedback or a correction to a fishing guide.",
+    "sections": [
+      {
+        "heading": "Send an email",
+        "paragraphs": [
+          "Use the email link below to open your email app, or copy support@anglerdeck.com into your webmail. Your message is sent only when you send it from your email account."
+        ]
+      },
+      {
+        "heading": "Report a correction",
+        "paragraphs": [
+          "Include the AnglerDeck page URL, the information that needs changing and a link to the relevant fisheries agency, council or park authority if you have one. Tell us when you noticed the change. Please do not send passwords or payment card details."
+        ]
+      },
+      {
+        "heading": "Account or subscription help",
+        "paragraphs": [
+          "Include the email address associated with your account and describe what happened. For current access permissions, safety conditions and fishing rules, contact the responsible local authority."
+        ]
+      }
+    ]
+  }
+}

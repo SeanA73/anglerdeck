@@ -28,6 +28,7 @@ const Footer = () => {
       { name: "Compare Plans", href: "/pricing" },
     ],
     Support: [
+      { name: "About & Editorial Policy", href: "/about" },
       { name: "Help Center", href: "/support" },
       { name: "Contact Us", href: "/contact" },
       { name: "Regulations", href: "/regulations" },
